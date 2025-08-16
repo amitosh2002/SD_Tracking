@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -14,4 +14,4 @@ If you are developing a production application, we recommend using TypeScript wi
 =======
 # SD_Tracking
 This Repo is made for tacking the development of project
->>>>>>> 766a72264291372bf8d99cd529306f34edb73f25
+
