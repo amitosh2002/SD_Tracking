@@ -1,0 +1,565 @@
+// Variables
+$primary-color: #3b82f6;
+$secondary-color: #10b981;
+$danger-color: #ef4444;
+$warning-color: #f59e0b;
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+$white: #ffffff;
+
+$border-radius: 8px;
+$border-radius-sm: 4px;
+$border-radius-lg: 12px;
+$box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$transition: all 0.2s ease-in-out;
+
+// Mixins
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: $border-radius-sm;
+    border: none;
+    cursor: pointer;
+    transition: $transition;
+    text-decoration: none;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &:focus {
+        outline: 2px solid $primary-color;
+        outline-offset: 2px;
+    }
+}
+
+// Main wrapper
+.editorWrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: $white;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    overflow: hidden;
+}
+
+// Header styles
+.header {
+    @include flex-between;
+    padding: 1rem;
+    border-bottom: 1px solid $gray-200;
+    background: $white;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.headerIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: $primary-color;
+}
+
+.headerTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $gray-800;
+    margin: 0;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+// Button styles
+.button {
+    @include button-base;
+}
+
+.buttonTemplate {
+    background: lighten($primary-color, 45%);
+    color: $primary-color;
+
+    &:hover {
+        background: lighten($primary-color, 40%);
+    }
+}
+
+.buttonPreview {
+    background: $gray-100;
+    color: $gray-700;
+
+    &:hover {
+        background: $gray-200;
+    }
+
+    &.buttonPreviewActive {
+        background: lighten($secondary-color, 45%);
+        color: $secondary-color;
+
+        &:hover {
+            background: lighten($secondary-color, 40%);
+        }
+    }
+}
+
+.buttonSave {
+    background: lighten($secondary-color, 45%);
+    color: $secondary-color;
+
+    &:hover {
+        background: lighten($secondary-color, 40%);
+    }
+}
+
+.buttonIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+// Quick actions bar
+.quickActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: $gray-50;
+    border-bottom: 1px solid $gray-200;
+    flex-wrap: wrap;
+}
+
+.quickActionButton {
+    @include button-base;
+    padding: 0.5rem 0.75rem;
+    background: $white;
+    color: $gray-700;
+    border: 1px solid $gray-300;
+
+    &:hover {
+        background: $gray-50;
+        border-color: $gray-400;
+    }
+
+    &:active {
+        background: $gray-100;
+    }
+}
+
+.quickActionIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+// Upload progress
+.uploadProgress {
+    padding: 0.75rem;
+    background: lighten($primary-color, 48%);
+    border-bottom: 1px solid lighten($primary-color, 35%);
+}
+
+.uploadItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:not(:last-child) {
+        margin-bottom: 0.5rem;
+    }
+}
+
+.uploadIcon {
+    width: 1rem;
+    height: 1rem;
+    color: $primary-color;
+}
+
+.progressBar {
+    flex: 1;
+    height: 0.5rem;
+    background: $gray-200;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: $primary-color;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.progressText {
+    font-size: 0.875rem;
+    color: $primary-color;
+    font-weight: 500;
+    min-width: 3rem;
+    text-align: right;
+}
+
+// Editor container
+.editorContainer {
+    position: relative;
+    min-height: 400px;
+}
+
+// Preview mode
+.previewMode {
+    padding: 1.5rem;
+    min-height: 24rem;
+    line-height: 1.7;
+
+    // Typography styles for preview
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        line-height: 1.25;
+        color: $gray-900;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    h4 {
+        font-size: 1.125rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    h6 {
+        font-size: 0.875rem;
+    }
+
+    p {
+        margin-bottom: 1rem;
+        color: $gray-700;
+    }
+
+    ul,
+    ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+
+        li {
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    blockquote {
+        border-left: 4px solid $gray-300;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        font-style: italic;
+        color: $gray-600;
+    }
+
+    code {
+        background: $gray-100;
+        padding: 0.125rem 0.25rem;
+        border-radius: $border-radius-sm;
+        font-size: 0.875rem;
+        font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+    }
+
+    pre {
+        background: $gray-900;
+        color: $white;
+        padding: 1rem;
+        border-radius: $border-radius;
+        overflow-x: auto;
+        margin: 1rem 0;
+
+        code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+
+        th,
+        td {
+            border: 1px solid $gray-300;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        th {
+            background: $gray-100;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: $gray-50;
+        }
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: $border-radius;
+        margin: 1rem 0;
+    }
+
+    a {
+        color: $primary-color;
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
+
+// Quill container styles
+.quillContainer {
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    min-height: 300px;
+
+    .toolbar {
+        border-bottom: 1px solid $gray-300;
+        padding: 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        background: $gray-50;
+        border-top-left-radius: $border-radius;
+        border-top-right-radius: $border-radius;
+    }
+
+    .toolbarButton {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid $gray-300;
+        background: $white;
+        border-radius: $border-radius-sm;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: $transition;
+
+        &:hover {
+            background: $gray-100;
+            border-color: $gray-400;
+        }
+
+        &:active {
+            background: $gray-200;
+        }
+    }
+
+    .separator {
+        margin: 0 0.25rem;
+        color: $gray-300;
+        font-weight: 300;
+    }
+
+    .editorTextarea {
+        width: 100%;
+        min-height: 250px;
+        border: none;
+        padding: 1rem;
+        resize: vertical;
+        font-family: inherit;
+        font-size: 0.875rem;
+        outline: none;
+        border-bottom-left-radius: $border-radius;
+        border-bottom-right-radius: $border-radius;
+
+        &::placeholder {
+            color: $gray-400;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+// Table insertion styles
+.insertedTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+
+    th,
+    td {
+        border: 1px solid $gray-300;
+        padding: 0.5rem;
+    }
+
+    th {
+        background: $gray-100;
+        font-weight: 600;
+    }
+}
+
+// Footer styles
+.footer {
+    @include flex-between;
+    padding: 0.75rem;
+    background: $gray-50;
+    border-top: 1px solid $gray-200;
+    font-size: 0.875rem;
+    color: $gray-600;
+}
+
+.footerStat {
+    font-weight: 500;
+}
+
+.footerTime {
+    font-size: 0.75rem;
+    color: $gray-500;
+}
+
+// Hidden input
+.hiddenInput {
+    display: none !important;
+}
+
+// Example wrapper styles
+.exampleWrapper {
+    padding: 1.5rem;
+    background: $gray-100;
+    min-height: 100vh;
+}
+
+.exampleHeader {
+    margin-bottom: 1.5rem;
+}
+
+.exampleTitle {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $gray-800;
+    margin: 0 0 1rem 0;
+}
+
+// Mode selector
+.modeSelector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.modeButton {
+    @include button-base;
+    padding: 0.5rem 1rem;
+    background: $white;
+    color: $gray-700;
+    border: 1px solid $gray-300;
+    font-weight: 500;
+
+    &:hover {
+        background: $gray-50;
+    }
+
+    &.modeButtonActive {
+        background: $primary-color;
+        color: $white;
+        border-color: $primary-color;
+
+        &:hover {
+            background: darken($primary-color, 5%);
+        }
+    }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+    .editorWrapper {
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .headerActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .quickActions {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .quickActionButton {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .footer {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+
+    .modeSelector {
+        flex-wrap: wrap;
+    }
+
+    .exampleWrapper {
+        padding: 1rem;
+    }
+}

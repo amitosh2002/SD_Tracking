@@ -1,0 +1,57 @@
+// _customButton.scss
+
+// Define some variables for consistency
+$primary-color: #007bff;
+$primary-hover: #0056b3;
+$disabled-color: #ccc;
+$text-color: #fff;
+$font-family: Arial, sans-serif;
+$border-radius: 4px;
+@import "../customDesign/customTexts.scss"; // Import custom text styles
+.custom-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; // Space between icon and text
+    padding: 10px 16px;
+    border: none;
+    border-radius: $border-radius;
+    font-family: $font-family;
+    font-size: 16px;
+    font-weight: 500;
+    color: $text-color;
+    background-color: $primary-color;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+
+    // Hover and active states
+    &:hover {
+        background-color: $primary-hover;
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    // Disabled state
+    &:disabled {
+        background-color: $disabled-color;
+        cursor: not-allowed;
+    }
+
+    // Styles for the icon inside the button
+    .button-icon {
+        display: flex; // Align icon properly
+    width: 25px;
+        // You can add more specific styles for SVG or other icon types here
+    }
+}
+
+// Example of an alternate style using a modifier class
+.custom-button.secondary {
+    background-color: #6c757d;
+
+    &:hover {
+        background-color: #5a6268;
+    }
+}

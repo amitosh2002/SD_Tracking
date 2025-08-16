@@ -1,0 +1,72 @@
+
+@import "../../customFiles/customDesign/customTexts.scss";
+
+
+.github_container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+
+    .create-branch-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            // height: 100vh;
+    
+    
+            .icon_container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 1.2rem;
+                justify-content: center;
+                margin: 1.6rem;
+    
+                img {
+                    width: 100px;
+                    height: 100px;
+                }
+    
+                // width: 100px !important;
+                // height: 100px;
+            }
+            .collab_icon{
+                width:45px !important;
+
+            }
+            .select_tag{
+                max-width: 450px;
+                width: 100%;
+                padding: 0.5rem;
+                border-radius: 5px;
+                margin:0.5rem;
+                
+                option{
+                    padding: 0.2rem;
+                    margin-top: 1.25rem;
+
+                }
+            }
+            input{
+                @extend .select_tag;
+            }
+        }
+
+    .github_icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 20px;
+    }
+
+    .github_text {
+        @extend .Lg_body_bold;
+        font-size: 1.5rem;
+        color: #333;
+    }
+}
+

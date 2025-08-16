@@ -1,0 +1,21 @@
+import "./buttonStyle.scss"
+
+
+export const ButtonV1 = ({ onClick, children, icon,tailIcon, type = 'button', disabled , className = '',text }) => {
+  return (
+    <button
+      onClick={onClick}
+      type={type}
+      disabled={disabled}
+      className={`custom-button ${className}`} 
+    >
+      {/* Conditionally render the icon if the prop is provided */}
+      {icon && <img src={icon} className="button-icon"/>}
+      {/* Render the text or other content passed as children */}
+      <p className="Lg_body_bold-">{text}</p>
+      {children}
+      {tailIcon &&<img src={tailIcon} className="button-icon"/>}
+
+    </button>
+  );
+};

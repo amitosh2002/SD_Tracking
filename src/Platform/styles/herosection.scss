@@ -1,0 +1,113 @@
+@import "../../customFiles/customDesign/customTexts.scss";
+
+.hero_section_body {
+    width: -webkit-fill-available;
+    // background-color: rgb(12, 233, 233);
+
+    .activity_body {
+        display: flex;
+        width: 100%;
+        gap: 1.5rem;
+        padding: 1.2rem;
+        flex-direction: column;
+
+        .activity_tab {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            border: solid 1px rgb(188, 188, 188);
+            border-radius: 8px;
+            padding: 20px;
+
+            .icon {
+                width: 40px;
+
+                img {
+                    width: 30px;
+                    height: 30px;
+                }
+            }
+
+
+        }
+
+    }
+
+    .rescent_task {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.2rem;
+
+
+
+        .tasks {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            border: solid 1px rgb(188, 188, 188);
+            padding: 1.2rem;
+            gap: 1.5rem;
+
+
+            .task_info {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 1.3rem;
+
+                .button_radio {
+                        display: flex; // Make it a flex container
+                        justify-content: center; // Center content horizontally
+                        align-items: center; // Center content vertically
+                
+                        border-radius: 100%;
+                        border: solid 3px gray;
+                
+                       
+                        width: 24px; // Example: Set the desired content area + padding
+                        height: 24px; // Example: Set the desired content area + padding
+                        padding: 4px; // Example: Padding on all sides to create space around the image
+                
+                        // Now, the actual image itself needs to scale within this new space
+                        img {
+                            max-width: 100%; // Ensure image doesn't exceed its parent's content width
+                            max-height: 100%; // Ensure image doesn't exceed its parent's content height
+                            object-fit: contain; // Scale down the image to fit within the container
+                            // without cropping, maintaining aspect ratio.
+                            display: block; // Remove any extra space from inline elements
+                        }
+                    }
+            }
+        }
+    }
+
+    .quick_actions {
+        @extend .rescent_task;
+
+        .actions_tabs {
+            @extend .tasks;
+
+            .action_tags {
+                @extend .task_info
+            }
+        }
+    }
+}
+
+.priatory {
+    width: 100%;
+    max-width: 64px;
+    height: 25px;
+    background-color: yellow;
+    border-radius: 20px;
+    text-align: center ;
+    // height: max-content;
+}
+
+.done_task{
+    border: solid 3px rgb(19, 193, 19) !important;
+}

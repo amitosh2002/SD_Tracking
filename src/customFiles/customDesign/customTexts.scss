@@ -1,0 +1,32 @@
+
+
+.Lg_body_bold{
+    font-weight: 700;
+    font-size: larger;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+
+.Lg_body_regular{
+    // font-weight: 700;
+    font-size: larger;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgba(128, 128, 128, 0.911);
+
+}
+
+.md_body_bold{
+    font-weight: 700;
+    font-size: medium;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+
+  .completed-task {
+      color: grey;
+      /* Often strikethrough text is also greyed out */
+      text-decoration: line-through;
+  }
+  
+
+

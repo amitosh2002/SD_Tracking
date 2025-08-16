@@ -1,0 +1,48 @@
+.nav_container {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: aqua;
+    width: -webkit-fill-available;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1.2rem;
+
+    .nav_body {
+
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        gap: 1rem;
+
+        .search_container {
+            max-width: 200px;
+            width: 100%;
+
+            input {
+                padding: 0.6rem;
+                border-radius: 50px;
+            }
+
+
+        }
+
+        .notifications {
+            img {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        .user {
+            @extend .notifications
+        }
+
+    }
+
+
+
+}
