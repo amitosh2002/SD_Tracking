@@ -1,0 +1,68 @@
+// TaskGenerator.scss
+
+$primary-color: #0052cc;
+$border-color: #dfe1e6;
+$text-color: #172b4d;
+$background-color: #f4f5f7;
+$box-shadow: 0 4px 8px rgba(9, 30, 66, 0.15);
+
+.task-generator-container {
+  font-family: Arial, sans-serif;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: $box-shadow;
+  max-width: 500px;
+  margin: 40px auto;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    color: $text-color;
+    margin-bottom: 8px;
+  }
+}
+
+.prefix-select,
+.task-name-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 1px $primary-color;
+  }
+}
+
+.generated-output {
+  margin-top: 30px;
+  padding: 16px;
+  background-color: $background-color;
+  border-left: 4px solid $primary-color;
+  border-radius: 4px;
+
+  .output-label {
+    font-size: 14px;
+    // color: $secondary-text-color;
+    margin: 0 0 8px 0;
+  }
+
+  .output-code {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    color: $text-color;
+    word-break: break-all;
+  }
+}

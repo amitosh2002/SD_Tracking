@@ -70,6 +70,7 @@ const CreateBranch = () => {
         <ButtonV1  onClick={handleCreateBranch}
           tailIcon={copy}
           text={"Create Branch"}
+          type="primary"
         />
         {/* <img src={copy} alt="" /> */}
         

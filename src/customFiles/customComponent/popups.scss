@@ -1,0 +1,44 @@
+.popup-container{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    z-index: 99999;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    .popup-content{
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        max-width: 500px;
+        margin: auto;
+        position: relative;
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+
+            .popup-title {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .close-button {
+                cursor: pointer;
+                font-size: 16px;
+            }
+        }
+
+        .popup-body {
+            font-size: 14px;
+            color: #333;
+        }
+    }
+
+
+
+}
