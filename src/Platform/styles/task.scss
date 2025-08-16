@@ -1,0 +1,16 @@
+@import "../../customFiles/customDesign/customTexts.scss";
+
+.Task_container{
+    display: flex;
+    gap: 1.2rem;
+    width: -webkit-fill-available;
+    flex-direction: column;
+    
+    .task_body{
+        display: flex   ;
+        flex-direction: row;
+        width: 100%;
+
+    }
+
+}

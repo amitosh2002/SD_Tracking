@@ -7,7 +7,7 @@ export const ButtonV1 = ({ onClick, children, icon,tailIcon, type = 'button', di
       onClick={onClick}
       type={type}
       disabled={disabled}
-      className={`custom-button ${className}`} 
+      className={type ==="primary" ? `custom-button   ${className}` : `custom-button secondary ${className}`} 
     >
       {/* Conditionally render the icon if the prop is provided */}
       {icon && <img src={icon} className="button-icon"/>}

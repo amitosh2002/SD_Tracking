@@ -1,0 +1,115 @@
+// IssueDetails.scss
+
+// General variables for colors and spacing
+$background-color: #f6f8fa;
+$border-color: #d8dee4;
+$text-color: #24292e;
+$secondary-text-color: #586069;
+$section-padding: 16px;
+$border-radius: 6px;
+
+.issue-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    padding: $section-padding;
+    max-width: 400px;
+}
+
+// Action Bar
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $section-padding;
+
+    .action-bar__right {
+        display: flex;
+        gap: 8px;
+    }
+}
+
+.status-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border: 1px solid $border-color;
+    border-radius: 20px;
+    background-color: #28a745; // A sample color for 'complete' status
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.icon-button {
+    background: none;
+    border: 1px solid $border-color;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+}
+
+// Sections and details
+.section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: $text-color;
+    margin-bottom: 8px;
+}
+
+.details-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.details-label {
+    font-size: 12px;
+    color: $secondary-text-color;
+}
+
+.details-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0366d6;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.user-name {
+    font-size: 14px;
+    color: $text-color;
+}
+
+.dev-item {
+    margin-bottom: 8px;
+}
+.time-log-input,
+.story-point-input {
+    border: 1px solid #dfe1e6;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    color: #172b4d;
+    background-color: #f4f5f7;
+    transition: all 0.2s ease;
+
+    &:focus {
+        outline: none;
+        border-color: #0052cc;
+        box-shadow: 0 0 0 1px #0052cc;
+    }
+}
