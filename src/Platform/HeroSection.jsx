@@ -1,8 +1,14 @@
 import "./styles/herosection.scss"
 import done from "../assets/platformIcons/greenTick.svg"
 import greenTick from "../assets/platformIcons/green_tick.svg"
+import createTask from "../assets/platformIcons/TaskPlat/createTask.svg"
 import blueTick from "../assets/platformIcons/bluck_tick.svg"
 import yellowCLock from "../assets/platformIcons/yellow_tick.svg"
+import { ButtonV1 } from "../customFiles/customComponent/CustomButtons"
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
+import { getAllProjects } from "../Redux/Actions/projectsActions"
+import { useDispatch } from "react-redux"
 const HeroSection = () => {
     // let isCompleted =true
 
@@ -38,6 +44,13 @@ const rescentTask =[
     { id: 4, title: 'Team standup meeting', project: 'General', priority: 'medium', completed: false, dueDate: '2024-07-23', timeSpent: '30m' },
 ]
 
+const dispatch = useDispatch(); 
+useEffect(() => {
+    // Simulate fetching data from an API
+    dispatch(getAllProjects());
+}, []);
+
+const navigate = useNavigate();
 // const complete =true;
   return (
     <>
@@ -101,7 +114,18 @@ const rescentTask =[
                     <img src="" alt="->" />
                 </div>
             </div>
+             <div className="floating_button">
+            <ButtonV1
+            icon={createTask}
+            text="Create Task"
+            type="primary"
+            onClick={() => navigate("/editor")}
+            />
         </div>
+        </div>
+        
+
+       
 
     </>
   )

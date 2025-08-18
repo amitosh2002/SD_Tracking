@@ -14,8 +14,8 @@ const App = () => {
     <HeroSection/> */}
     {/* <EditorExample/> */}
     {/* <CreateBranch/> */}
-    <Navbar />
     <div className="app-container">
+    <Navbar />
       {/* You can add a header or any other component here if needed */}
 
       <AllRoutes  />
