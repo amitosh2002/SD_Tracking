@@ -10,6 +10,8 @@
         gap: 1.5rem;
         padding: 1.2rem;
         flex-direction: column;
+        // position: relative;
+       
 
         .activity_tab {
             width: 100%;
@@ -111,3 +113,10 @@
 .done_task{
     border: solid 3px rgb(19, 193, 19) !important;
 }
+
+ .floating_button {
+     position: fixed;
+     right: 20px;
+     bottom: 0;
+     z-index: 9999;
+ }
