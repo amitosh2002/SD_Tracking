@@ -17,11 +17,13 @@
 
 .editor-body {
     width: 100% !important;
+    height: calc(80vh - 100px); // Adjust height to fit within the viewport
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     padding: 1rem;
     box-sizing: border-box;
+    border: 1px solid #797575; // Optional: Add a border for better visibility
 }
 
 .button-group {
