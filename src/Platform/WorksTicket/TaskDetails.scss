@@ -1,0 +1,41 @@
+.task-details {
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+
+    strong {
+        font-weight: bold;
+        color: #555;
+    }
+    position: relative;
+    // padding: 20px;
+    display: flex;
+    flex-direction: row;
+    // gap: 20px;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        
+    }
+
+}
+.task-details-container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5px;
+
+    @media screen and (max-width: 768px) {
+        padding: 10px;
+    }
+}

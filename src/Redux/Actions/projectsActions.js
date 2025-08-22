@@ -1,10 +1,11 @@
 import axios from "axios";
+import { getAllTicketApi } from "../../Api/Plat/TicketsApi";
 
 export const getAllProjects = () =>async( dispatch)=>{
 
     try{
 
-        const response = await axios.get("http://localhost:8000/api/platform/v1/projects");
+        const response = await axios.get(getAllTicketApi);
         if(response.status === 200){
             dispatch({
                 type: 'GET_ALL_PROJECTS',
@@ -18,7 +19,7 @@ export const getAllProjects = () =>async( dispatch)=>{
 }
 export const getProjectById = (projectId) => async (dispatch) => {
     try {
-        const response = await axios.get(`http://localhost:8000/api/platform/v1/projects/${projectId}`);
+        const response = await axios.get(`${getAllTicketApi}/${projectId}`);
         if (response.status === 200) {
             dispatch({
                 type: 'GET_PROJECT_BY_ID',

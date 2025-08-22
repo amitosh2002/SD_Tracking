@@ -1,0 +1,74 @@
+.task-manager-container {
+    display: flex;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    color: #333;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+    .task_body{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+        }
+    }
+    .status_info{
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+
+    }
+}
+
+.task-list-panel {
+    width: 350px;
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f7f7f7;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        color: #555;
+        margin-bottom: 20px;
+    }
+}
+
+.task-details-panel {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+
+    @media (max-width: 768px) {
+        height: 60vh;
+        padding: 20px;
+    }
+}
+
+.placeholder {
+    text-align: center;
+    margin-top: 50px;
+    color: #888;
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    p {
+        margin-top: 10px;
+    }
+}

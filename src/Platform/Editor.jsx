@@ -5,18 +5,19 @@ import List from '@editorjs/list';
 import Paragraph from '@editorjs/paragraph';
 import DragDrop from "editorjs-drag-drop";
 import "./styles/editior.scss"
+import Table from '@editorjs/table';
 import { ButtonV1 } from '../customFiles/customComponent/CustomButtons';
-import IssueDetails from './LeftControll';
-const TextEditor = () => {
-  
+
+const TextEditor = ({ initialData }) => {
     const editorHolderRef = useRef(null);
     const editorInstanceRef = useRef(null);
 
     useEffect(() => {
         if (editorHolderRef.current && !editorInstanceRef.current) {
             try {
-                editorInstanceRef.current = new EditorJS({
-                    holder: editorHolderRef.current,
+                // Initialize the Editor.js instance
+                const editor = new EditorJS({
+                    holder: editorHolderRef.current || 'editorjs',
                     tools: {
                         header: Header,
                         list: List,
@@ -24,56 +25,81 @@ const TextEditor = () => {
                             class: Paragraph,
                             inlineToolbar: true,
                         },
+                        table: Table,
+                        
                     },
+                    data: initialData,
+                    onReady: () => {
+                        // Initialize DragDrop here, only after the editor is ready
+                        new DragDrop(editor);
+                        console.log('Editor.js is ready with DragDrop!');
+                    }
                 });
+                editorInstanceRef.current = editor;
+
             } catch (error) {
                 console.error('Editor.js initialization failed:', error);
-                // Ensure the ref is null if initialization fails
                 editorInstanceRef.current = null;
             }
         }
 
         return () => {
-            // Check if the destroy method exists before calling it
             if (editorInstanceRef.current && typeof editorInstanceRef.current.destroy === 'function') {
                 editorInstanceRef.current.destroy();
                 editorInstanceRef.current = null;
             }
         };
-    }, []);
-    const buttonGroup = [
-        {
-            text: "save",
-            // icon: "https://cdn-icons-png.flaticon.com/512/1828/1828770.png",
-            // tailIcon: "https://cdn-icons-png.flaticon.com/512/1828/1828770.png",
-            type: "primary"
-        },
-        {
-            text: "clear",
-            // icon: "https://cdn-icons-png.flaticon.com/512/1828/1828770.png",
-            // tailIcon: "https://cdn-icons-png.flaticon.com/512/1828/1828770.png",
-            type: "secondary"
+    }, [editorHolderRef, initialData]); // Add initialData to dependency array
+
+    const handleSave = async () => {
+        if (editorInstanceRef.current) {
+            try {
+                const outputData = await editorInstanceRef.current.save();
+                console.log('Content saved:', outputData);
+                // You can now handle the saved data
+            } catch (error) {
+                console.error('Saving failed:', error);
+            }
+        } else {
+            console.error('Editor instance is not initialized');
         }
+    };
+
+    const handleClear = async () => {
+        if (editorInstanceRef.current) {
+            try {
+                await editorInstanceRef.current.clear();
+                console.log('Editor cleared');
+            } catch (error) {
+                console.error('Clearing failed:', error);
+            }
+        } else {
+            console.error('Editor instance is not initialized');
+        }
+    };
+
+    const buttonGroup = [
+        { text: "save", onClick: handleSave, type: "primary" },
+        { text: "clear", onClick: handleClear, type: "secondary" }
     ];
 
     return (
-          <div className='editor-container'>
-              <div className='editor-body' >
-
-            <div ref={editorHolderRef} />
-              </div>
+        <div className='editor-container'>
+            <div className='editor-body'>
+                <div id="editorjs" ref={editorHolderRef} />
+            </div>
             <div className="button-group">
                 {buttonGroup.map((button, index) => (
                     <ButtonV1
                         key={index}
                         onClick={button.onClick}
                         text={button.text}
-                        icon={button.icon}
                         type={button.type}
                     />
                 ))}
             </div>
-        </div>)
-};    
-    
+        </div>
+    );
+};
+
 export default TextEditor;

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import './styles/issueDetails.scss'; // Import the SCSS file
 
-const IssueDetails = () => {
+const IssueDetails = ({task}) => {
 
+  console.log("Task Details:", task);
+
+  const {status,storyPoint,priority}=task || {};
   const [timeLogged, setTimeLogged] = useState('1d 2h 30m');
-  const [storyPoints, setStoryPoints] = useState('8');
+  const [storyPoints, setStoryPoints] = useState(storyPoint || 0);
 
   const handleTimeLogChange = (e) => {
     setTimeLogged(e.target.value);
@@ -20,7 +23,7 @@ const IssueDetails = () => {
         <div className="action-bar__left">
           <button className="status-button">
             <span className="status-dot"></span>
-            M1 Testing Complete
+           {status || 'Open'}
           </button>
         </div>
         <div className="action-bar__right">
@@ -66,7 +69,7 @@ const IssueDetails = () => {
         <h3 className="section-title">More Fields</h3>
         <div className="more-field-item">
           <span className="field-label">Priority:</span>
-          <span className="field-value">High</span>
+          <span className="field-value">{priority}</span>
         </div>
         <div className="more-field-item">
           <span className="field-label">Due Date:</span>

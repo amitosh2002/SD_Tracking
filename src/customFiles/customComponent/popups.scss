@@ -6,13 +6,18 @@
     position: fixed;
     z-index: 99999;
     background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    display: flex;
+    justify-content: center;
+
 
     .popup-content{
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         padding: 1rem;
-        max-width: 500px;
+        max-width: 700px;
+        width: 100%;
         margin: auto;
         position: relative;
 
