@@ -13,17 +13,7 @@ const TaskDetails = ({ task }) => {
       </div>
     );
   }
-const savedData = {
-  time: 1755691820318,
-  blocks: [
-    {
-      id: "_T_lK2jgE6",
-      type: "paragraph",
-      data: { text: "gtgtgt" }
-    }
-  ],
-  version: "2.31.0-rc.7"
-};
+
   return (
     <>
    
@@ -31,8 +21,8 @@ const savedData = {
       <div className="task-details-container">
       <p className="task-id">ID: {task.ticketKey}</p>
       <h2 className="task-title">{task.title}</h2>
-      <p className="task-description">{task.description || 'No description available.'}</p>
-      <TextEditor initialData={savedData} />
+      {/* <p className="task-description">{task.description || 'No description available.'}</p> */}
+      <TextEditor initialData={task?.description} />
       </div>
       {/* <TextEditor/> */}
                     <IssueDetails task={task}/>

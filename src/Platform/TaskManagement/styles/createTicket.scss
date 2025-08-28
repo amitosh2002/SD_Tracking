@@ -1,0 +1,26 @@
+.ticket_name_container{
+    display: flex;
+    flex-direction: column;
+    // margin-bottom: 1rem;
+    gap: 1rem;
+    .drop_down_container{
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
+    .ticket_type_dropdown{
+        max-width: 20%;
+    }
+    .ticket_priority_dropdown{
+        @extend .ticket_type_dropdown;
+    }
+
+    .ticket-input{
+        width: 100%;
+        padding:10px;
+        border-radius: 3px;
+            font-size: large;
+            border-color: whitesmoke;
+            
+    }
+}

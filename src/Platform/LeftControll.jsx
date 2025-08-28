@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import './styles/issueDetails.scss'; // Import the SCSS file
-
+import { ButtonUD } from '../customFiles/customComponent/CustomButtons';
+import defaultUser from"../assets/platformIcons/defaultUser.svg"
+import { assignTaskApi } from '../Redux/Actions/TicketActions/ticketAction';
+import { useDispatch } from 'react-redux';
 const IssueDetails = ({task}) => {
-
+  const dispatch = useDispatch()
   console.log("Task Details:", task);
 
-  const {status,storyPoint,priority}=task || {};
+  const {status,storyPoint}=task || {};
   const [timeLogged, setTimeLogged] = useState('1d 2h 30m');
   const [storyPoints, setStoryPoints] = useState(storyPoint || 0);
 
@@ -16,6 +19,18 @@ const IssueDetails = ({task}) => {
   const handleStoryPointChange = (e) => {
     setStoryPoints(e.target.value);
   };
+
+  const handleAssingTask=(id)=>{
+    
+    // console.log(id);
+    if (!id) {
+      console.log("ticket not found")
+      return;
+      
+    }
+    dispatch(assignTaskApi(id));
+  }
+  
   return (
     <div className="issue-container">
       {/* Top action bar */}
@@ -38,16 +53,32 @@ const IssueDetails = ({task}) => {
         <h3 className="section-title">Details</h3>
         <div className="details-row">
           <span className="details-label">Assignee</span>
-          <div className="details-value">
-            <span className="avatar">AK</span>
-            <span className="user-name">Amitosh Kumar</span>
+          <div className="assigne_detail_value">
+           <div className="assigne_detail">
+           {
+            task?.assignee !== "Unassigned"? (
+                <>
+                <span className="avatar">{task?.assignee[0]}</span>
+            <span className="user-name">{task?.assignee}</span>
+            <ButtonUD text={"Unassigned"}/>
+
+                </>
+            ):(
+                <>
+                <img src={defaultUser} className="avatar"alt="" />
+                <span className="user-name">Unassigned</span>
+                </>
+            )
+           }
+           </div>
+            <ButtonUD text={"Assign to me"} onClick={()=>handleAssingTask(task._id)}/>
           </div>
         </div>
         <div className="details-row">
           <span className="details-label">Reporter</span>
           <div className="details-value">
-            <span className="avatar">JL</span>
-            <span className="user-name">Jahnavi Lam</span>
+            <span className="avatar">{task?.reporter[0]}</span>
+            <span className="user-name">{task?.reporter}</span>
           </div>
         </div>
       </div>
@@ -69,11 +100,11 @@ const IssueDetails = ({task}) => {
         <h3 className="section-title">More Fields</h3>
         <div className="more-field-item">
           <span className="field-label">Priority:</span>
-          <span className="field-value">{priority}</span>
+          <span className="field-value">{task?.priority}</span>
         </div>
         <div className="more-field-item">
-          <span className="field-label">Due Date:</span>
-          <span className="field-value">2023-10-31</span>
+          <span className="field-label">Status:</span>
+          <span className="field-value">{task?.status}</span>
         </div>
       </div>
       <div className="task_other_details">

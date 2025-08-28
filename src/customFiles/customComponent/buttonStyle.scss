@@ -56,3 +56,12 @@ $border-radius: 4px;
         background-color: #5a6268;
     }
 }
+
+.underline_button{
+    border: none;
+    color: rgb(63, 140, 235);
+    width: 100%;
+    background: none;
+    border-bottom: 3px solid rgb(63, 140, 235);
+    cursor: pointer;
+}
