@@ -230,8 +230,8 @@ export const DropDownForTicketStatus = ({
   const statusWorkflow = {
     "OPEN": ["IN_PROGRESS", "IN_REVIEW", "ON_HOLD"],
     "IN_PROGRESS": ["IN_REVIEW", "ON_HOLD", "OPEN"],
-    "IN_REVIEW": ["Dev Testing", "REJECTED", "ON_HOLD"],
-    "Dev Testing": ["RESOLVED", "IN_REVIEW", "REJECTED"],
+    "IN_REVIEW": ["DEV_TESTING", "REJECTED", "ON_HOLD"],
+    "DEV_TESTING": ["RESOLVED", "IN_REVIEW", "REJECTED"],
     "RESOLVED": ["M1 TESTING COMPLETED", "REOPENED"],
     "M1 TESTING COMPLETED": ["M2 TESTING COMPLETED", "REOPENED"],
     "M2 TESTING COMPLETED": ["CLOSED", "REOPENED"],
