@@ -4,10 +4,13 @@ import {  SET_TICKET_STATUS, SET_TICKET_TYPE } from "../../Constants/KeyValueCon
 export const fetchPlatformKeyValueAction = () => async (dispatch) => {
     try {
         const token = localStorage.getItem("token");
+        // Helpful debug: ensure the backend URL is what we expect
+        // console.debug('VITE_BACKEND_URL=', import.meta.env.VITE_BACKEND_URL);
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/platform/key-values`, {
             headers: {
                 'Content-Type': 'application/json',
-                autherization: `Bearer ${token}`
+                // Correct header name (was misspelled as `autherization`)
+                Authorization: `Bearer ${token}`
             }
         });
 

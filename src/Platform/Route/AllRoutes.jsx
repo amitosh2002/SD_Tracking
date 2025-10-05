@@ -10,6 +10,7 @@ import UserProfile from "../profile";
 import { useEffect } from "react";
 import { fetchUserDetails } from "../../Redux/Actions/PlatformActions.js/userActions";
 import { useDispatch } from "react-redux";
+import { fetchPlatformKeyValueAction } from "../../Redux/Actions/KeyValueActions/keyValueActions";
 
 // import { useSelector } from "react-redux";
 
@@ -17,8 +18,9 @@ const AllRoutes = () => {
     const dispatch = useDispatch();
 
       useEffect(() => {
-    dispatch(fetchUserDetails());
-  }, [dispatch]);
+               dispatch(fetchPlatformKeyValueAction());
+               dispatch(fetchUserDetails());
+           }, [dispatch]);
     return (
         // <BrowserRouter>
             <Routes>
