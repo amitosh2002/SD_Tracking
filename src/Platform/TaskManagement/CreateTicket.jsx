@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { PopupV1 } from '../../customFiles/customComponent/popups';
-import { DropDownV1 } from '../../customFiles/customComponent/DropDown';
+import { DropDownV1, DropDownV2 } from '../../customFiles/customComponent/DropDown';
 import "./styles/createTicket.scss";
 import TextEditor from '../Editor';
 import { ButtonV1 } from '../../customFiles/customComponent/CustomButtons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createTicket } from '../../Redux/Actions/TicketActions/ticketAction';
 import { IIV2Icon } from '../../customFiles/customComponent/inputContainer';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
@@ -17,7 +17,8 @@ const CreateTicket = () => {
     priority: "Medium",
     description: ""
   });
-
+  const {TicketType}=useSelector((state)=>state.keyValuePair)||{}
+  console.log("Ticket Types from Redux:", TicketType);
   const handleChange = (field, value) => {
     setTicketData(prev => ({ ...prev, [field]: value }));
     
@@ -39,9 +40,10 @@ const CreateTicket = () => {
     <PopupV1 title={"Create Ticket"} onClose={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false  })}>
       <div className="ticket_name_container">
        <div className="drop_down_container">
-         <DropDownV1
+         <DropDownV2
           label="Type"
-          defaultType={ticketData.type}
+          // defaultType={ticketData}
+          data={TicketType}
           onChange={val => handleChange("type", val)}
           className="ticket_type_dropdown"
         />

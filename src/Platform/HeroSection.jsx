@@ -10,6 +10,8 @@ import { useEffect } from "react"
 import { getAllProjects } from "../Redux/Actions/projectsActions"
 import { useDispatch } from "react-redux"
 const HeroSection = () => {
+
+    
     // let isCompleted =true
 
     // const svgClassName = `task-icon ${isCompleted ? 'completed' : ''}`;

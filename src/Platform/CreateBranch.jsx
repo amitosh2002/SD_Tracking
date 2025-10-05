@@ -5,6 +5,8 @@ import copy from "../assets/platformIcons/TaskPlat/copyIcon.svg"
 import colab from "../assets/platformIcons/TaskPlat/colab.svg"
 import hora from "../assets/platformIcons/horaLogo.svg"
 import { ButtonV1 } from "../customFiles/customComponent/CustomButtons";
+import { useDispatch } from "react-redux";
+import { fetchGithubRepoAction } from "../Redux/Actions/GithubActions/githubActions";
 
 const CreateBranch = () => {
   const [repository, setRepository] = useState('');
@@ -15,7 +17,12 @@ const CreateBranch = () => {
     baseBranchName: "main",
     branchName: "main",
   });
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    console.log('Initial gitData state:', gitData);
+    dispatch(fetchGithubRepoAction())
+  }
+, [dispatch,gitData]); // Log initial state on mount  
   const handleCreateBranch = () => {
     // Correct way to log the data you're about to set
     const newGitData = {

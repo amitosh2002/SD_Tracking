@@ -456,11 +456,18 @@ export const clearAuthState = () => (dispatch) => {
 };
 
 // Logout action
-export const logoutAction = () => (dispatch) => {
+export const logoutAction = () => async(dispatch) => {
   // Clear any stored tokens
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  
+  await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+      // Include auth token if required by backend
+    }});
+    dispatch({ type: CLEAR_AUTH_STATE });
   // Clear auth state
-  dispatch({ type: CLEAR_AUTH_STATE });
 };
+
+

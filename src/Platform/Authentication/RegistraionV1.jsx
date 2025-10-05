@@ -550,7 +550,7 @@ const HoraRegistration = () => {
             otp: otp
         },))
         if(isAuthenticated){
-            navigate("/home");
+            navigate("/");
         }
 
         // setTimeout(() => {

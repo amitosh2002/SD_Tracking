@@ -1,12 +1,13 @@
-import {  useSelector } from "react-redux";
+import {    useSelector } from "react-redux";
 import "../../App.css";
 import Navbar from "../Navbar";
-import AllRoutes from "../Routex/AllRoutes";
+import AllRoutes from "../Route/AllRoutes";
 import { PopupV1 } from "../../customFiles/customComponent/popups";
 import { OPEN_CREATE_TICKET_POPUP } from "../../Redux/Constants/ticketReducerConstants";
 import LoginPage from "../Authentication/authPage";
 import HoraRegistration from "../Authentication/RegistraionV1";
 import CreateTicket from "../TaskManagement/CreateTicket";
+
 
 const Layoutv1 = () => {
     // const dispatch = useDispatch();
@@ -14,7 +15,8 @@ const Layoutv1 = () => {
     // ticketReducer
     const { createPopup } = useSelector((state) => state.worksTicket);
     const { isAuthenticated, requiresRegistration } = useSelector((state) => state.auth);
-    
+       
+   
     console.log("Layout Rendered", { isAuthenticated, requiresRegistration });
     
     // Fix 1: Add explicit type checking and more detailed logging
@@ -37,7 +39,7 @@ const Layoutv1 = () => {
     }
     
     console.log("Rendering main layout");
-    
+
     return (
         <div className="app-container">
                 <Navbar />

@@ -11,6 +11,7 @@
         padding: 1.2rem;
         flex-direction: column;
         // position: relative;
+    background-color: white;
        
 
         .activity_tab {
@@ -42,7 +43,7 @@
         flex-direction: column;
         gap: 1.5rem;
         padding: 1.2rem;
-
+    background-color: white;
 
 
         .tasks {
@@ -60,7 +61,7 @@
                 flex-direction: row;
                 align-items: center;
                 gap: 1.3rem;
-
+    background-color: white;
                 .button_radio {
                         display: flex; // Make it a flex container
                         justify-content: center; // Center content horizontally

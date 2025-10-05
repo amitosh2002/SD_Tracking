@@ -86,6 +86,16 @@ $border-radius: 6px;
     flex-direction: row;
     gap: 5px;
 }
+.assignie_controll{
+    display: flex;
+    flex-direction: column;
+    .assigne-avtar{
+        display: flex;
+        flex-direction: row;
+        gap:8px;
+        padding: 0.2rem;
+    }
+}
 
 .avatar {
     width: 24px;

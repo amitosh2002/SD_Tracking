@@ -67,7 +67,7 @@ const LoginPage = () => {
     
     setLoading(true);
     setError('');
-    navigate("/home")
+    navigate("/")
     // Simulate API call
     setTimeout(() => {
       setLoading(false);

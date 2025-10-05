@@ -3,6 +3,8 @@ import "./styles/navbar.scss"
 import { PopupV1 } from '../customFiles/customComponent/popups';
 import { OPEN_CREATE_TICKET_POPUP } from '../Redux/Constants/ticketReducerConstants';
 import { useDispatch } from 'react-redux';
+import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 // SVG Icon Components for clarity and reusability
 const MenuIcon = () => (
@@ -36,6 +38,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const profileMenuRef = useRef(null);
   const dispatch = useDispatch();
+  const navigate=useNavigate();
   // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -48,14 +51,20 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  const handleSignOut = () => {
+    // Implement sign out logic here
+    console.log("Sign out clicked");
+    dispatch(logoutAction());
+    Navigate('/');
+    // For example, clear auth tokens, redirect to login, etc.
+  }
   return (
     <nav className="main-navbar">
       <div className="main-navbar__container">
         
         <div className="main-navbar__left">
           {/* Left Section: Logo */}
-          <a href="#" className="main-navbar__logo">Hora</a>
+          <a href="#" className="main-navbar__logo" onClick={()=>navigate('/')}>Hora</a>
         </div>
 
         {/* Center Section: Search Bar (Desktop) */}
@@ -74,6 +83,11 @@ const Navbar = () => {
             />
           </div>
         </div>
+              <div className="nav_routes">
+          <a href="#" className="profile-menu__item md_body_bold"  onClick={(e)=>{navigate('/all-work')
+                  e.stopPropagation()
+                }}>For You</a>
+        </div>
 
         {/* Mobile Menu Button */}
         <div className="main-navbar__mobile-toggle">
@@ -82,6 +96,7 @@ const Navbar = () => {
             {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
         </div>
+  
 
         {/* Right Section: Create Button & Profile (Desktop) */}
         <div className="main-navbar__right">
@@ -109,9 +124,11 @@ const Navbar = () => {
             {/* Dropdown Panel */}
             {isProfileMenuOpen && (
               <div className="profile-menu">
-                <a href="#" className="profile-menu__item">Your Profile</a>
+                <a href="#" className="profile-menu__item" onClick={(e)=>{navigate('/profile')
+                  e.stopPropagation()
+                }}>Your Profile</a>
                 <a href="#" className="profile-menu__item">Settings</a>
-                <a href="#" className="profile-menu__item">Sign out</a>
+                <a href="#" className="profile-menu__item" onClick={handleSignOut}>Sign out</a>
               </div>
             )}
           </div>

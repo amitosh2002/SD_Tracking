@@ -1,20 +1,84 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './styles/issueDetails.scss'; // Import the SCSS file
-import { ButtonUD } from '../customFiles/customComponent/CustomButtons';
+import { ButtonUD, ButtonV1 } from '../customFiles/customComponent/CustomButtons';
 import defaultUser from"../assets/platformIcons/defaultUser.svg"
-import { assignTaskApi } from '../Redux/Actions/TicketActions/ticketAction';
-import { useDispatch } from 'react-redux';
+import { addTimeLogForWork, assignTaskApi, changeTicketStatus } from '../Redux/Actions/TicketActions/ticketAction';
+import { useDispatch, useSelector } from 'react-redux';
+import { DropDownForTicketStatus } from '../customFiles/customComponent/DropDown';
+import { PopupV1 } from '../customFiles/customComponent/popups';
+import { convertInputToSeconds, formatMinutesToCustomDays } from '../utillity/helper';
+import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
 const IssueDetails = ({task}) => {
   const dispatch = useDispatch()
   console.log("Task Details:", task);
 
   const {status,storyPoint}=task || {};
-  const [timeLogged, setTimeLogged] = useState('1d 2h 30m');
-  const [storyPoints, setStoryPoints] = useState(storyPoint || 0);
+   const [timeLogged, setTimeLogged] = useState('');
+    const [error, setError] = useState(null);
+    const [timeLogPopup, setTimeLogPopup] = useState(false);
 
-  const handleTimeLogChange = (e) => {
-    setTimeLogged(e.target.value);
-  };
+  const [storyPoints, setStoryPoints] = useState(storyPoint || 0);
+  const [ticketstatusUpdate, setTicketStatusUpdate] = useState(status || "OPEN");
+
+  const {
+    TicketStatus:ticketStatus
+  }=useSelector((state)=>state.keyValuePair)||{}
+  const {userDetails}=useSelector((state)=>state.user);
+  console.log(userDetails,"details after login")
+  useEffect(()=>{})
+  console.log("Ticket Status from Redux:", ticketStatus);
+
+ const handleTimeLogChange = (e) => {
+    let timeLog = e.target.value.trim(); // Trim whitespace
+    
+    // Regex allows digits, d, m, h (if needed), and spaces.
+    // It filters out invalid characters as the user types.
+    const allowedCharsRegex = /^[0-9dhms\s]*$/i; 
+
+    // Regex to fully validate the format (e.g., "2d 5h 30m") 
+    // This looks for one or more segments (e.g., 2d, 3h, 15m) separated by spaces.
+    // The units are optional, but if present, must be d, h, or m.
+    const validationRegex = /^(\s*\d+\s*[dhm]\s*)*$/i; 
+
+    // 1. Filter out disallowed characters (e.g., letters, symbols) immediately
+    if (!allowedCharsRegex.test(timeLog)) {
+        // If an invalid character is detected, do NOT update the state
+        // You can optionally show an error message here.
+        console.log("Invalid character entered.");
+        setError(true)
+        return; 
+
+    }
+
+    // 2. Update the state with the raw input (contains only allowed chars)
+    setTimeLogged(e.target.value); 
+    
+    // 3. Optional: If you need to ONLY allow saving/submitting if the format is perfect:
+    // This check should ideally be done in the submit handler, not the change handler.
+    if (validationRegex.test(timeLog) || timeLog === '') {
+        setTimeLogged(e.target.value);
+        console.log(timeLog)
+    }
+};
+
+  const handleSubmit=(e)=>{
+     e.preventDefault();
+    let totalTimeLog = convertInputToSeconds(timeLogged)
+    const note =""
+    dispatch(addTimeLogForWork(task?._id,userDetails?.id,totalTimeLog,note))
+    setTimeLogPopup(false);
+    setTimeLogged("")
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          message: `Successful added the timelog for "${task?.type} ${task?.sequenceNumber}"`,
+          type: "success"
+        }
+      });
+
+    
+
+  }
 
   const handleStoryPointChange = (e) => {
     setStoryPoints(e.target.value);
@@ -28,8 +92,22 @@ const IssueDetails = ({task}) => {
       return;
       
     }
-    dispatch(assignTaskApi(id));
+    dispatch(assignTaskApi(id,userDetails?.id));
   }
+
+
+     const handleStatusChange = useCallback((data) => {
+        if (!task?._id) {
+            console.error("Task ID not found for status change.");
+            return;
+        }
+        // Dispatch the action to update the status in the backend and Redux store
+        dispatch(changeTicketStatus(task?._id, data?.newStatus));
+        setTicketStatusUpdate(data?.newStatus)
+        
+      
+        
+    }, [task?._id, dispatch]);
   
   return (
     <div className="issue-container">
@@ -38,7 +116,17 @@ const IssueDetails = ({task}) => {
         <div className="action-bar__left">
           <button className="status-button">
             <span className="status-dot"></span>
-           {status || 'Open'}
+           {/* {status || 'Open'} */}
+                  <DropDownForTicketStatus
+          label="Status"
+          ticketTypes={ticketStatus }
+          defaultType={ticketstatusUpdate || "OPEN"}
+          onStatusChange={(statusData) => {
+           handleStatusChange(statusData);
+          }}
+          className="status-dropdown"
+        />
+            <span className="chevron-down">▼</span>
           </button>
         </div>
         <div className="action-bar__right">
@@ -57,12 +145,16 @@ const IssueDetails = ({task}) => {
            <div className="assigne_detail">
            {
             task?.assignee !== "Unassigned"? (
-                <>
-                <span className="avatar">{task?.assignee[0]}</span>
-            <span className="user-name">{task?.assignee}</span>
-            <ButtonUD text={"Unassigned"}/>
-
-                </>
+                <div className='assignie_controll'>
+               <div className="assigne-avtar" >
+                 <span className="avatar">{task?.assignee[0] ?? ""}</span>
+                <span className="user-name">{task?.assignee ?? ""}</span>
+               </div>
+              {
+                 task.assignee===userDetails?.username &&  <ButtonUD text={"Unassigned"}/>
+              }
+           
+                </div>
             ):(
                 <>
                 <img src={defaultUser} className="avatar"alt="" />
@@ -70,15 +162,17 @@ const IssueDetails = ({task}) => {
                 </>
             )
            }
-           </div>
+           </div>{
+            task.assignee!==userDetails?.username &&
             <ButtonUD text={"Assign to me"} onClick={()=>handleAssingTask(task._id)}/>
+           }
           </div>
         </div>
         <div className="details-row">
           <span className="details-label">Reporter</span>
           <div className="details-value">
-            <span className="avatar">{task?.reporter[0]}</span>
-            <span className="user-name">{task?.reporter}</span>
+            <span className="avatar">{task?.reporter[0] ?? ""}</span>
+            <span className="user-name">{task?.reporter ?? ""}</span>
           </div>
         </div>
       </div>
@@ -101,6 +195,7 @@ const IssueDetails = ({task}) => {
         <div className="more-field-item">
           <span className="field-label">Priority:</span>
           <span className="field-value">{task?.priority}</span>
+          {/* <DropDownV1/> */}
         </div>
         <div className="more-field-item">
           <span className="field-label">Status:</span>
@@ -116,8 +211,9 @@ const IssueDetails = ({task}) => {
             <input 
               type="text" 
               className="time-log-input" 
-              value={timeLogged}
+              value={formatMinutesToCustomDays(task?.totalTimeLogged)}
               onChange={handleTimeLogChange}
+              onClick={()=>setTimeLogPopup(true)}
             />
           </div>
         </div>
@@ -136,6 +232,46 @@ const IssueDetails = ({task}) => {
           </div>
         </div>
       </div>
+
+     { timeLogPopup && <PopupV1 
+      title={"Enter Time Log"}
+      onClose={()=>setTimeLogPopup(false)}>
+          <form onSubmit={handleSubmit} className="time-log-form">
+            <div className="time-log-input-group">
+                <label htmlFor="timeInput" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                    Log Time Duration:
+                </label>
+                <input
+                    id="timeInput"
+                    type="text"
+                    value={timeLogged}
+                    onChange={handleTimeLogChange}
+                    // 💡 ADDED: Clear description for the user in the placeholder
+                    placeholder="e.g., 1d 4h 30m (1 day = 9 hours)"
+                    style={{ 
+                        border: error ? '1px solid red' : '1px solid #ccc', 
+                        padding: '10px', 
+                        width: '250px',
+                        marginRight: '10px'
+                    }}
+                />
+                <ButtonV1 type="primary" disabled={!timeLogged.trim()}>
+                    Log Time
+                </ButtonV1>
+            </div>
+            
+            {/* 💡 ADDED: Concise instruction below the input */}
+            <p style={{ 
+                fontSize: '12px', 
+                color: '#666', 
+                marginTop: '5px' 
+            }}>
+                Use 'd' for **Days** (1d = 9 hours), 'h' for **Hours**, and 'm' for **Minutes**. Example: **`1d 45m`**.
+            </p>
+
+            {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
+        </form>
+      </PopupV1>}
     </div>
   );
 };
