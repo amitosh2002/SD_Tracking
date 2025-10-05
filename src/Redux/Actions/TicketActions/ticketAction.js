@@ -1,10 +1,10 @@
 import axios from "axios";
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl} from "../../../Api/Plat/TicketsApi"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1} from "../../../Api/Plat/TicketsApi"
 
 export const getAllWorkTicket = ()=>async(dispatch)=>{
 
     try{
-        const response = await axios.get("http://localhost:8000/api/platform/v1/tickets");
+        const response = await axios.get(`${getAllTicketApiv1}`);
         if(response.status === 200){
             dispatch({
                 type: 'GET_ALL_TICKETS',
@@ -18,8 +18,7 @@ export const getAllWorkTicket = ()=>async(dispatch)=>{
 
 }
 
-export const createTicket =(ticketData)=>async()=>{
-    const userId='68a9f7f1eda6ac5064a5d87e';
+export const createTicket =(ticketData,userId)=>async()=>{
     if (!ticketData) {
         console.log("mo ticket found")
     }

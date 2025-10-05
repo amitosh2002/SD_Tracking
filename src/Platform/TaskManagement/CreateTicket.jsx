@@ -11,6 +11,7 @@ import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerCon
 
 const CreateTicket = () => {
     const dispatch = useDispatch();
+    const {userdetails}=useSelector((state)=>state.user)
   const [ticketData, setTicketData] = useState({
     title: "",
     type: "BUG",
@@ -29,7 +30,7 @@ const CreateTicket = () => {
         alert("Fill all details")
     }
       if (ticketData ) {
-        dispatch(createTicket(ticketData))
+        dispatch(createTicket(ticketData,userdetails?.id))
         console.log(ticketData,"data sent to backend")
     }
     

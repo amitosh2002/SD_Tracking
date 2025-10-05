@@ -24,9 +24,7 @@ const IssueDetails = ({task}) => {
     TicketStatus:ticketStatus
   }=useSelector((state)=>state.keyValuePair)||{}
   const {userDetails}=useSelector((state)=>state.user);
-  console.log(userDetails,"details after login")
   useEffect(()=>{})
-  console.log("Ticket Status from Redux:", ticketStatus);
 
  const handleTimeLogChange = (e) => {
     let timeLog = e.target.value.trim(); // Trim whitespace
