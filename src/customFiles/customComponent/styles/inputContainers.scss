@@ -1,0 +1,64 @@
+// iiv2icon
+/* Base styles for the input container */
+.custom-input {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* Space between icons and input field */
+    border: 1px solid #d1d5db;
+    /* A neutral gray border */
+    border-radius: 0.5rem;
+    /* Rounded corners */
+    padding: 0.75rem 1rem;
+    /* Padding inside the container */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    font-family: sans-serif;
+    /* Use a common font */
+
+    &:focus-within {
+        border-color: #3b82f6;
+        /* A blue border on focus */
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        /* Blue glow on focus */
+    }
+
+    /* Style for the actual input element */
+    input {
+        flex-grow: 1;
+        /* Allows the input to take up all available space */
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        color: #1f2937;
+        /* Dark gray text */
+        background: transparent;
+
+        &::placeholder {
+            color: #9ca3af;
+            /* Light gray placeholder text */
+        }
+    }
+
+    /* Style for the icons */
+    .head-icon,
+    .tail-icon {
+        display: flex;
+        /* Centers the SVG */
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        /* Gray color for icons */
+        transition: color 0.2s ease-in-out;
+
+        .custom-input:focus-within & {
+            color: #1f2937;
+            /* Darken the icons on focus */
+        }
+
+        svg {
+            width: 1.25rem;
+            /* Standard icon size (20px) */
+            height: 1.25rem;
+        }
+    }
+}

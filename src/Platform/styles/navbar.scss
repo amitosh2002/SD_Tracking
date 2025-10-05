@@ -1,3 +1,5 @@
+@import "../../customFiles/customDesign/customTexts.scss";
+
 // --- Variables ---
 $primary-color: #3B82F6;
 $primary-hover-color: #2563EB;
@@ -15,6 +17,23 @@ $shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 // --- Base Styles ---
+// Assuming $primary-hover-color is defined, e.g., $primary-hover-color: #007bff;
+
+.profile-menu__item {
+    padding: 0.8rem 1.2rem 0.6rem; // Adjusted padding to account for the border
+    border-bottom: 2px solid transparent; // Initial transparent border to prevent layout shift
+    cursor: pointer;
+    
+
+    // 💡 ANIMATION: Smooth transition for border-color
+    transition: border-color 0.2s ease-out, color 0.2s ease-out;
+
+    // Optional: Add a transition for text color on hover as well
+}
+
+.profile-menu__item:hover {
+    border-bottom-color: $primary-hover-color; // Change only the border color on hover
+}
 .sr-only {
     position: absolute;
     width: 1px;

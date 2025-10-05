@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './TaskGenerator.scss'; // SCSS for styling
-import { ButtonV1 } from '../../customFiles/customComponent/CustomButtons';
 
 const prefixes = [
   { label: 'Architecture', value: 'ARCH' },
@@ -23,15 +22,15 @@ const slugify = (text) => {
 };
 
 const TaskGenerator = () => {
+  // Initialize state with a better approach
   const [selectedPrefix, setSelectedPrefix] = useState(prefixes[0].value);
   const [taskName, setTaskName] = useState('');
   const [generatedTaskID, setGeneratedTaskID] = useState('');
+  const [ticketNumber, setTicketNumber] = useState('001'); // Using state to allow user input
 
-  // Use a mock ticket number for demonstration
-  const [ticketNumber, setTicketNumber] = useState('001');
-
+  // Effect to generate the task ID
   useEffect(() => {
-    if (taskName) {
+    if (taskName && ticketNumber) { // Ensure both inputs are provided
       const slug = slugify(taskName);
       const newID = `${selectedPrefix}-${ticketNumber}-${slug}`.toUpperCase();
       setGeneratedTaskID(newID);
@@ -39,6 +38,17 @@ const TaskGenerator = () => {
       setGeneratedTaskID('');
     }
   }, [selectedPrefix, taskName, ticketNumber]);
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(generatedTaskID)
+      .then(() => {
+        // Optional: Provide user feedback like a success message
+        console.log('Task ID copied to clipboard!');
+      })
+      .catch((err) => {
+        console.error('Failed to copy text: ', err);
+      });
+  };
 
   return (
     <div className="task-generator-container">
@@ -59,6 +69,18 @@ const TaskGenerator = () => {
       </div>
 
       <div className="input-group">
+        <label htmlFor="ticket-number">Ticket Number</label>
+        <input
+          id="ticket-number"
+          type="text"
+          value={ticketNumber}
+          onChange={(e) => setTicketNumber(e.target.value)}
+          placeholder="e.g., 001"
+          className="task-name-input"
+        />
+      </div>
+
+      <div className="input-group">
         <label htmlFor="task-name">Task Name</label>
         <input
           id="task-name"
@@ -71,17 +93,15 @@ const TaskGenerator = () => {
       </div>
 
       {generatedTaskID && (
-       <>
-        <div className="generated-output">
-          <p className="output-label">Generated Task ID:</p>
-          <code className="output-code">{generatedTaskID}</code>
-           
+        <div className="generated-output-container">
+          <div className="generated-output">
+            <p className="output-label">Generated Task ID:</p>
+            <code className="output-code">{generatedTaskID}</code>
+          </div>
+          <button onClick={handleCopyToClipboard} className="copy-button">
+            Copy to Clipboard
+          </button>
         </div>
-        <ButtonV1
-                onClick={() => navigator.clipboard.writeText(generatedTaskID)}
-                text="Copy to Clipboard"
-                type="primary"
-          /></>
       )}
     </div>
   );

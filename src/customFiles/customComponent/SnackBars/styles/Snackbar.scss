@@ -1,0 +1,73 @@
+/* Snackbar.css */
+.snackbar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 300px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    /* Vertically align all items */
+    z-index: 1000;
+
+    /* Fade Transition Styles */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.snackbar.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 1. Prefix Icon Styling */
+.snackbar-prefix-icon {
+    font-size: 1.2em;
+    /* Size up the icon/emoji */
+    margin-right: 10px;
+    /* You can apply specific colors here if not relying on emoji */
+}
+
+/* 2. Message Styling (takes up available space) */
+.snackbar-message {
+    flex-grow: 1;
+    /* Allows message to take remaining space */
+    margin: 0;
+    padding: 0;
+}
+
+/* 3. Suffix Icon (Close Button) Styling */
+.snackbar-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 15px;
+    padding: 0;
+    opacity: 0.7;
+    /* Make the close button slightly transparent */
+    transition: opacity 0.2s;
+}
+
+.snackbar-close:hover {
+    opacity: 1;
+}
+
+/* Type-specific background colors (unchanged) */
+.snackbar.success {
+    background-color: #4CAF50;
+}
+
+.snackbar.error {
+    background-color: #F44336;
+}
+
+.snackbar.info {
+    background-color: #2196F3;
+}

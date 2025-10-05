@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { GET_OTP } from '../../Redux/Constants/AuthConstants';
+import { getOtpAction, resendOtpRequest, verifyOtpAction } from '../../Redux/Actions/Auth/AuthActions';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1); // 1 for email, 2 for OTP
@@ -6,6 +10,8 @@ const LoginPage = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const dispatch=useDispatch();
+  const navigate =useNavigate();
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -13,6 +19,8 @@ const LoginPage = () => {
       setError('Please enter your email address');
       return;
     }
+   const res= await dispatch(getOtpAction(email));
+    console.log("dispatched",email,res);
     
     setLoading(true);
     setError('');
@@ -21,7 +29,7 @@ const LoginPage = () => {
     setTimeout(() => {
       setLoading(false);
       setStep(2);
-    }, 2000);
+    }, 500);
   };
 
   const handleOtpChange = (index, value) => {
@@ -53,19 +61,29 @@ const LoginPage = () => {
       setError('Please enter the complete OTP');
       return;
     }
+    const data={email:email,otp:otpString};
+    console.log("verifying otp for",data);
+    await dispatch(verifyOtpAction(data));
     
     setLoading(true);
     setError('');
-    
+    navigate("/")
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
       alert('Login successful!');
-    }, 2000);
+    }, 3000);
   };
 
-  const resendOtp = () => {
+  const resendOtp = async() => {
     setLoading(true);
+    console.log("resending otp to",email);
+    if(!email) {
+      setError('Email is required to resend OTP');
+      setLoading(false);
+      return;
+    }
+    await dispatch(resendOtpRequest(email));
     setTimeout(() => {
       setLoading(false);
       alert('OTP sent successfully!');

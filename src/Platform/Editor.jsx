@@ -8,7 +8,7 @@ import "./styles/editior.scss"
 import Table from '@editorjs/table';
 import { ButtonV1 } from '../customFiles/customComponent/CustomButtons';
 
-const TextEditor = ({ initialData }) => {
+const TextEditor = ({ initialData,onSave }) => {
     const editorHolderRef = useRef(null);
     const editorInstanceRef = useRef(null);
 
@@ -56,6 +56,7 @@ const TextEditor = ({ initialData }) => {
             try {
                 const outputData = await editorInstanceRef.current.save();
                 console.log('Content saved:', outputData);
+                if (onSave) onSave(outputData); // <-- Pass data to parent
                 // You can now handle the saved data
             } catch (error) {
                 console.error('Saving failed:', error);
