@@ -249,7 +249,7 @@ export const DropDownForTicketStatus = ({
     
     const allowedNext = statusWorkflow[currentStatus];
     return [currentStatus, ...allowedNext].filter((status, index, self) => 
-      self.indexOf(status) === index && ticketTypes.includes(status)
+      self.indexOf(status) === index && ticketTypes?.includes(status)
     );
   };
 
