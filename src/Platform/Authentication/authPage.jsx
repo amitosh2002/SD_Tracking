@@ -19,8 +19,7 @@ const LoginPage = () => {
       setError('Please enter your email address');
       return;
     }
-   const res= await dispatch(getOtpAction(email));
-    console.log("dispatched",email,res);
+    dispatch(getOtpAction(email));
     
     setLoading(true);
     setError('');
@@ -63,7 +62,7 @@ const LoginPage = () => {
     }
     const data={email:email,otp:otpString};
     console.log("verifying otp for",data);
-    await dispatch(verifyOtpAction(data));
+     dispatch(verifyOtpAction(data));
     
     setLoading(true);
     setError('');

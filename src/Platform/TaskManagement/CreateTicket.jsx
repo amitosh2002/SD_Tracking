@@ -11,7 +11,7 @@ import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerCon
 
 const CreateTicket = () => {
     const dispatch = useDispatch();
-    const {userdetails}=useSelector((state)=>state.user)
+    const {userDetails}=useSelector((state)=>state.user)
   const [ticketData, setTicketData] = useState({
     title: "",
     type: "BUG",
@@ -19,7 +19,7 @@ const CreateTicket = () => {
     description: ""
   });
   const {TicketType}=useSelector((state)=>state.keyValuePair)||{}
-  console.log("Ticket Types from Redux:", TicketType);
+  // console.log("Ticket Types from Redux:", TicketType);
   const handleChange = (field, value) => {
     setTicketData(prev => ({ ...prev, [field]: value }));
     
@@ -30,10 +30,10 @@ const CreateTicket = () => {
         alert("Fill all details")
     }
       if (ticketData ) {
-        dispatch(createTicket(ticketData,userdetails?.id))
-        console.log(ticketData,"data sent to backend")
+        dispatch(createTicket(ticketData,userDetails?.id))
+        // console.log(ticketData,userDetails,"data sent to backend")
     }
-    
+    dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false  })
 
   }
 
