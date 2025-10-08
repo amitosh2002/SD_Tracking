@@ -124,7 +124,7 @@ export const DropDownV2 = ({
 }) => { 
   const [dataType, setdataType] = useState(() => {     
     if (defaultType) return defaultType;     
-    return data[0];   
+    return data[0]?? "";   
   });   
 
 
@@ -224,7 +224,8 @@ export const DropDownForTicketStatus = ({
   label,
   disabled = false,
   className = "",
-  required 
+  required,
+  ticketId // Add unique identifier for each dropdown
 }) => {
   // Define workflow rules - what statuses can follow each current status
   const statusWorkflow = {
@@ -249,13 +250,16 @@ export const DropDownForTicketStatus = ({
     
     const allowedNext = statusWorkflow[currentStatus];
     return [currentStatus, ...allowedNext].filter((status, index, self) => 
-      self.indexOf(status) === index && ticketTypes.includes(status)
+      self?.indexOf(status) === index && ticketTypes?.includes(status)
     );
   };
 
+  // Use a unique key for each dropdown instance to prevent state sharing
+  const uniqueKey = `dropdown-${ticketId || Math.random()}`;
+  
   const [dataType, setdataType] = useState(() => {
     if (defaultType) return defaultType;
-    return ticketTypes.length > 0 ? ticketTypes[0] : "";
+    return ticketTypes && ticketTypes.length > 0 ? ticketTypes[0] : "";
   });
   
   const [isOpen, setIsOpen] = useState(false);
@@ -263,11 +267,12 @@ export const DropDownForTicketStatus = ({
 
   const filteredOptions = getAllowedStatuses(dataType);
 
+  // Only update state when defaultType changes and it's different from current state
   useEffect(() => {
     if (defaultType && defaultType !== dataType) {
       setdataType(defaultType);
     }
-  }, [defaultType,dataType]);
+  }, [defaultType]); // Removed dataType from dependency to prevent infinite loops
   
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -309,7 +314,7 @@ export const DropDownForTicketStatus = ({
   };
 
   return (
-    <div className={`modern-dropdown ${className}`} ref={dropdownRef}>
+    <div className={`modern-dropdown ${className}`} ref={dropdownRef} key={uniqueKey}>
       {label && (
         <label htmlFor="dropdown-trigger" className="dropdown-label">
           {label}
@@ -344,7 +349,7 @@ export const DropDownForTicketStatus = ({
         <div className="dropdown-options" role="listbox">
           {Array.isArray(filteredOptions) && filteredOptions.map((type, id) => (
             <div
-              key={id}
+              key={`${uniqueKey}-${id}`}
               className={`dropdown-option ${dataType === type ? 'selected' : ''}`}
               onClick={() => handleOptionClick(type)}
               role="option"

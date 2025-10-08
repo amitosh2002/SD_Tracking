@@ -10,6 +10,7 @@ import UserProfile from "../profile";
 import { useEffect } from "react";
 import { fetchUserDetails } from "../../Redux/Actions/PlatformActions.js/userActions";
 import { useDispatch } from "react-redux";
+import TicketPage from "../WorksTicket/TicketPage";
 
 // import { useSelector } from "react-redux";
 
@@ -18,6 +19,7 @@ const AllRoutes = () => {
 
       useEffect(() => {
     dispatch(fetchUserDetails());
+    // dispatch(fetch)
   }, [dispatch]);
     return (
         // <BrowserRouter>
@@ -29,6 +31,7 @@ const AllRoutes = () => {
                 {/* <Route path="/editor" element={<TextEditor />} /> */}
                 <Route path="/" element={<HeroSection />} />
                 <Route path="/profile" element={<UserProfile />} />
+                <Route path="/tickets/:id" element={<TicketPage />} />
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 

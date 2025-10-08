@@ -118,11 +118,12 @@ const IssueDetails = ({task}) => {
                   <DropDownForTicketStatus
           label="Status"
           ticketTypes={ticketStatus }
-          defaultType={ticketstatusUpdate || "OPEN"}
+          defaultType={ticketstatusUpdate || task?.status || "OPEN"}
           onStatusChange={(statusData) => {
            handleStatusChange(statusData);
           }}
           className="status-dropdown"
+          ticketId={task?._id}
         />
             <span className="chevron-down">▼</span>
           </button>
