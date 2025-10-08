@@ -18,7 +18,6 @@ const IssueDetails = ({task}) => {
     const [timeLogPopup, setTimeLogPopup] = useState(false);
 
   const [storyPoints, setStoryPoints] = useState(storyPoint || 0);
-  const [ticketstatusUpdate, setTicketStatusUpdate] = useState(status || "OPEN");
 
   const {
     TicketStatus:ticketStatus
@@ -101,9 +100,7 @@ const IssueDetails = ({task}) => {
         }
         // Dispatch the action to update the status in the backend and Redux store
         dispatch(changeTicketStatus(task?._id, data?.newStatus));
-        setTicketStatusUpdate(data?.newStatus)
-        
-      
+        // Remove local state update - let Redux handle the state
         
     }, [task?._id, dispatch]);
   
@@ -118,7 +115,7 @@ const IssueDetails = ({task}) => {
                   <DropDownForTicketStatus
           label="Status"
           ticketTypes={ticketStatus }
-          defaultType={ticketstatusUpdate || task?.status || "OPEN"}
+          value={task?.status || "OPEN"}
           onStatusChange={(statusData) => {
            handleStatusChange(statusData);
           }}
