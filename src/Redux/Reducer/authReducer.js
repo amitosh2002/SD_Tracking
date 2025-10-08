@@ -43,7 +43,9 @@ import {
   REGISTER_USER_SUCCESS,
   CLEAR_AUTH_STATE,
   ACCOUNT_VERIFIACTION_FAIL,
-  ACCOUNT_VERIFIACTION_SUCESS
+  ACCOUNT_VERIFIACTION_SUCESS,
+  TOKEN_VALIDATION_SUCCESS,
+  TOKEN_VALIDATION_FAILED
 } from "../Constants/AuthConstants";
 
 const initialState = {
@@ -109,6 +111,20 @@ const authReducer = createReducer(initialState, (builder) => {
       state.verifiedEmail = null;
       
       console.log("User authenticated successfully:", action.payload);
+    })
+    
+    .addCase(TOKEN_VALIDATION_SUCCESS, (state, action) => {
+      state.loading = false;
+      state.isAuthenticated = true;
+      state.user = action.payload;
+      state.error = null;
+    })
+    
+    .addCase(TOKEN_VALIDATION_FAILED, (state) => {
+      state.loading = false;
+      state.isAuthenticated = false;
+      state.user = null;
+      state.error = null;
     })
     
     .addCase(CLEAR_AUTH_STATE, (state) => {

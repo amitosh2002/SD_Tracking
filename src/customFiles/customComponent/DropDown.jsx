@@ -124,7 +124,7 @@ export const DropDownV2 = ({
 }) => { 
   const [dataType, setdataType] = useState(() => {     
     if (defaultType) return defaultType;     
-    return data[0];   
+    return data[0]?? "";   
   });   
 
 
@@ -219,12 +219,14 @@ export const DropDownV2 = ({
 export const DropDownForTicketStatus = ({
   ticketTypes,
   defaultType = "",
+  value = "", // Add value prop for controlled component
   onChange, // Keep this for backward compatibility
   onStatusChange, // New prop for status updates
   label,
   disabled = false,
   className = "",
-  required 
+  required,
+  ticketId // Add unique identifier for each dropdown
 }) => {
   // Define workflow rules - what statuses can follow each current status
   const statusWorkflow = {
@@ -249,25 +251,20 @@ export const DropDownForTicketStatus = ({
     
     const allowedNext = statusWorkflow[currentStatus];
     return [currentStatus, ...allowedNext].filter((status, index, self) => 
-      self.indexOf(status) === index && ticketTypes.includes(status)
+      self?.indexOf(status) === index && ticketTypes?.includes(status)
     );
   };
 
-  const [dataType, setdataType] = useState(() => {
-    if (defaultType) return defaultType;
-    return ticketTypes.length > 0 ? ticketTypes[0] : "";
-  });
+  // Use a unique key for each dropdown instance to prevent state sharing
+  const uniqueKey = `dropdown-${ticketId || Math.random()}`;
+  
+  // Use value prop if provided, otherwise fall back to defaultType or first option
+  const currentValue = value || defaultType || (ticketTypes && ticketTypes.length > 0 ? ticketTypes[0] : "");
   
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const filteredOptions = getAllowedStatuses(dataType);
-
-  useEffect(() => {
-    if (defaultType && defaultType !== dataType) {
-      setdataType(defaultType);
-    }
-  }, [defaultType,dataType]);
+  const filteredOptions = getAllowedStatuses(currentValue);
   
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -281,10 +278,9 @@ export const DropDownForTicketStatus = ({
   }, []);
 
   const handleOptionClick = (value) => {
-    console.log("Status changing from:", dataType, "to:", value);
-    const previousStatus = dataType;
+    console.log("Status changing from:", currentValue, "to:", value);
+    const previousStatus = currentValue;
     
-    setdataType(value);
     setIsOpen(false);
     
     // Call the new onStatusChange prop with more context
@@ -309,7 +305,7 @@ export const DropDownForTicketStatus = ({
   };
 
   return (
-    <div className={`modern-dropdown ${className}`} ref={dropdownRef}>
+    <div className={`modern-dropdown ${className}`} ref={dropdownRef} key={uniqueKey}>
       {label && (
         <label htmlFor="dropdown-trigger" className="dropdown-label">
           {label}
@@ -331,8 +327,8 @@ export const DropDownForTicketStatus = ({
           }
         }}
       >
-        <span className={`dropdown-text ${!dataType ? 'placeholder' : ''}`}>
-          {dataType || "Select option"}
+        <span className={`dropdown-text ${!currentValue ? 'placeholder' : ''}`}>
+          {currentValue || "Select option"}
         </span>
         <ChevronDown 
           size={20} 
@@ -344,11 +340,11 @@ export const DropDownForTicketStatus = ({
         <div className="dropdown-options" role="listbox">
           {Array.isArray(filteredOptions) && filteredOptions.map((type, id) => (
             <div
-              key={id}
-              className={`dropdown-option ${dataType === type ? 'selected' : ''}`}
+              key={`${uniqueKey}-${id}`}
+              className={`dropdown-option ${currentValue === type ? 'selected' : ''}`}
               onClick={() => handleOptionClick(type)}
               role="option"
-              aria-selected={dataType === type}
+              aria-selected={currentValue === type}
             >
               <span>{type}</span>
               <Check size={16} className="check-icon" />

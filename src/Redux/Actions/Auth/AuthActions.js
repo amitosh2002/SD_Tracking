@@ -249,7 +249,8 @@ export const registerUserAction = (data) => async (dispatch) => {
 // };
 
 import axios from "axios";
-import { GET_OTP, REGISTER_USER, REQUIRES_REGISTRATION, VERIFIED_USER_AND_LOGIN, VERIFY_OTP, REGISTER_USER_SUCCESS, CLEAR_AUTH_STATE, ACCOUNT_VERIFIACTION_SUCESS, ACCOUNT_VERIFIACTION_FAIL } from "../../Constants/AuthConstants";
+import { GET_OTP, REGISTER_USER, REQUIRES_REGISTRATION, VERIFIED_USER_AND_LOGIN, VERIFY_OTP, REGISTER_USER_SUCCESS, CLEAR_AUTH_STATE, ACCOUNT_VERIFIACTION_SUCESS, ACCOUNT_VERIFIACTION_FAIL, TOKEN_VALIDATION_SUCCESS, TOKEN_VALIDATION_FAILED } from "../../Constants/AuthConstants";
+import apiClient from "../../../utils/axiosConfig";
 
 // Get OTP Action
 export const getOtpAction = (email) => async (dispatch) => {
@@ -455,19 +456,61 @@ export const clearAuthState = () => (dispatch) => {
   dispatch({ type: CLEAR_AUTH_STATE });
 };
 
+// Token validation action
+export const validateTokenAction = () => async (dispatch) => {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    dispatch({ type: TOKEN_VALIDATION_FAILED });
+    return false;
+  }
+
+  try {
+    const response = await apiClient.post('/api/auth/validate-token', {
+      token: token
+    });
+    
+    if (response.data.success) {
+      dispatch({ type: TOKEN_VALIDATION_SUCCESS, payload: response.data.user });
+      return true;
+    } else {
+      dispatch({ type: TOKEN_VALIDATION_FAILED });
+      return false;
+    }
+  } catch (error) {
+    console.error('Token validation failed:', error);
+    dispatch({ type: TOKEN_VALIDATION_FAILED });
+    return false;
+  }
+};
+
+// Initialize auth state from localStorage
+export const initializeAuthAction = () => (dispatch) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    // Validate the token
+    dispatch(validateTokenAction());
+  } else {
+    dispatch({ type: TOKEN_VALIDATION_FAILED });
+  }
+};
+
 // Logout action
 export const logoutAction = () => async(dispatch) => {
-  // Clear any stored tokens
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {}, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-      // Include auth token if required by backend
-    }});
+  try {
+    // Try to logout from server if token exists
+    const token = localStorage.getItem('token');
+    if (token) {
+      await apiClient.post('/api/auth/logout');
+    }
+  } catch (error) {
+    console.log('Logout error:', error);
+  } finally {
+    // Always clear local storage and state
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     dispatch({ type: CLEAR_AUTH_STATE });
-  // Clear auth state
+  }
 };
 
 

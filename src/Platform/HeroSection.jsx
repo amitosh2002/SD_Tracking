@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { getAllProjects } from "../Redux/Actions/projectsActions"
 import { useDispatch } from "react-redux"
+import { fetchPlatformKeyValueAction } from "../Redux/Actions/KeyValueActions/keyValueActions"
 const HeroSection = () => {
 
     
@@ -50,7 +51,9 @@ const dispatch = useDispatch();
 useEffect(() => {
     // Simulate fetching data from an API
     dispatch(getAllProjects());
-}, []);
+                dispatch(fetchPlatformKeyValueAction());
+    
+}, [dispatch]);
 
 const navigate = useNavigate();
 // const complete =true;
