@@ -16,7 +16,7 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.selectedTicket = state.tickets.find(ticket => ticket.id === action.payload);
         })
         .addCase(CREATE_TICKET, (state, action) => {
-            state.tickets.push(action.payload);
+            state.tickets.push(action.payload.data);
         })
         .addCase(UPDATE_TICKET, (state, action) => {
             const index = state.tickets.findIndex(ticket => ticket.id === action.payload.id);
