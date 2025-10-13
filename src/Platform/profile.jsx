@@ -384,9 +384,9 @@ export default function UserProfile() {
                               className="user-profile__bar-fill"
                               style={{ height: `${day.hours * 10}%` }}
                             >
-                              <span className="user-profile__bar-value">{day.hours}h</span>
+                              <span className="user-profile__bar-value">{day?.hours}h</span>
                             </div>
-                            <span className="user-profile__bar-label">{day.day}</span>
+                            <span className="user-profile__bar-label">{day?.day}</span>
                           </div>
                     ))
                 ) : (
