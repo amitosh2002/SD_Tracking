@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "./styles/navbar.scss"
 import { PopupV1 } from '../customFiles/customComponent/popups';
-import { OPEN_CREATE_TICKET_POPUP } from '../Redux/Constants/ticketReducerConstants';
+import { OPEN_CREATE_TICKET_POPUP, SET_FILTERED_TICKETS } from '../Redux/Constants/ticketReducerConstants';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { searchTicketByQuery } from '../Redux/Actions/TicketActions/ticketAction';
 
 // SVG Icon Components for clarity and reusability
 const MenuIcon = () => (
@@ -41,7 +42,7 @@ const Navbar = () => {
   const navigate=useNavigate();
   // Close profile dropdown when clicking outside
   const {userDetails}=useSelector((state)=>state.user);
-  console.log(userDetails,"qwertyu")
+  const {filteredTickets}= useSelector((state)=>state.worksTicket)
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
@@ -60,6 +61,25 @@ const Navbar = () => {
     Navigate('/');
     // For example, clear auth tokens, redirect to login, etc.
   }
+
+  useEffect(()=>{
+
+    // initilizing debouncing  check for query if exist update setSearchQuery and dispatch actions
+    const debounceSearch =setTimeout(()=>{
+          if(searchQuery.trim()){
+            setSearchQuery(searchQuery.trim());
+            dispatch(searchTicketByQuery(searchQuery.trim()));
+          }
+          else{
+            dispatch({type:SET_FILTERED_TICKETS,payload:[]})
+          }
+    },500)
+
+    return ()=>{//cleanup function for debounce
+      clearTimeout(debounceSearch);
+    }
+  },[searchQuery,dispatch])
+
   return (
     <nav className="main-navbar">
       <div className="main-navbar__container">
@@ -81,9 +101,24 @@ const Navbar = () => {
               placeholder="Search..."
               type="search"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {setSearchQuery(e.target.value)}
+                }
             />
           </div>
+          { filteredTickets && filteredTickets.length > 0 &&
+            <div className="flitered_ticket_container">
+              {
+                Array.isArray(filteredTickets) && filteredTickets.slice(0,5).map((ticket)=>(
+                  <div key={ticket._id} className="filtered_ticket_item" onClick={()=>{
+                    navigate(`/tickets/${ticket.id}`) 
+                    setSearchQuery('')
+                  }}>
+                    <span className="ticket_key">{ticket.ticketKey}</span> - <span className="ticket_title">{ticket.title}</span>
+                  </div>
+                ))
+              }
+            </div>
+          }
         </div>
               <div className="nav_routes">
           <a href="#" className="profile-menu__item md_body_bold"  onClick={(e)=>{navigate('/all-work')
@@ -147,9 +182,9 @@ const Navbar = () => {
             </button>
             
             <div className="mobile-menu__user-info">
-              <img 
+            <img 
                 className="profile__avatar" 
-                src="https://placehold.co/100x100/E2E8F0/4A5568?text=A" 
+                src={`https://placehold.co/100x100/E2E8F0/4A5568?text=${userDetails?.username[0]} `}
                 alt="User avatar"
                 onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/100x100/E2E8F0/4A5568?text=U'; }}
               />
@@ -160,9 +195,11 @@ const Navbar = () => {
             </div>
             
             <div className="mobile-menu__links">
-              <a href="#" className="mobile-menu__link">Your Profile</a>
+              <a  className="mobile-menu__link" onClick={(e)=>{navigate('/profile')
+                  e.stopPropagation()
+                }}>Your Profile</a>
               <a href="#" className="mobile-menu__link">Settings</a>
-              <a href="#" className="mobile-menu__link">Sign out</a>
+              <a href="#" className="mobile-menu__link"  onClick={handleSignOut}>Sign out</a>
             </div>
           </div>
         </div>

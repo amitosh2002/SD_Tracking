@@ -5,6 +5,7 @@ import {  getRescentUserTimeLog, getRescentUserWork } from '../Redux/Actions/Pla
 import { useDispatch, useSelector } from 'react-redux';
 import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
 import { formatCreatedAtDate, transformWeeklyAggregates } from '../utillity/helper';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -31,6 +32,7 @@ export default function UserProfile() {
   });
   
   const [editedData, setEditedData] = useState({});
+  const navigate= useNavigate();
 
   // const weeklyData = [
   //   { day: 'Mon', hours: 8.5 },
@@ -39,7 +41,20 @@ export default function UserProfile() {
   //   { day: 'Thu', hours: 8.1 },
   //   { day: 'Fri', hours: 5.7 },
   // ];
+  // const weeklyData = [
+  //   { day: 'Mon', hours: 8.5 },
+  //   { day: 'Tue', hours: 7.2 },
+  //   { day: 'Wed', hours: 9.0 },
+  //   { day: 'Thu', hours: 8.1 },
+  //   { day: 'Fri', hours: 5.7 },
+  // ];
 
+  // const recentActivity = [
+  //   { project: 'Dashboard Redesign', hours: 4.5, date: 'Today' },
+  //   { project: 'Mobile App UI', hours: 6.2, date: 'Yesterday' },
+  //   { project: 'Client Meeting', hours: 2.0, date: 'Oct 1' },
+  //   { project: 'Design System', hours: 5.5, date: 'Sep 30' },
+  // ];
   // const recentActivity = [
   //   { project: 'Dashboard Redesign', hours: 4.5, date: 'Today' },
   //   { project: 'Mobile App UI', hours: 6.2, date: 'Yesterday' },
@@ -56,6 +71,7 @@ export default function UserProfile() {
    
 
   }, [dispatch,userDetails?.id]);
+ 
 
   // Process user details when they arrive
   useEffect(() => {
@@ -97,14 +113,7 @@ export default function UserProfile() {
         avatar: getInitials(),
         joinDate: formatJoinDate(user?.createdAt),
         
-        // Mock data for fields not in API (you can replace these with real data later)
-        location: user?.location || 'Not specified',
-        totalHours: user?.totalHours || 1847,
-        thisWeek: user?.thisWeek || 38.5,
-        thisMonth: user?.thisMonth || 156,
-        efficiency: user?.efficiency || 94,
-        projects: user?.projects || 12,
-        achievements: user?.achievements || 28
+      
       };
 
       
@@ -158,7 +167,6 @@ export default function UserProfile() {
       // dispatch(fetchUserDetails());
     } catch (error) {
       console.error('Error saving user data:', error);
-      alert('Failed to save profile. Please try again.');
         dispatch({
               type: SHOW_SNACKBAR,
               payload: {
@@ -166,6 +174,7 @@ export default function UserProfile() {
                 type: "error"
               }
             });
+      
     } finally {
       setSaving(false);
     }
@@ -382,9 +391,9 @@ export default function UserProfile() {
                               className="user-profile__bar-fill"
                               style={{ height: `${day.hours * 10}%` }}
                             >
-                              <span className="user-profile__bar-value">{day.hours}h</span>
+                              <span className="user-profile__bar-value">{day?.hours}h</span>
                             </div>
-                            <span className="user-profile__bar-label">{day.day}</span>
+                            <span className="user-profile__bar-label">{day?.day}</span>
                           </div>
                     ))
                 ) : (
@@ -398,13 +407,14 @@ export default function UserProfile() {
             <h2 className="user-profile__card-title">Recent Activity</h2>
             <div className="user-profile__activity-list">
               {Array.isArray(rescentWork) && rescentWork?.map((activity, index) => (
-                <div key={index} className="user-profile__activity-item">
+                <div key={index} className="user-profile__activity-item" onClick={()=>navigate(`/tickets/${activity?.ticketID}`)}>
                   <div className="user-profile__activity-header">
                     <span className="user-profile__activity-project">{activity?.ticketKey}</span>
                     <span className="user-profile__activity-hours">{activity.ticketPriority}</span>
                   </div>
                   <div className="user-profile__activity-date">{
                   formatCreatedAtDate( activity.createdAt, 'en-US')}</div>
+                
                 </div>
               ))}
             </div>

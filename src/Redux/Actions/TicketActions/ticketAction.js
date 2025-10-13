@@ -1,7 +1,8 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1} from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET } from "../../Constants/ticketReducerConstants"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi} from "../../../Api/Plat/TicketsApi"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
+import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
 export const getAllWorkTicket = () => async (dispatch) => {
     try {
@@ -161,3 +162,31 @@ export const getTicketById = (ticketId) => async (dispatch) => {
         console.error("Error fetching ticket by id:", error);
     }
 }
+
+export const searchTicketByQuery = (searchQuery) => async(dispatch) => {
+    // if(!searchQuery) return;
+    console.log(" api callf or search")
+ try {
+       const res =await apiClient.get(`${ticketSearchQueryApi}`,{//this api client automatically add token
+        params: { query: searchQuery }
+    })
+    console.log(ticketSearchQueryApi)
+
+    if(res?.data){
+        dispatch({
+            type:SET_FILTERED_TICKETS,
+            payload:{
+                resultTicket:res?.data?.resultTicket,
+                total: res?.data?.resultTicket.length
+            }
+        })}
+            } catch (error) {
+                dispatch({
+                    type:SHOW_SNACKBAR,
+                    payload:{
+                        type:"error",
+                        message:error?.response?.data?.message || "Failed to fetch the data"
+                    }
+                })
+ }
+    }

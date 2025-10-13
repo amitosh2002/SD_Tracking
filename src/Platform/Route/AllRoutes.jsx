@@ -29,11 +29,13 @@ const AllRoutes = () => {
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 <Route path="/create" element={<TaskGenerator />} />
                 <Route path="/all-work" element={<TaskManager />} />
+                
                 {/* <Route path="/editor" element={<TextEditor />} /> */}
                 <Route path="/" element={<HeroSection />} />
                 <Route path="/profile" element={<UserProfile />} />
                 <Route path="/tickets/:id" element={<TicketPage />} />
                 <Route path="/v2" element={<Dashboard />} />
+
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 

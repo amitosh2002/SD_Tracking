@@ -109,22 +109,16 @@ const IssueDetails = ({task}) => {
       {/* Top action bar */}
       <div className="action-bar">
         <div className="action-bar__left">
-          <button className="status-button">
-            <span className="status-dot"></span>
-           {/* {status || 'Open'} */}
-                  <DropDownForTicketStatus
-          label="Status"
-          ticketTypes={ticketStatus }
+        <DropDownForTicketStatus
+          ticketTypes={ticketStatus}
           value={task?.status || "OPEN"}
           onStatusChange={(statusData) => {
-           handleStatusChange(statusData);
+            handleStatusChange(statusData);
           }}
           className="status-dropdown"
           ticketId={task?._id}
         />
-            <span className="chevron-down">▼</span>
-          </button>
-        </div>
+      </div>
         <div className="action-bar__right">
           <button className="icon-button">👁️ 5</button>
           <button className="icon-button">🔗</button>

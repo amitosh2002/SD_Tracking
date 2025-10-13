@@ -1,10 +1,12 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET } from "../Constants/ticketReducerConstants";
+import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS } from "../Constants/ticketReducerConstants";
 
 const initialState = {
   tickets: [],
   selectedTicket: null, // Add a state for a single ticket
-  createPopup: false
+  createPopup: false,
+  filteredTickets: [], // Add a state for ,filtered tickets if needed
+  filteredTicketsLenth:0
 };
 
 export const ticketReducer = createReducer(initialState,(builder=>{
@@ -71,5 +73,9 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             if (state.selectedTicket && state.selectedTicket._id === ticketId) {
                 state.selectedTicket.assignee = assignee;
             }
+        })
+        .addCase(SET_FILTERED_TICKETS,(state,action)=>{
+            state.filteredTickets=action.payload.resultTicket;
+            state.filteredTicketsLenth=action.payload.total;
         })
 }))
