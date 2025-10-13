@@ -5,9 +5,10 @@ import "./styles/createTicket.scss";
 import TextEditor from '../Editor';
 import { ButtonV1 } from '../../customFiles/customComponent/CustomButtons';
 import { useDispatch, useSelector } from 'react-redux';
-import { createTicket } from '../../Redux/Actions/TicketActions/ticketAction';
+import { createTicket, getAllWorkTicket } from '../../Redux/Actions/TicketActions/ticketAction';
 import { IIV2Icon } from '../../customFiles/customComponent/inputContainer';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
+import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
 
 const CreateTicket = () => {
     const dispatch = useDispatch();
@@ -27,14 +28,28 @@ const CreateTicket = () => {
 
   const handeleCreateTicket =()=>{
     if (!ticketData.title || !ticketData.type || !ticketData.priority ) {
-        alert("Fill all details")
+         dispatch({
+               type: SHOW_SNACKBAR,
+               payload: {
+                 message: `Failed to create Ticket"`,
+                 type: "success"
+               }
+             });
     }
       if (ticketData ) {
         dispatch(createTicket(ticketData,userDetails?.id))
         // console.log(ticketData,userDetails,"data sent to backend")
     }
+    console.log(ticketData,"ticket data")
     dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false  })
-
+    dispatch({
+      type:SHOW_SNACKBAR,
+        payload: {
+           message: `Sucessful created ticket ${ticketData?.title}"`,
+           type: "success"
+         }
+    })
+    dispatch(getAllWorkTicket())
   }
 
   return (
