@@ -5,10 +5,11 @@ import createTask from "../assets/platformIcons/TaskPlat/createTask.svg"
 import blueTick from "../assets/platformIcons/bluck_tick.svg"
 import yellowCLock from "../assets/platformIcons/yellow_tick.svg"
 import { ButtonV1 } from "../customFiles/customComponent/CustomButtons"
-import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { getAllProjects } from "../Redux/Actions/projectsActions"
 import { useDispatch } from "react-redux"
+import { fetchPlatformKeyValueAction } from "../Redux/Actions/KeyValueActions/keyValueActions"
+import { OPEN_CREATE_TICKET_POPUP } from "../Redux/Constants/ticketReducerConstants"
 const HeroSection = () => {
 
     
@@ -50,9 +51,10 @@ const dispatch = useDispatch();
 useEffect(() => {
     // Simulate fetching data from an API
     dispatch(getAllProjects());
-}, []);
+                dispatch(fetchPlatformKeyValueAction());
+    
+}, [dispatch]);
 
-const navigate = useNavigate();
 // const complete =true;
   return (
     <>
@@ -121,7 +123,7 @@ const navigate = useNavigate();
             icon={createTask}
             text="Create Task"
             type="primary"
-            onClick={() => navigate("/editor")}
+            onClick={()=>dispatch({type:OPEN_CREATE_TICKET_POPUP,payload:true})}
             />
         </div>
         </div>

@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, TrendingUp, Award, BarChart3, Mail, MapPin, Phone, Edit2, Save, X } from 'lucide-react';
 import "./styles/profile.scss"
-import { fetchUserDetails } from '../Redux/Actions/PlatformActions.js/userActions';
+import {  getRescentUserTimeLog, getRescentUserWork } from '../Redux/Actions/PlatformActions.js/userActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
+import { formatCreatedAtDate, transformWeeklyAggregates } from '../utillity/helper';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const dispatch = useDispatch();
   
-  const { userDetails, sucessFetch } = useSelector((state) => state.user);
+  const { userDetails, sucessFetch,rescentWork ,suceessFetchUserLog, totalWorkHours,currentWeek,currentMonthtotalWorkHours,currentWeektotalWorkHours} = useSelector((state) => state.user);
   const [loading, setLoading] = useState(!sucessFetch); // Changed to true initially
   
   const [userData, setUserData] = useState({
@@ -29,27 +32,46 @@ export default function UserProfile() {
   });
   
   const [editedData, setEditedData] = useState({});
+  const navigate= useNavigate();
 
-  const weeklyData = [
-    { day: 'Mon', hours: 8.5 },
-    { day: 'Tue', hours: 7.2 },
-    { day: 'Wed', hours: 9.0 },
-    { day: 'Thu', hours: 8.1 },
-    { day: 'Fri', hours: 5.7 },
-  ];
+  // const weeklyData = [
+  //   { day: 'Mon', hours: 8.5 },
+  //   { day: 'Tue', hours: 7.2 },
+  //   { day: 'Wed', hours: 9.0 },
+  //   { day: 'Thu', hours: 8.1 },
+  //   { day: 'Fri', hours: 5.7 },
+  // ];
+  // const weeklyData = [
+  //   { day: 'Mon', hours: 8.5 },
+  //   { day: 'Tue', hours: 7.2 },
+  //   { day: 'Wed', hours: 9.0 },
+  //   { day: 'Thu', hours: 8.1 },
+  //   { day: 'Fri', hours: 5.7 },
+  // ];
 
-  const recentActivity = [
-    { project: 'Dashboard Redesign', hours: 4.5, date: 'Today' },
-    { project: 'Mobile App UI', hours: 6.2, date: 'Yesterday' },
-    { project: 'Client Meeting', hours: 2.0, date: 'Oct 1' },
-    { project: 'Design System', hours: 5.5, date: 'Sep 30' },
-  ];
+  // const recentActivity = [
+  //   { project: 'Dashboard Redesign', hours: 4.5, date: 'Today' },
+  //   { project: 'Mobile App UI', hours: 6.2, date: 'Yesterday' },
+  //   { project: 'Client Meeting', hours: 2.0, date: 'Oct 1' },
+  //   { project: 'Design System', hours: 5.5, date: 'Sep 30' },
+  // ];
+  // const recentActivity = [
+  //   { project: 'Dashboard Redesign', hours: 4.5, date: 'Today' },
+  //   { project: 'Mobile App UI', hours: 6.2, date: 'Yesterday' },
+  //   { project: 'Client Meeting', hours: 2.0, date: 'Oct 1' },
+  //   { project: 'Design System', hours: 5.5, date: 'Sep 30' },
+  // ];
 
   // Fetch user data from backend
   useEffect(() => {
     console.log('Dispatching fetchUserDetails...');
-    dispatch(fetchUserDetails());
-  }, [dispatch]);
+    // dispatch(fetchUserDetails());
+    dispatch(getRescentUserWork(userDetails?.id));
+    dispatch(getRescentUserTimeLog(userDetails?.id));
+   
+
+  }, [dispatch,userDetails?.id]);
+ 
 
   // Process user details when they arrive
   useEffect(() => {
@@ -91,14 +113,7 @@ export default function UserProfile() {
         avatar: getInitials(),
         joinDate: formatJoinDate(user?.createdAt),
         
-        // Mock data for fields not in API (you can replace these with real data later)
-        location: user?.location || 'Not specified',
-        totalHours: user?.totalHours || 1847,
-        thisWeek: user?.thisWeek || 38.5,
-        thisMonth: user?.thisMonth || 156,
-        efficiency: user?.efficiency || 94,
-        projects: user?.projects || 12,
-        achievements: user?.achievements || 28
+      
       };
 
       
@@ -152,7 +167,14 @@ export default function UserProfile() {
       // dispatch(fetchUserDetails());
     } catch (error) {
       console.error('Error saving user data:', error);
-      alert('Failed to save profile. Please try again.');
+        dispatch({
+              type: SHOW_SNACKBAR,
+              payload: {
+                message: `Failed to save profile. Please try again.`,
+                type: "error"
+              }
+            });
+      
     } finally {
       setSaving(false);
     }
@@ -309,7 +331,7 @@ export default function UserProfile() {
                 This Week
               </span>
             </div>
-            <h3 className="user-profile__stat-value">{displayData.thisWeek || 0}h</h3>
+            <h3 className="user-profile__stat-value">{currentWeektotalWorkHours || 0}h</h3>
             <p className="user-profile__stat-label">Logged hours</p>
           </div>
 
@@ -322,7 +344,7 @@ export default function UserProfile() {
                 This Month
               </span>
             </div>
-            <h3 className="user-profile__stat-value">{displayData.thisMonth || 0}h</h3>
+            <h3 className="user-profile__stat-value">{currentMonthtotalWorkHours || 0}h</h3>
             <p className="user-profile__stat-label">Total tracked</p>
           </div>
 
@@ -348,7 +370,7 @@ export default function UserProfile() {
                 All Time
               </span>
             </div>
-            <h3 className="user-profile__stat-value">{displayData.totalHours || 0}h</h3>
+            <h3 className="user-profile__stat-value">{Math.ceil(totalWorkHours/60) || 0}h</h3>
             <p className="user-profile__stat-label">Total hours</p>
           </div>
         </div>
@@ -362,17 +384,21 @@ export default function UserProfile() {
               Weekly Time Log
             </h2>
             <div className="user-profile__chart">
-              {weeklyData.map((day, index) => (
-                <div key={index} className="user-profile__bar">
-                  <div 
-                    className="user-profile__bar-fill" 
-                    style={{ height: `${(day.hours / 10) * 100}%` }}
-                  >
-                    <span className="user-profile__bar-value">{day.hours}h</span>
-                  </div>
-                  <span className="user-profile__bar-label">{day.day}</span>
-                </div>
-              ))}
+                {suceessFetchUserLog ? (
+                    transformWeeklyAggregates(currentWeek)?.map((day, index) => (
+                       <div key={index} className="user-profile__bar">
+                            <div
+                              className="user-profile__bar-fill"
+                              style={{ height: `${day.hours * 10}%` }}
+                            >
+                              <span className="user-profile__bar-value">{day?.hours}h</span>
+                            </div>
+                            <span className="user-profile__bar-label">{day?.day}</span>
+                          </div>
+                    ))
+                ) : (
+                    <p>Loading </p> 
+                )}
             </div>
           </div>
 
@@ -380,13 +406,15 @@ export default function UserProfile() {
           <div className="user-profile__activity-card">
             <h2 className="user-profile__card-title">Recent Activity</h2>
             <div className="user-profile__activity-list">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="user-profile__activity-item">
+              {Array.isArray(rescentWork) && rescentWork?.map((activity, index) => (
+                <div key={index} className="user-profile__activity-item" onClick={()=>navigate(`/tickets/${activity?.ticketID}`)}>
                   <div className="user-profile__activity-header">
-                    <span className="user-profile__activity-project">{activity.project}</span>
-                    <span className="user-profile__activity-hours">{activity.hours}h</span>
+                    <span className="user-profile__activity-project">{activity?.ticketKey}</span>
+                    <span className="user-profile__activity-hours">{activity.ticketPriority}</span>
                   </div>
-                  <div className="user-profile__activity-date">{activity.date}</div>
+                  <div className="user-profile__activity-date">{
+                  formatCreatedAtDate( activity.createdAt, 'en-US')}</div>
+                
                 </div>
               ))}
             </div>

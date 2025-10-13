@@ -1,4 +1,5 @@
-import {    useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useCallback } from "react";
 import "../../App.css";
 import Navbar from "../Navbar";
 import AllRoutes from "../Route/AllRoutes";
@@ -8,32 +9,97 @@ import LoginPage from "../Authentication/authPage";
 import HoraRegistration from "../Authentication/RegistraionV1";
 import CreateTicket from "../TaskManagement/CreateTicket";
 
+// Import actions
+import { fetchPlatformKeyValueAction } from "../../Redux/Actions/KeyValueActions/keyValueActions";
+import { fetchUserDetails } from "../../Redux/Actions/PlatformActions.js/userActions";
+import { initializeAuthAction } from "../../Redux/Actions/Auth/AuthActions";
 
 const Layoutv1 = () => {
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
     
-    // ticketReducer
+    // Selectors
     const { createPopup } = useSelector((state) => state.worksTicket);
-    const { isAuthenticated, requiresRegistration } = useSelector((state) => state.auth);
-       
-   
-    console.log("Layout Rendered", { isAuthenticated, requiresRegistration });
+    const { isAuthenticated, requiresRegistration, loading } = useSelector((state) => state.auth);
+    const { TicketType, TicketStatus } = useSelector((state) => state.keyValuePair);
     
-    // Fix 1: Add explicit type checking and more detailed logging
-    console.log("Auth state details:", {
-        isAuthenticated: isAuthenticated,
-        isAuthenticatedType: typeof isAuthenticated,
-        requiresRegistration: requiresRegistration,
-        requiresRegistrationType: typeof requiresRegistration
-    });
+    console.log("Layout Rendered", { isAuthenticated, requiresRegistration, loading });
     
-    // Fix 2: Check requiresRegistration FIRST, then isAuthenticated
+    // Initialize authentication on app load
+    useEffect(() => {
+        dispatch(initializeAuthAction());
+    }, [dispatch]);
+
+    // API calls that should run after authentication
+    const loadAppData = useCallback(async () => {
+        if (isAuthenticated) {
+            try {
+                console.log("Loading app data after authentication...");
+                
+                // Fetch key-value pairs (ticket types, statuses, etc.)
+                if (!TicketType || !TicketStatus) {
+                    console.log("Fetching key-value pairs...");
+                    await dispatch(fetchPlatformKeyValueAction());
+                }
+                
+                // Fetch user details
+                console.log("Fetching user details...");
+                await dispatch(fetchUserDetails());
+                
+                console.log("App data loaded successfully");
+            } catch (error) {
+                console.error("Error loading app data:", error);
+            }
+        }
+    }, [dispatch, isAuthenticated, TicketType, TicketStatus]);
+
+    // Load data when authentication status changes
+    useEffect(() => {
+        if (isAuthenticated && !loading) {
+            loadAppData();
+        }
+    }, [isAuthenticated, loading, loadAppData]);
+
+    // Handle page refresh - reload data if authenticated
+    useEffect(() => {
+        const handlePageRefresh = () => {
+            if (isAuthenticated && !loading) {
+                console.log("Page refreshed, reloading app data...");
+                loadAppData();
+            }
+        };
+
+        // Listen for page visibility change (handles refresh)
+        document.addEventListener('visibilitychange', handlePageRefresh);
+        
+        return () => {
+            document.removeEventListener('visibilitychange', handlePageRefresh);
+        };
+    }, [isAuthenticated, loading, loadAppData]);
+
+    // Show loading state while initializing auth
+    if (loading) {
+        return (
+            <div className="app-container">
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '100vh',
+                    fontSize: '18px'
+                }}>
+                    Loading...
+                </div>
+            </div>
+        );
+    }
+
+    // Check requiresRegistration FIRST, then isAuthenticated
     if (requiresRegistration === true) {
         console.log("Rendering HoraRegistration");
         return <HoraRegistration />;
     }
     
-    if (isAuthenticated === false || isAuthenticated === undefined || isAuthenticated === null) {
+    if (isAuthenticated === false || isAuthenticated === undefined || isAuthenticated === null && requiresRegistration===false) {
         console.log("Rendering LoginPage");
         return <LoginPage />;
     }
@@ -42,20 +108,13 @@ const Layoutv1 = () => {
 
     return (
         <div className="app-container">
-                <Navbar />
-                <AllRoutes />
+            <Navbar />
+            <AllRoutes />
             
             {/* Conditional rendering for the popup */}
             {createPopup && (
-            //   <PopupV1
-            //         title={"Create Ticket"}
-            //         onClose={() => dispatch({ 
-            //           type: OPEN_CREATE_TICKET_POPUP, 
-            //           payload: false 
-            //         })}
-            //     />
-            <CreateTicket  />
-              )}
+                <CreateTicket />
+            )}
         </div>
     );
 };

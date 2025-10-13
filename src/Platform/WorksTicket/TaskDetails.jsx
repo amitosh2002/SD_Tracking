@@ -3,6 +3,7 @@ import './TaskDetails.scss';
 // import TextEditor from '../Editor';
 import TextEditor from '../../Platform/Editor';
 import IssueDetails from '../LeftControll';
+import CommentActivitySection from '../CommentAndActivity/CommentAndActivity';
 
 const TaskDetails = ({ task }) => {
   if (!task) {
@@ -23,6 +24,8 @@ const TaskDetails = ({ task }) => {
       <h2 className="task-title">{task.title}</h2>
       {/* <p className="task-description">{task.description || 'No description available.'}</p> */}
       <TextEditor initialData={task?.description} />
+      <CommentActivitySection/>
+      
       </div>
       {/* <TextEditor/> */}
                     <IssueDetails task={task}/>

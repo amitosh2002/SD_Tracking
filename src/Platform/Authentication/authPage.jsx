@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { GET_OTP } from '../../Redux/Constants/AuthConstants';
 import { getOtpAction, resendOtpRequest, verifyOtpAction } from '../../Redux/Actions/Auth/AuthActions';
 import { useNavigate } from 'react-router-dom';
+import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1); // 1 for email, 2 for OTP
@@ -19,8 +20,7 @@ const LoginPage = () => {
       setError('Please enter your email address');
       return;
     }
-   const res= await dispatch(getOtpAction(email));
-    console.log("dispatched",email,res);
+    dispatch(getOtpAction(email));
     
     setLoading(true);
     setError('');
@@ -63,7 +63,7 @@ const LoginPage = () => {
     }
     const data={email:email,otp:otpString};
     console.log("verifying otp for",data);
-    await dispatch(verifyOtpAction(data));
+     dispatch(verifyOtpAction(data));
     
     setLoading(true);
     setError('');
@@ -71,7 +71,6 @@ const LoginPage = () => {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      alert('Login successful!');
     }, 3000);
   };
 
@@ -86,8 +85,14 @@ const LoginPage = () => {
     await dispatch(resendOtpRequest(email));
     setTimeout(() => {
       setLoading(false);
-      alert('OTP sent successfully!');
     }, 1000);
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          message: `OTP sent successfully!`,
+          type: "success"
+        }
+      });
   };
 
   const styles = {
