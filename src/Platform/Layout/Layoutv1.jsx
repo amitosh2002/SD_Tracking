@@ -99,7 +99,7 @@ const Layoutv1 = () => {
         return <HoraRegistration />;
     }
     
-    if (isAuthenticated === false || isAuthenticated === undefined || isAuthenticated === null) {
+    if (isAuthenticated === false || isAuthenticated === undefined || isAuthenticated === null && requiresRegistration===false) {
         console.log("Rendering LoginPage");
         return <LoginPage />;
     }

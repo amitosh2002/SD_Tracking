@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import "./styles/navbar.scss"
 import { PopupV1 } from '../customFiles/customComponent/popups';
 import { OPEN_CREATE_TICKET_POPUP } from '../Redux/Constants/ticketReducerConstants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
 import { Navigate, useNavigate } from 'react-router-dom';
 
@@ -40,6 +40,8 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate=useNavigate();
   // Close profile dropdown when clicking outside
+  const {userDetails}=useSelector((state)=>state.user);
+  console.log(userDetails,"qwertyu")
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
@@ -113,11 +115,11 @@ const Navbar = () => {
               <span className="sr-only">Open user menu</span>
               <img 
                 className="profile__avatar" 
-                src="https://placehold.co/100x100/E2E8F0/4A5568?text=A" 
+                src={`https://placehold.co/100x100/E2E8F0/4A5568?text=${userDetails?.username[0]} `}
                 alt="User avatar"
                 onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/100x100/E2E8F0/4A5568?text=U'; }}
               />
-              <span className="profile__name">Amitosh</span>
+              <span className="profile__name">{userDetails?.profile?.firstName}</span>
               <ChevronDownIcon />
             </button>
 
@@ -152,8 +154,8 @@ const Navbar = () => {
                 onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/100x100/E2E8F0/4A5568?text=U'; }}
               />
               <div>
-                <div className="mobile-menu__user-name">Amitosh</div>
-                <div className="mobile-menu__user-email">amitosh@example.com</div>
+                <div className="mobile-menu__user-name">{userDetails?.username}</div>
+                <div className="mobile-menu__user-email">{userDetails?.email}</div>
               </div>
             </div>
             

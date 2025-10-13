@@ -1,6 +1,7 @@
 import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1} from "../../../Api/Plat/TicketsApi"
 import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
+import axios from "axios";
 
 export const getAllWorkTicket = () => async (dispatch) => {
     try {
