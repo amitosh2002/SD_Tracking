@@ -9,7 +9,7 @@ const projectsReducer = createReducer(initialState, (builder) => {
   builder
     .addCase('GET_ALL_PROJECTS', (state, action) => {
       // Immer allows direct mutation
-      state.projects = action.payload;
+      state.projects = action.payload.projects;
     })
     .addCase('GET_PROJECT_BY_ID', (state, action) => {
       // Find the project and store it in a dedicated state field

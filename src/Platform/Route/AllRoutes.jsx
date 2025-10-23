@@ -12,6 +12,9 @@ import UserProfile from "../profile";
 // import { useDispatch } from "react-redux"
 import TicketPage from "../WorksTicket/TicketPage";
 import Dashboard from "../HeroSection/HeroSectionV1";
+import PartnerOnboarding from "../Onboarding/onboarding";
+import HoraShowcase from "../Onboarding/prelogin";
+import CreateProject from "../AccessControl/createProject";
 
 // import { useSelector } from "react-redux";
 
@@ -31,10 +34,15 @@ const AllRoutes = () => {
                 <Route path="/all-work" element={<TaskManager />} />
                 
                 {/* <Route path="/editor" element={<TextEditor />} /> */}
-                <Route path="/" element={<HeroSection />} />
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/profile" element={<UserProfile />} />
                 <Route path="/tickets/:id" element={<TicketPage />} />
                 <Route path="/v2" element={<Dashboard />} />
+                <Route path="/partner" element={<PartnerOnboarding />} />
+                <Route path="/Hora-prelogin" element={<HoraShowcase />} />
+                {/* // letter it turn down into popup */}
+                <Route path="/create/project" element={<CreateProject />} />
+                {/* // letter it turn down into popup */}
 
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}
                 {/* <Route path="/" element={<LoginPage />} /> */}
