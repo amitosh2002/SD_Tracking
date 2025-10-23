@@ -430,6 +430,7 @@
    }
 
    .user-profile__activity-card {
+   
        background: white;
        border-radius: 1rem;
        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -438,6 +439,9 @@
    }
 
    .user-profile__activity-list {
+         max-height: 350px;
+        overflow-y: auto;
+        overflow-x: hidden;
        display: flex;
        flex-direction: column;
        gap: 1rem;

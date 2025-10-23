@@ -64,7 +64,6 @@ export default function UserProfile() {
 
   // Fetch user data from backend
   useEffect(() => {
-    console.log('Dispatching fetchUserDetails...');
     // dispatch(fetchUserDetails());
     dispatch(getRescentUserWork(userDetails?.id));
     dispatch(getRescentUserTimeLog(userDetails?.id));
