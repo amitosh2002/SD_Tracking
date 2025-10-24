@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { getAllProjects } from './Redux/Actions/PlatformActions.js/projectsActions';
 // import { EmptyStateGraphic } from './customFiles/customComponent/emptyState';
 import "./styles/herosection.scss";
+import { useNavigate } from 'react-router-dom';
 // import { getAllProjects } from '../../Redux/Actions/PlatformActions/projectsActions.js';
 
 const HoraDashboard = () => {
@@ -14,6 +15,7 @@ const HoraDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const dispatch = useDispatch();
+  const navigate=useNavigate();
   const { userDetails } = useSelector((state) => state.user);
   const { projects } = useSelector((state) => state.projects);
 
@@ -74,7 +76,9 @@ const HoraDashboard = () => {
                           <p>{project.name.charAt(0)}</p>
                         )}
                       </div>
-                      <div className="project-card__info">
+                      <div className="project-card__info" onClick={()=>{
+                        navigate(`/projects/${project.projectId}/tasks`);
+                      }}>
                         <h3 className="project-card__name">{project.name}</h3>
                         <p className="project-card__client">{project.partnerCode}</p>
                       </div>

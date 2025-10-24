@@ -15,6 +15,7 @@ import Dashboard from "../HeroSection/HeroSectionV1";
 import PartnerOnboarding from "../Onboarding/onboarding";
 import HoraShowcase from "../Onboarding/prelogin";
 import CreateProject from "../AccessControl/createProject";
+import TeamInvitationPage from "../AccessControl/invitationPage";
 
 // import { useSelector } from "react-redux";
 
@@ -32,6 +33,8 @@ const AllRoutes = () => {
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 <Route path="/create" element={<TaskGenerator />} />
                 <Route path="/all-work" element={<TaskManager />} />
+                {/* Project specific tasks - TaskManager will read projectId from route params */}
+                <Route path="/projects/:projectId/tasks" element={<TaskManager />} />
                 
                 {/* <Route path="/editor" element={<TextEditor />} /> */}
                 <Route path="/" element={<Dashboard />} />
