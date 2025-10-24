@@ -361,10 +361,7 @@ import { ChevronDown, Check } from "lucide-react";
 import "./styles/dropDown.scss";
 
 export const DropDownV1 = ({
-  dataTypes = [
-    "ARCH", "BUG", "FEATURE", "TASK", "STORY", "EPIC", "IMPROVEMENT", 
-    "SUBTASK", "TEST", "DOCUMENTATION", "LIVEOPS", "PLAT"
-  ],
+  dataTypes,
   defaultType = "",
   onChange,
   label,

@@ -215,8 +215,8 @@ const CreateTicket = () => {
 
           <DropDownV1
             label="Priority"
-            ticketTypes={["LOW", "MEDIUM", "HIGH", "CRITICAL"]}
-            defaultType={ticketData.priority}
+            dataTypes={["LOW", "MEDIUM", "HIGH", "CRITICAL"]}
+            // defaultType={"MEDIUM"}
             onChange={(val) => handleChange("priority", val)}
             className="ticket_priority_dropdown"
           />
