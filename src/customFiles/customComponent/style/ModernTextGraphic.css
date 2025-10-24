@@ -1,0 +1,62 @@
+/* --- 1. Container & Responsiveness --- */
+.text-graphic-container {
+    width: 100%;
+    max-width: 900px; /* Control the max width for large screens */
+    margin: 3rem auto;
+    text-align: center;
+    overflow: hidden; /* Important to keep box-shadow within bounds if added */
+    /* Modern, soft background for context */
+    background-color: #f7f9fc; 
+    border-radius: 1.5rem;
+}
+
+/* --- 2. SVG Styling (Scalability & Modern Look) --- */
+.modern-swoosh-svg {
+    /* Critical for responsiveness */
+    display: block; 
+    width: 100%; 
+    height: auto;
+    /* Soft shadow to lift the graphic off the page */
+    filter: drop-shadow(0 15px 15px rgba(0, 0, 0, 0.2)); 
+    /* The SVG itself should be slightly offset to align with the text below */
+    margin-bottom: -1px; 
+}
+
+/* --- 3. HTML Text Styling (Modern Typography) --- */
+.custom-text-wrapper {
+    padding: 2rem 1.5rem 3rem 1.5rem;
+    color: #1f2937;
+}
+
+.headline {
+    font-family: 'Inter', sans-serif; /* Use a modern, clean font */
+    font-size: clamp(1.8rem, 5vw, 3.5rem); /* Responsive font size */
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+    /* Subtle text gradient to match the SVG */
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtext {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.3rem); /* Responsive font size */
+    font-weight: 400;
+    color: #4b5563;
+    max-width: 600px;
+    margin: 0.5rem auto 0;
+}
+
+/* --- 4. Mobile Optimizations (Pure CSS Responsiveness) --- */
+@media (max-width: 600px) {
+    .text-graphic-container {
+        margin: 2rem 1rem;
+        border-radius: 1rem;
+    }
+    
+    .custom-text-wrapper {
+        padding: 1.5rem 1rem 2rem 1rem;
+    }
+}

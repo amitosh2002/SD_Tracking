@@ -1,0 +1,457 @@
+ .hora-onboarding {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 3rem 1rem;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        .hora-onboarding__container {
+          max-width: 900px;
+          margin: 0 auto;
+        }
+
+        /* Header */
+        .hora-onboarding__header {
+          text-align: center;
+          margin-bottom: 3rem;
+        }
+
+        .hora-logo {
+          margin-bottom: 1.5rem;
+        }
+
+        .hora-logo__text {
+          font-size: 2.5rem;
+          font-weight: 800;
+          color: white;
+          text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          letter-spacing: -0.02em;
+        }
+
+        .hora-onboarding__title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 0.5rem;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hora-onboarding__subtitle {
+          font-size: 1.25rem;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Steps */
+        .hora-steps {
+          margin-bottom: 3rem;
+        }
+
+        .hora-steps__wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .hora-steps__item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          flex: 1;
+        }
+
+        .hora-steps__circle {
+          width: 3.5rem;
+          height: 3.5rem;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          color: rgba(255, 255, 255, 0.7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .hora-steps__circle--active {
+          background: white;
+          color: #667eea;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transform: scale(1.1);
+        }
+
+        .hora-steps__circle--completed {
+          background: #10b981;
+          color: white;
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .hora-steps__icon {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+
+        .hora-steps__label {
+          margin-top: 0.75rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.7);
+          transition: color 0.3s ease;
+        }
+
+        .hora-steps__label--active {
+          color: white;
+        }
+
+        .hora-steps__line {
+          flex: 1;
+          height: 3px;
+          background: rgba(255, 255, 255, 0.3);
+          margin: 0 1rem;
+          transition: background 0.3s ease;
+        }
+
+        .hora-steps__line--completed {
+          background: #10b981;
+        }
+
+        /* Card */
+        .hora-card {
+          background: white;
+          border-radius: 1.5rem;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          padding: 3rem;
+        }
+
+        /* Form */
+        .hora-form__step {
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .hora-form__heading {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 2rem;
+        }
+
+        .hora-form__group {
+          margin-bottom: 1.5rem;
+        }
+
+        .hora-form__row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1.5rem;
+        }
+
+        .hora-form__label {
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 0.5rem;
+        }
+
+        .hora-input,
+        .hora-select {
+          width: 100%;
+          padding: 0.875rem 1rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 0.75rem;
+          font-size: 1rem;
+          color: #1f2937;
+          transition: all 0.2s ease;
+          background: white;
+        }
+
+        .hora-input:focus,
+        .hora-select:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .hora-input--error,
+        .hora-select--error {
+          border-color: #ef4444;
+        }
+
+        .hora-input--error:focus,
+        .hora-select--error:focus {
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .hora-form__error {
+          display: block;
+          margin-top: 0.5rem;
+          font-size: 0.875rem;
+          color: #ef4444;
+        }
+
+        .hora-checkbox {
+          display: flex;
+          align-items: flex-start;
+          cursor: pointer;
+        }
+
+        .hora-checkbox__input {
+          margin-top: 0.25rem;
+          margin-right: 0.75rem;
+          cursor: pointer;
+          width: 1.125rem;
+          height: 1.125rem;
+        }
+
+        .hora-checkbox__label {
+          font-size: 0.875rem;
+          color: #374151;
+        }
+
+        /* Alert */
+        .hora-alert {
+          padding: 1.25rem;
+          border-radius: 0.75rem;
+          font-size: 0.875rem;
+        }
+
+        .hora-alert--info {
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          color: #1e40af;
+        }
+
+        .hora-alert__title {
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+        }
+
+        /* Buttons */
+        .hora-form__actions {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 2.5rem;
+          padding-top: 2rem;
+          border-top: 2px solid #f3f4f6;
+        }
+
+        .hora-btn {
+          display: inline-flex;
+          align-items: center;
+          padding: 0.875rem 1.75rem;
+          border-radius: 0.75rem;
+          font-size: 1rem;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .hora-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .hora-btn--primary {
+          background: #667eea;
+          color: white;
+        }
+
+        .hora-btn--primary:hover {
+          background: #5568d3;
+        }
+
+        .hora-btn--secondary {
+          background: #f3f4f6;
+          color: #374151;
+        }
+
+        .hora-btn--secondary:hover {
+          background: #e5e7eb;
+        }
+
+        .hora-btn--success {
+          background: #10b981;
+          color: white;
+          margin-left: auto;
+        }
+
+        .hora-btn--success:hover {
+          background: #059669;
+        }
+
+        .hora-btn--outline {
+          background: transparent;
+          color: #667eea;
+          border: 2px solid #667eea;
+        }
+
+        .hora-btn--outline:hover {
+          background: #667eea;
+          color: white;
+        }
+
+        .hora-btn__icon-left {
+          width: 1.25rem;
+          height: 1.25rem;
+          margin-right: 0.5rem;
+        }
+
+        .hora-btn__icon-right {
+          width: 1.25rem;
+          height: 1.25rem;
+          margin-left: 0.5rem;
+        }
+
+        /* Success Screen */
+        .hora-success {
+          text-align: center;
+          padding: 4rem 3rem;
+        }
+
+        .hora-success__icon-wrapper {
+          width: 5rem;
+          height: 5rem;
+          border-radius: 50%;
+          background: #d1fae5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 2rem;
+        }
+
+        .hora-success__icon {
+          width: 3rem;
+          height: 3rem;
+          color: #10b981;
+        }
+
+        .hora-success__title {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 1rem;
+        }
+
+        .hora-success__message {
+          font-size: 1.125rem;
+          color: #6b7280;
+          margin-bottom: 2rem;
+          line-height: 1.7;
+        }
+
+        .hora-success__list {
+          list-style: none;
+          text-align: left;
+          padding: 0;
+        }
+
+        .hora-success__list li {
+          padding: 0.5rem 0;
+          padding-left: 1.5rem;
+          position: relative;
+        }
+
+        .hora-success__list li::before {
+          content: "•";
+          position: absolute;
+          left: 0;
+          color: #667eea;
+          font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .hora-onboarding {
+            padding: 2rem 1rem;
+          }
+
+          .hora-onboarding__title {
+            font-size: 2rem;
+          }
+
+          .hora-onboarding__subtitle {
+            font-size: 1rem;
+          }
+
+          .hora-card {
+            padding: 2rem 1.5rem;
+          }
+
+          .hora-form__heading {
+            font-size: 1.5rem;
+          }
+
+          .hora-form__row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+
+          .hora-steps__wrapper {
+            flex-wrap: wrap;
+          }
+
+          .hora-steps__item {
+            min-width: 80px;
+          }
+
+          .hora-steps__label {
+            font-size: 0.75rem;
+          }
+
+          .hora-steps__circle {
+            width: 3rem;
+            height: 3rem;
+          }
+
+          .hora-steps__icon {
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+
+          .hora-form__actions {
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .hora-btn {
+            width: 100%;
+            justify-content: center;
+          }
+
+          .hora-success {
+            padding: 3rem 1.5rem;
+          }
+
+          .hora-success__title {
+            font-size: 1.5rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hora-logo__text {
+            font-size: 2rem;
+          }
+
+          .hora-onboarding__title {
+            font-size: 1.75rem;
+          }
+
+          .hora-steps__line {
+            margin: 0 0.5rem;
+          }
+
+          .hora-card {
+            padding: 1.5rem 1rem;
+          }
+        }
