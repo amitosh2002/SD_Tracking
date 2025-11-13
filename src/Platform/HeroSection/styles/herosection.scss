@@ -154,9 +154,13 @@
         }
 
         .projects__grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 1.5rem;
+          // display: grid;
+          // grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          // gap: 1.5rem;
+          display: flex;
+          flex-direction: row;
+          gap: 0.5rem;
+          flex-wrap: wrap;
         }
 
         .project-card {
@@ -289,7 +293,7 @@
         /* Responsive Design */
         @media (max-width: 1024px) {
           .projects__grid {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            flex-wrap: wrap;
           }
         }
 
@@ -331,7 +335,7 @@
           }
 
           .projects__grid {
-            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
           }
 
           .timer {

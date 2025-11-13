@@ -1,4 +1,4 @@
-import { getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
+import { createProject, getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 import {EmptyStateGraphic} from '../../customFiles/customComponent/emptyState';
 import React, { useState, useEffect } from 'react';
 import { Calendar, CheckSquare, Clock, BarChart3, Target, FolderKanban, Settings, Users, Bell, Tag } from 'lucide-react';
@@ -7,12 +7,15 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { EmptyStateGraphic } from './customFiles/customComponent/emptyState';
 import "./styles/herosection.scss";
 import { useNavigate } from 'react-router-dom';
+import ProjectCreationFlow from '../GenerailForms/projectCreationFlow';
 // import { getAllProjects } from '../../Redux/Actions/PlatformActions/projectsActions.js';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
   const [timer, setTimer] = useState("00:00:00");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [createProject, setCreateProject] = useState(false);
+    const {projectCreateSucess} = useSelector((state)=>state.projects)
   
   const dispatch = useDispatch();
   const navigate=useNavigate();
@@ -37,7 +40,10 @@ const HoraDashboard = () => {
     if (userDetails?.id) {
       dispatch(getAllProjects(userDetails.id));
     }
-  }, [dispatch, userDetails]);
+    if(projectCreateSucess){
+      setCreateProject(false);
+    }
+  }, [dispatch, userDetails, projectCreateSucess]);
 
   const menuItems = [
     { id: 'dashboard', icon: BarChart3, label: 'Dashboard' },
@@ -64,22 +70,22 @@ const HoraDashboard = () => {
               <h2 className="projects__title">My Recent Projects</h2>
             </div>
 
-            <div className="projects__grid">
-              {projects && projects.length > 0 ? (
+              {projects && !createProject&& projects.length > 0? (
                 projects.map((project) => (
+                  <div className="projects__grid">
                   <div key={project._id} className="project-card">
                     <div className="project-card__header">
                       <div className="project-card__icon">
                         {project.image && project.image !== "" ? (
                           <img src={project.image} alt={project.name} />
                         ) : (
-                          <p>{project.name.charAt(0)}</p>
+                          <p>{project?.name?.charAt(0) ?? project?.projectName.charAt[0]}</p>
                         )}
                       </div>
                       <div className="project-card__info" onClick={()=>{
                         navigate(`/projects/${project.projectId}/tasks`);
                       }}>
-                        <h3 className="project-card__name">{project.name}</h3>
+                        <h3 className="project-card__name">{project.name ?? project?.projectName}</h3>
                         <p className="project-card__client">{project.partnerCode}</p>
                       </div>
                     </div>
@@ -93,11 +99,16 @@ const HoraDashboard = () => {
                       </div>
                     </div>
                   </div>
+                </div>
                 ))
               ) : (
-                <EmptyStateGraphic message="No projects assigned" />
+                // <EmptyStateGraphic message="No projects assigned" />
+                !createProject && <ProjectCreationFlow/>
               )}
-            </div>
+
+              {
+                createProject && <ProjectCreationFlow createNew={createProject}/>
+              }
           </section>
         </>
       );
@@ -209,7 +220,10 @@ const HoraDashboard = () => {
             </div>
             <div className="header__actions">
               <button className="btn btn--outline">EXPORT</button>
-              <button className="btn btn--primary">NEW PROJECT</button>
+              <button className="btn btn--primary" onClick={()=>{
+                setActiveItem('dashboard'),
+                setCreateProject(true);
+              }}>NEW PROJECT</button>
             </div>
           </div>
         </header>

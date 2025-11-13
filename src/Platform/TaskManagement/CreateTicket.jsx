@@ -226,8 +226,8 @@ const CreateTicket = () => {
           <DropDownV2
   label="Project"
   data={Array.isArray(projects) ? projects.map(p => ({
-    type: p.name || 'Unnamed Project',  // Display name
-    icon: null,                         // Optional icon
+    type: p.name ||p.projectName || "UNKOWN PROJECT",  // Display name
+    icon: null,                          // Optional icon
     projectId: p.projectId || p._id,    // Store ID for internal use
     _id: p._id                          // Keep Mongo ID as backup
   })) : []}

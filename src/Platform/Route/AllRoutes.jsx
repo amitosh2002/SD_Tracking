@@ -16,6 +16,7 @@ import PartnerOnboarding from "../Onboarding/onboarding";
 import HoraShowcase from "../Onboarding/prelogin";
 import CreateProject from "../AccessControl/createProject";
 import TeamInvitationPage from "../AccessControl/invitationPage";
+import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/InvitaionAcceptancePage";
 
 // import { useSelector } from "react-redux";
 
@@ -42,9 +43,11 @@ const AllRoutes = () => {
                 <Route path="/tickets/:id" element={<TicketPage />} />
                 <Route path="/v2" element={<Dashboard />} />
                 <Route path="/partner" element={<PartnerOnboarding />} />
+                <Route path="/invite" element={<TeamInvitationPage />} />
                 <Route path="/Hora-prelogin" element={<HoraShowcase />} />
                 {/* // letter it turn down into popup */}
                 <Route path="/create/project" element={<CreateProject />} />
+                <Route path="/invitation" element={<FullInvitationPage />} />
                 {/* // letter it turn down into popup */}
 
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { GET_ALL_PROJECTS } from "../../Constants/projectConstant";
 import { getAlluserAccessProject } from "../../../Api/Plat/projectApi";
-import { getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
+import { createProjectApi, getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
 
 export const getAllProjects = (userId) =>async( dispatch)=>{
 
@@ -17,6 +17,7 @@ export const getAllProjects = (userId) =>async( dispatch)=>{
                 },
             }
         );
+        console.log("Get All Projects Response:", response);
         if(response.status === 200){
             dispatch({
                 type: GET_ALL_PROJECTS,
@@ -46,3 +47,71 @@ export const getProjectById = (projectId) => async (dispatch) => {
     }
 }
 
+export const createProject = (projectData,userId) => async (dispatch) => {
+  try {
+    if (!projectData) {
+      dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: {
+          type: "error",
+          message: "Project data is required",
+        },
+      });
+      return;
+    }
+
+    const response = await axios.post(
+      createProjectApi,
+     { projectData,
+      userId,},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    console.log("Create Project Response:", response);
+    if (response.status !== 201) {
+      dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "error",
+        message: "Failed to create project!",
+      },
+
+    });
+    }
+    // ✅ success case
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "success",
+        message: "Project created successfully!",
+      },
+    });
+
+    dispatch({
+      type: "CREATE_PROJECT_SUCCESS",
+      payload: response.data,
+    });
+
+  } catch (error) {
+    console.error("Error creating project:", error);
+
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "error",
+        message:
+          error.response?.data?.message ||
+          "Failed to create project. Please try again.",
+      },
+    });
+
+    dispatch({
+      type: "CREATE_PROJECT_FAILURE",
+      payload: error,
+    });
+  }
+};

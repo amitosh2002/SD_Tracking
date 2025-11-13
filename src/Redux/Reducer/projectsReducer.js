@@ -4,6 +4,7 @@ import { GET_ALL_PROJECTS } from '../Constants/projectConstant';
 const initialState = {
   projects: [],
   selectedProject: null, // Add a state for a single project
+  projectCreateSucess:false,
 };
 
 const projectsReducer = createReducer(initialState, (builder) => {
@@ -18,6 +19,7 @@ const projectsReducer = createReducer(initialState, (builder) => {
     })
     .addCase('CREATE_PROJECT', (state, action) => {
       state.projects.push(action.payload);
+      
     })
     .addCase('UPDATE_PROJECT', (state, action) => {
       const index = state.projects.findIndex(p => p.id === action.payload.id);
@@ -28,6 +30,11 @@ const projectsReducer = createReducer(initialState, (builder) => {
     .addCase('DELETE_PROJECT', (state, action) => {
       // Filter returns a new array, which Immer handles
       state.projects = state.projects.filter(p => p.id !== action.payload);
+    })
+    .addCase('SUCESS_CREATE_PROJECT', (state) => {
+
+      state.projectCreateSucess = true;
+      // Filter returns a new array, which Immer handles
     });
 });
 
