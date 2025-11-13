@@ -1,29 +1,45 @@
 import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi} from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS } from "../../Constants/ticketReducerConstants"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
-export const getAllWorkTicket = () => async (dispatch) => {
-    try {
-        const response = await apiClient.get(`${getAllTicketApiv1}`);
-        if (response.status === 200) {
-            dispatch({
-                type: 'GET_ALL_TICKETS',
-                payload: response.data
-            });
-        }
-        console.log("All tickets fetched successfully:", response.data);
-    } catch (error) {
-        console.error("Error fetching all tickets:", error);
-    }
-};
+export const getAllWorkTicket =
+  ({ userId, limit = 10, page = 1, type  }) =>
+  async (dispatch) => {
+    dispatch({ type: "GET_ALL_TICKETS_REQUEST" }); // show loader
 
+    try {
+      // build query params
+      const params = new URLSearchParams();
+      if (userId) params.append("userId", userId);
+      params.append("limit", limit);
+      params.append("page", page);
+      if (type) params.append("type", type);
+
+      const response = await apiClient.get(`${getAllTicketApiv1}?${params}`);
+
+      if (response.status === 200) {
+        dispatch({
+          type: GET_ALL_TICKETS,
+          payload: response.data, // { total, items, page, limit }
+        });
+      }
+    } catch (error) {
+      console.error("❌ Error fetching tickets:", error);
+      dispatch({
+        type: "GET_ALL_TICKETS_FAIL",
+        payload:
+          error.response?.data?.message || "Failed to fetch work tickets",
+      });
+    }
+  };
 export const createTicket = (ticketData, userId) => async (dispatch) => {
     if (!ticketData) {
         console.log("No ticket data found");
         return;
     }
+    console.log("Creating ticket with data:", ticketData, "for user:", userId);
     
     try {
         const response = await apiClient.post(`${createTicketV2}`, {
