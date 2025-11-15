@@ -72,7 +72,9 @@ const HoraDashboard = () => {
 
               {projects && !createProject&& projects.length > 0? (
                 projects.map((project) => (
-                  <div className="projects__grid">
+                  <div className="projects__grid" onClick={()=>{
+                        navigate(`/projects/${project?.projectId}/tasks`);
+                      }}>
                   <div key={project._id} className="project-card">
                     <div className="project-card__header">
                       <div className="project-card__icon">
@@ -82,9 +84,7 @@ const HoraDashboard = () => {
                           <p>{project?.name?.charAt(0) ?? project?.projectName.charAt[0]}</p>
                         )}
                       </div>
-                      <div className="project-card__info" onClick={()=>{
-                        navigate(`/projects/${project?.projectId}/tasks`);
-                      }}>
+                      <div className="project-card__info" >
                         <h3 className="project-card__name">{project.name ?? project?.projectName}</h3>
                         <p className="project-card__client">{project.partnerCode}</p>
                       </div>
