@@ -5,35 +5,46 @@ import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
 export const getAllWorkTicket =
-  ({ userId, limit = 10, page = 1, type  }) =>
+  ({ userId, projectId, limit = 10, page = 1, type }) =>
   async (dispatch) => {
-    dispatch({ type: "GET_ALL_TICKETS_REQUEST" }); // show loader
+
+    dispatch({ type: "GET_ALL_TICKETS_REQUEST" });
 
     try {
-      // build query params
       const params = new URLSearchParams();
-      if (userId) params.append("userId", userId);
+
+      if (userId) {
+        params.append("userId", String(userId));
+       
+      }
+
+      if (projectId) {
+        params.append("projectId", String(projectId));
+       \
+      }
+
       params.append("limit", limit);
       params.append("page", page);
       if (type) params.append("type", type);
 
-      const response = await apiClient.get(`${getAllTicketApiv1}?${params}`);
+      const response = await apiClient.get(
+        `${getAllTicketApiv1}?${params}`
+      );
 
-      if (response.status === 200) {
-        dispatch({
-          type: GET_ALL_TICKETS,
-          payload: response.data, // { total, items, page, limit }
-        });
-      }
+      dispatch({
+        type: GET_ALL_TICKETS,
+        payload: response.data,
+      });
+
     } catch (error) {
       console.error("❌ Error fetching tickets:", error);
       dispatch({
         type: "GET_ALL_TICKETS_FAIL",
-        payload:
-          error.response?.data?.message || "Failed to fetch work tickets",
+        payload: error.response?.data?.message || "Failed to fetch work tickets",
       });
     }
   };
+
 export const createTicket = (ticketData, userId) => async (dispatch) => {
     if (!ticketData) {
         console.log("No ticket data found");
