@@ -20,7 +20,7 @@ export const getAllWorkTicket =
 
       if (projectId) {
         params.append("projectId", String(projectId));
-       \
+       
       }
 
       params.append("limit", limit);
@@ -216,4 +216,5 @@ export const searchTicketByQuery = (searchQuery) => async(dispatch) => {
                     }
                 })
  }
+
     }
