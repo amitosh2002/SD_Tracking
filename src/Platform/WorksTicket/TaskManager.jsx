@@ -13,13 +13,14 @@ const TaskManager = () => {
   const { projectId } = useParams();
 
   // Fetch tickets: if projectId is present, fetch by project; otherwise by user
-  useEffect(() => {
-    if (projectId) {
-      dispatch(getAllWorkTicket({ projectId }));
-    } else if (userDetails?.id) {
-      dispatch(getAllWorkTicket({ userId: userDetails.id }));
-    }
-  }, [dispatch, projectId, userDetails?.id]);
+ useEffect(() => {
+  if (projectId) {
+    dispatch(getAllWorkTicket({ projectId ,userId: userDetails.id}));
+  } else if (userDetails && userDetails.id) {
+    dispatch(getAllWorkTicket({ userId: userDetails.id }));
+  }
+}, [dispatch, projectId, userDetails]);
+
 
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 

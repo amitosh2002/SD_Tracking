@@ -83,7 +83,7 @@ const HoraDashboard = () => {
                         )}
                       </div>
                       <div className="project-card__info" onClick={()=>{
-                        navigate(`/projects/${project.projectId}/tasks`);
+                        navigate(`/projects/${project?.projectId}/tasks`);
                       }}>
                         <h3 className="project-card__name">{project.name ?? project?.projectName}</h3>
                         <p className="project-card__client">{project.partnerCode}</p>
