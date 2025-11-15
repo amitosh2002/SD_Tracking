@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import "../../App.css";
 import Navbar from "../Navbar";
 import AllRoutes from "../Route/AllRoutes";
@@ -13,6 +13,7 @@ import CreateTicket from "../TaskManagement/CreateTicket";
 import { fetchPlatformKeyValueAction } from "../../Redux/Actions/KeyValueActions/keyValueActions";
 import { fetchUserDetails } from "../../Redux/Actions/PlatformActions.js/userActions";
 import { initializeAuthAction } from "../../Redux/Actions/Auth/AuthActions";
+import { useLocation } from "react-router-dom";
 
 const Layoutv1 = () => {
     const dispatch = useDispatch();
@@ -28,6 +29,21 @@ const Layoutv1 = () => {
     useEffect(() => {
         dispatch(initializeAuthAction());
     }, [dispatch]);
+
+    // to hide navbar for specific routes
+    const location=useLocation();
+    const [hideNavbar,setHideNavbar]=useState(false);
+    
+     useEffect(() => {
+    const hideNavbarRoutes = ["/login", "/register", "/Hora-prelogin","/partner","/invite","/create/project"];
+    const currentPath = location.pathname;
+
+    if (hideNavbarRoutes.includes(currentPath)) {
+      setHideNavbar(true);
+    } else {
+      setHideNavbar(false);
+    }
+  }, [location.pathname]); 
 
     // API calls that should run after authentication
     const loadAppData = useCallback(async () => {
@@ -108,7 +124,7 @@ const Layoutv1 = () => {
 
     return (
         <div className="app-container">
-            <Navbar />
+            {!hideNavbar && <Navbar />}
             <AllRoutes />
             
             {/* Conditional rendering for the popup */}

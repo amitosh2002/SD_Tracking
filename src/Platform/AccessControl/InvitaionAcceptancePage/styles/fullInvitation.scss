@@ -1,0 +1,1224 @@
+// fullInvitation.scss - Hora Complete Invitation Page
+
+// Hora Theme Variables
+$hora-gradient-start: #667eea;
+$hora-gradient-end: #764ba2;
+$hora-gradient: linear-gradient(135deg, $hora-gradient-start 0%, $hora-gradient-end 100%);
+
+// Breakpoints
+$mobile: 480px;
+$tablet: 768px;
+$desktop: 1024px;
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Page Container
+.full-invitation-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  @media (max-width: $tablet) {
+    padding: 20px 12px;
+    align-items: flex-start;
+  }
+
+  @media (max-width: $mobile) {
+    padding: 80px 24px;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    color: #1e293b;
+    margin: 24px 0 12px;
+
+    @media (max-width: $mobile) {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    color: #64748b;
+    font-size: 1rem;
+
+    @media (max-width: $mobile) {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.loading-spinner {
+  svg {
+    color: $hora-gradient-start;
+    animation: spin 1s linear infinite;
+  }
+
+  @media (max-width: $mobile) {
+    svg {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}
+
+// Error State
+.error-state {
+  padding: 100px 40px;
+  text-align: center;
+
+  @media (max-width: $mobile) {
+    padding: 80px 24px;
+  }
+
+  svg {
+    color: #dc2626;
+    margin-bottom: 24px;
+
+    @media (max-width: $mobile) {
+      width: 56px;
+      height: 56px;
+    }
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+
+    @media (max-width: $mobile) {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    color: #64748b;
+    font-size: 1rem;
+    margin: 0 0 32px 0;
+    line-height: 1.6;
+
+    @media (max-width: $mobile) {
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+  }
+
+  .btn {
+    max-width: 300px;
+    margin: 0 auto;
+
+    @media (max-width: $mobile) {
+      max-width: 100%;
+    }
+  }
+}
+
+// Touch device optimizations
+@media (hover: none) and (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+  }
+}
+
+// Print styles
+@media print {
+  .full-invitation-page {
+    background: white;
+    padding: 0;
+  }
+
+  .full-invitation-container {
+    box-shadow: none;
+  }
+
+  .invitation-actions,
+  .btn {
+    display: none;
+  }
+}
+    
+  
+
+
+.full-invitation-container {
+  max-width: 800px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+  overflow: hidden;
+  animation: fadeIn 0.5s ease;
+
+  &--success {
+    max-width: 700px;
+  }
+
+  @media (max-width: $tablet) {
+    border-radius: 20px;
+    max-width: 100%;
+  }
+
+  @media (max-width: $mobile) {
+    border-radius: 16px;
+  }
+}
+
+// Header
+.invitation-header {
+  background: $hora-gradient;
+  padding: 60px 40px;
+  text-align: center;
+  color: white;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: white;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+
+  @media (max-width: $tablet) {
+    padding: 50px 32px;
+
+    &::after {
+      bottom: -35px;
+      height: 70px;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    padding: 40px 24px;
+
+    &::after {
+      bottom: -30px;
+      height: 60px;
+    }
+  }
+
+  &__logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 24px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+    @media (max-width: $tablet) {
+      width: 90px;
+      height: 90px;
+      font-size: 2.75rem;
+    }
+
+    @media (max-width: $mobile) {
+      width: 80px;
+      height: 80px;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+  }
+
+  &__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    letter-spacing: -0.5px;
+
+    @media (max-width: $tablet) {
+      font-size: 2.25rem;
+    }
+
+    @media (max-width: $mobile) {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1.125rem;
+    margin: 0;
+    opacity: 0.95;
+    font-weight: 400;
+
+    @media (max-width: $tablet) {
+      font-size: 1rem;
+    }
+
+    @media (max-width: $mobile) {
+      font-size: 0.95rem;
+    }
+  }
+}
+
+// Body
+.invitation-body {
+  padding: 60px 40px 40px;
+
+  @media (max-width: $tablet) {
+    padding: 50px 32px 32px;
+  }
+
+  @media (max-width: $mobile) {
+    padding: 40px 24px 24px;
+  }
+}
+
+// Alert
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+
+  &--error {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 2px solid #fca5a5;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: $mobile) {
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Info Section
+.info-section {
+  margin-bottom: 40px;
+
+  @media (max-width: $mobile) {
+    margin-bottom: 32px;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 20px 0;
+
+    svg {
+      color: $hora-gradient-start;
+    }
+
+    @media (max-width: $mobile) {
+      font-size: 1.1rem;
+      gap: 10px;
+      margin-bottom: 16px;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+// Project Card
+.project-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  border: 2px solid #e9ecff;
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  }
+
+  @media (max-width: $mobile) {
+    padding: 20px;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    @media (max-width: $mobile) {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+}
+
+.project-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+
+  @media (max-width: $mobile) {
+    font-size: 1.25rem;
+  }
+}
+
+.project-status {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &--active {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  &--pending {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  @media (max-width: $mobile) {
+    padding: 5px 14px;
+    font-size: 0.8rem;
+  }
+}
+
+.project-description {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+
+  @media (max-width: $mobile) {
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+}
+
+.project-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+
+  @media (max-width: $mobile) {
+    gap: 16px;
+  }
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  svg {
+    color: $hora-gradient-start;
+  }
+
+  @media (max-width: $mobile) {
+    font-size: 0.875rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// Role Card
+.role-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  border: 2px solid #e9ecff;
+  border-radius: 16px;
+  padding: 28px;
+  text-align: center;
+
+  @media (max-width: $mobile) {
+    padding: 20px;
+  }
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 12px 32px;
+  background: $hora-gradient;
+  color: white;
+  border-radius: 30px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+  @media (max-width: $mobile) {
+    padding: 10px 28px;
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+}
+
+.role-description {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+
+  @media (max-width: $mobile) {
+    font-size: 0.9rem;
+  }
+}
+
+// Details Grid
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+
+  @media (max-width: $mobile) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.detail-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  border: 2px solid #e9ecff;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+  }
+
+  svg {
+    color: $hora-gradient-start;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  @media (max-width: $mobile) {
+    padding: 16px;
+    gap: 12px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  @media (max-width: $mobile) {
+    font-size: 0.8rem;
+  }
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 600;
+  word-break: break-word;
+
+  @media (max-width: $mobile) {
+    font-size: 0.9rem;
+  }
+}
+
+// Next Steps
+.next-steps {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  border: 2px solid #e9ecff;
+  border-radius: 16px;
+  padding: 28px;
+
+  @media (max-width: $mobile) {
+    padding: 20px;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 20px 0;
+
+    @media (max-width: $mobile) {
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (max-width: $mobile) {
+      gap: 12px;
+    }
+  }
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.6;
+
+    svg {
+      color: #16a34a;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    @media (max-width: $mobile) {
+      font-size: 0.9rem;
+      gap: 10px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
+
+// Actions
+.invitation-actions {
+  margin: 40px 0 24px;
+
+  @media (max-width: $mobile) {
+    margin: 32px 0 20px;
+  }
+}
+
+// Buttons
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+
+  &--primary {
+    background: $hora-gradient;
+    color: white;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &--large {
+    width: 100%;
+    padding: 18px 36px;
+    font-size: 1.125rem;
+
+    @media (max-width: $mobile) {
+      padding: 16px 32px;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    padding: 14px 28px;
+    font-size: 0.95rem;
+    gap: 8px;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.btn-spinner {
+  animation: spin 1s linear infinite;
+}
+
+// Footer
+.invitation-footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+
+  @media (max-width: $mobile) {
+    font-size: 0.85rem;
+  }
+}
+
+.link {
+  color: $hora-gradient-start;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $hora-gradient-end;
+    text-decoration: underline;
+  }
+}
+
+// Inviter Card
+.inviter-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  border: 2px solid #e9ecff;
+  border-radius: 16px;
+  margin-bottom: 16px;
+
+  @media (max-width: $mobile) {
+    padding: 20px;
+    gap: 16px;
+  }
+}
+
+.inviter-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $hora-gradient;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+  @media (max-width: $mobile) {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+  }
+}
+
+.inviter-info {
+  flex: 1;
+}
+
+.inviter-message {
+  font-size: 1.125rem;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+  line-height: 1.5;
+
+  strong {
+    color: $hora-gradient-start;
+    font-weight: 700;
+  }
+
+  @media (max-width: $mobile) {
+    font-size: 1rem;
+  }
+}
+
+.inviter-role {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0;
+
+  @media (max-width: $mobile) {
+    font-size: 0.875rem;
+  }
+}
+
+// Organization Card
+.organization-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  border: 2px solid #e9ecff;
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  }
+
+  @media (max-width: $mobile) {
+    padding: 20px;
+  }
+}
+
+.organization-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+
+  @media (max-width: $mobile) {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+}
+
+.organization-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meta-tag {
+  padding: 6px 16px;
+  background: white;
+  border: 2px solid #e9ecff;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $hora-gradient-start;
+    color: $hora-gradient-start;
+  }
+
+  @media (max-width: $mobile) {
+    padding: 5px 14px;
+    font-size: 0.8rem;
+  }
+}
+
+// Success Celebration
+.success-celebration {
+  padding: 80px 40px 60px;
+  text-align: center;
+
+  @media (max-width: $mobile) {
+    padding: 60px 24px 40px;
+  }
+}
+
+.success-icon {
+  margin: 0 auto 32px;
+  
+  svg {
+    color: #16a34a;
+    animation: scaleIn 0.6s ease;
+  }
+
+  @media (max-width: $mobile) {
+    margin-bottom: 24px;
+
+    svg {
+      width: 64px;
+      height: 64px;
+    }
+  }
+}
+
+.success-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+
+  @media (max-width: $mobile) {
+    font-size: 1.75rem;
+    margin-bottom: 12px;
+  }
+}
+
+.success-message {
+  font-size: 1.125rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 40px 0;
+
+  strong {
+    color: $hora-gradient-start;
+    font-weight: 700;
+  }
+
+  @media (max-width: $mobile) {
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+}
+
+.success-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+
+  @media (max-width: $mobile) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+}
+
+.success-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+  border: 2px solid #e9ecff;
+  border-radius: 12px;
+
+  svg {
+    color: $hora-gradient-start;
+    flex-shrink: 0;
+  }
+
+  > div {
+    flex: 1;
+    text-align: left;
+  }
+
+  @media (max-width: $mobile) {
+    padding: 16px;
+    gap: 12px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.success-footer {
+  margin-top: 24px;
+  font-size: 1rem;
+  color: #64748b;
+
+  @media (max-width: $mobile) {
+    font-size: 0.9rem;
+    margin-top: 20px;
+  }
+}
+
+// Loading State
+.loading-state {
+  padding: 100px 40px;
+  text-align: center;
+
+  @media (max-width: $mobile) {
+    padding: 80px 24px;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    color: #1e293b;
+    margin: 24px 0 12px;
+
+    @media (max-width: $mobile) {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    color: #64748b;
+    font-size: 1rem;
+
+    @media (max-width: $mobile) {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.loading-spinner {
+  svg {
+    color: $hora-gradient-start;
+    animation: spin 1s linear infinite;
+  }
+
+  @media (max-width: $mobile) {
+    svg {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}
+
+// Error State
+.error-state {
+  padding: 100px 40px;
+  text-align: center;
+
+  @media (max-width: $mobile) {
+    padding: 80px 24px;
+  }
+
+  svg {
+    color: #dc2626;
+    margin-bottom: 24px;
+
+    @media (max-width: $mobile) {
+      width: 56px;
+      height: 56px;
+    }
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+
+    @media (max-width: $mobile) {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    color: #64748b;
+    font-size: 1rem;
+    margin: 0 0 32px 0;
+    line-height: 1.6;
+
+    @media (max-width: $mobile) {
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+  }
+
+  .btn {
+    max-width: 300px;
+    margin: 0 auto;
+
+    @media (max-width: $mobile) {
+      max-width: 100%;
+    }
+  }
+}
+
+// Touch device optimizations
+@media (hover: none) and (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+  }
+}
+
+// Landscape mobile optimization
+@media (max-width: $tablet) and (orientation: landscape) {
+  .invitation-header {
+    padding: 30px 32px;
+
+    &__logo {
+      width: 70px;
+      height: 70px;
+      font-size: 2.25rem;
+      margin-bottom: 16px;
+    }
+
+    &__title {
+      font-size: 1.75rem;
+    }
+
+    &__subtitle {
+      font-size: 0.95rem;
+    }
+  }
+
+  .invitation-body {
+    padding: 40px 32px 32px;
+  }
+}
+
+// Print styles
+@media print {
+  .full-invitation-page {
+    background: white;
+    padding: 0;
+  }
+
+  .full-invitation-container {
+    box-shadow: none;
+  }
+
+  .invitation-actions,
+  .btn {
+    display: none;
+  }
+
+  .invitation-header::after {
+    display: none;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .project-card,
+  .role-card,
+  .detail-card,
+  .next-steps,
+  .inviter-card,
+  .organization-card {
+    border-width: 3px;
+  }
+
+  .btn--primary {
+    border: 2px solid #1e293b;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// Dark mode support (optional)
+@media (prefers-color-scheme: dark) {
+  .full-invitation-page {
+    background: linear-gradient(135deg, #1a1f2e 0%, #2d1b3d 100%);
+  }
+
+  .full-invitation-container {
+    background: #1e293b;
+  }
+
+  .invitation-body {
+    color: #e2e8f0;
+  }
+
+  .project-card,
+  .role-card,
+  .detail-card,
+  .next-steps,
+  .inviter-card,
+  .organization-card {
+    background: linear-gradient(135deg, #2d3748 0%, #374151 100%);
+    border-color: #475569;
+  }
+
+  .project-name,
+  .organization-name,
+  .success-title,
+  .inviter-message,
+  .detail-value,
+  .info-section__title,
+  .next-steps h3 {
+    color: #f1f5f9;
+  }
+
+  .project-description,
+  .role-description,
+  .detail-label,
+  .inviter-role,
+  .next-steps li,
+  .invitation-footer {
+    color: #cbd5e1;
+  }
+}
