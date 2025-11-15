@@ -14,7 +14,7 @@
         /* Sidebar Styles */
         .sidebar {
           width: 240px;
-          background: #1e293b;
+          background: #ffffff;
           color: white;
           padding: 1.5rem 0;
           position: fixed;
@@ -154,9 +154,13 @@
         }
 
         .projects__grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 1.5rem;
+          // display: grid;
+          // grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          // gap: 1.5rem;
+          display: flex;
+          flex-direction: row;
+          gap: 0.5rem;
+          flex-wrap: wrap;
         }
 
         .project-card {
@@ -181,13 +185,14 @@
         }
 
         .project-card__icon {
+          color: violet;
+          background-color: gainsboro;
           width: 48px;
           height: 48px;
           border-radius: 0.75rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
           font-weight: 700;
           font-size: 1.25rem;
           flex-shrink: 0;
@@ -288,7 +293,7 @@
         /* Responsive Design */
         @media (max-width: 1024px) {
           .projects__grid {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            flex-wrap: wrap;
           }
         }
 
@@ -330,7 +335,7 @@
           }
 
           .projects__grid {
-            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
           }
 
           .timer {
@@ -376,3 +381,283 @@
           background: #94a3b8;
         }
       
+
+        // Hora Theme Variables
+$hora-gradient-start: #667eea;
+$hora-gradient-end: #764ba2;
+$hora-gradient: linear-gradient(135deg, $hora-gradient-start 0%, $hora-gradient-end 100%);
+
+// Sidebar Hora Styling
+.sidebar {
+  // Add Hora branding section
+  &__brand {
+    padding: 0 12px 32px 12px;
+    border-bottom: 2px solid #f1f5f9;
+    margin-bottom: 24px;
+  }
+
+  &__logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: $hora-gradient;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+
+  &__subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 4px 0 0 0;
+    font-weight: 500;
+  }
+
+  &__nav {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  &__section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 16px 12px 16px;
+    margin: 24px 0 8px 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  &__menu {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+
+    + .sidebar__section-title {
+      border-top: 2px solid #f1f5f9;
+      padding-top: 24px;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    &--active {
+      background: $hora-gradient;
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      
+      &:hover {
+        background: $hora-gradient;
+        color: #ffffff;
+      }
+
+      .sidebar__icon-svg {
+        stroke-width: 2.5;
+      }
+    }
+
+    // Remove emoji icon styling for Lucide icons
+    .sidebar__icon {
+      display: none;
+    }
+  }
+
+  &__icon-svg {
+    flex-shrink: 0;
+    stroke-width: 2;
+    transition: stroke-width 0.3s ease;
+  }
+
+  &__indicator {
+    position: absolute;
+    right: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  }
+
+  &__profile {
+    padding: 16px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
+    border-radius: 12px;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border: 1px solid #e9ecff;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $hora-gradient;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  &__user-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__user-email {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Header Logo Gradient
+.header {
+  &__logo {
+    background: $hora-gradient;
+    color: #ffffff;
+  }
+
+  &__title {
+    background: $hora-gradient;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// Button Hora Theme
+.btn {
+  &--primary {
+    background: $hora-gradient;
+    border: none;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transform: translateY(-2px);
+    }
+  }
+
+  &--outline {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                $hora-gradient border-box;
+    color: $hora-gradient-start;
+
+    &:hover {
+      background: $hora-gradient;
+      color: white;
+    }
+  }
+}
+
+// Project Card Enhancements
+.project-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  }
+
+  &__icon {
+    background: $hora-gradient;
+
+    p {
+      color: #ffffff;
+    }
+  }
+}
+
+// Timer Hora Theme
+.timer {
+  &__status {
+    background: $hora-gradient;
+  }
+
+  &__display {
+    background: $hora-gradient;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+  .mobile-toggle {
+    background: $hora-gradient;
+    color: white;
+    border: none;
+  }
+}
+
+// Scrollbar Styling for Sidebar
+.sidebar__nav {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $hora-gradient;
+    border-radius: 3px;
+
+    &:hover {
+      background: linear-gradient(135deg, darken($hora-gradient-start, 10%), darken($hora-gradient-end, 10%));
+    }
+  }
+}
