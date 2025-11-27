@@ -1,10 +1,12 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { GET_ALL_PROJECTS } from '../Constants/projectConstant';
+import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS } from '../Constants/projectConstant';
 
 const initialState = {
   projects: [],
   selectedProject: null, // Add a state for a single project
   projectCreateSucess:false,
+  projectWithAccess:null,
+  sucessFetchProjects:false
 };
 
 const projectsReducer = createReducer(initialState, (builder) => {
@@ -34,6 +36,12 @@ const projectsReducer = createReducer(initialState, (builder) => {
     .addCase('SUCESS_CREATE_PROJECT', (state) => {
 
       state.projectCreateSucess = true;
+      // Filter returns a new array, which Immer handles
+    })
+    .addCase(FETCH_PROJECT_WITH_HIGHER_ACCESS, (state,action) => {
+      state.projectWithAccess = action.payload.projectWithAccess;
+      state.sucessFetchProjects=action.payload.sucessFetchProjects;
+      
       // Filter returns a new array, which Immer handles
     });
 });

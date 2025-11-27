@@ -1,6 +1,6 @@
 import axios from "axios";
-import { GET_ALL_PROJECTS } from "../../Constants/projectConstant";
-import { getAlluserAccessProject } from "../../../Api/Plat/projectApi";
+import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS } from "../../Constants/projectConstant";
+import { acceptInvitationApi, getAlluserAccessProject, invitationDetails, inviteUsersToProject, userProjectWithRights } from "../../../Api/Plat/projectApi";
 import { createProjectApi, getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
 
 export const getAllProjects = (userId) =>async( dispatch)=>{
@@ -28,6 +28,31 @@ export const getAllProjects = (userId) =>async( dispatch)=>{
             });
         }
         console.log("All projects fetched successfully:", response.data);
+    }catch(error){
+        console.error("Error fetching all projects:", error);
+    }}
+export const getProjectWithHigherAccess = (userId) =>async( dispatch)=>{
+
+    try{
+
+        const response = await axios.post(userProjectWithRights,{
+            userId:userId
+        },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            }
+        );
+        console.log(response)
+        if(response.status === 200){
+         dispatch({type:FETCH_PROJECT_WITH_HIGHER_ACCESS,payload:{
+          projectWithAccess:response.data.userProjectWithRights,
+          sucessFetchProjects:response.data.success
+         }})
+        }
+        console.log("All projects fetched successfully: userProjectWithRights", response.data);
     }catch(error){
         console.error("Error fetching all projects:", error);
     }
@@ -113,5 +138,178 @@ export const createProject = (projectData,userId) => async (dispatch) => {
       type: "CREATE_PROJECT_FAILURE",
       payload: error,
     });
+  }
+};
+
+export const invitationToProjet = (invitationBody) => async (dispatch) => {
+  console.log("API call started:", invitationBody);
+
+  try {
+    // 1️⃣ Validate before API call
+    if (!invitationBody.projectId || !invitationBody.emails || !invitationBody.invitedBy) {
+      return dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: {
+          type: "error",
+          message: "Missing required fields!",
+        },
+      });
+    }
+
+    // 2️⃣ API CALL (ALWAYS outside validation block)
+    const response = await axios.post(
+      inviteUsersToProject,
+      invitationBody,  // FIXED
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    console.log("API RESPONSE:", response.data);
+
+    // 3️⃣ Success SnackBar
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "success",
+        message: "Invitation sent successfully!",
+      },
+    });
+
+    return response.data; // helps in awaiting
+  } catch (error) {
+    console.error("API ERROR:", error);
+
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "error",
+        message: error.response?.data?.message || "Invitation failed!",
+      },
+    });
+
+    throw error; // so frontend catch works
+  }
+};
+
+export const fetchInvitationDetails = (invitationBody) => async (dispatch) => {
+  console.log("API call started:", invitationBody);
+
+  try {
+    // 1️⃣ Validate before API call
+    if (!invitationBody.projectId ||  !invitationBody.invitedBy) {
+      return dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: {
+          type: "error",
+          message: "Missing required fields!",
+        },
+      });
+    }
+
+    // 2️⃣ API CALL (ALWAYS outside validation block)
+    // Log the endpoint to ensure env var is set correctly
+    console.log('Posting to invitationDetails URL:', invitationDetails);
+
+    const response = await axios.post(
+      invitationDetails,
+      {
+        projectId: invitationBody.projectId,
+        invitedBy: invitationBody.invitedBy,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    console.log("API RESPONSE:", response.data);
+
+    // 3️⃣ Success SnackBar (this action fetches details, so messaging updated)
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "success",
+        message: "Invitation details fetched successfully!",
+      },
+    });
+
+    return response.data; // helps in awaiting
+  } catch (error) {
+    // Log more details for debugging (network, response, request)
+    console.error("API ERROR:", error);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+    } else if (error.request) {
+      console.error('No response received, request info:', error.request);
+    }
+
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "error",
+        message: error.response?.data?.message || "Invitation failed!",
+      },
+    });
+
+    throw error; // so frontend catch works
+  }
+};
+
+export const acceptProjectInvitation = (invitationId) => async (dispatch) => {
+  try {
+    // Validate input
+    if (!invitationId) {
+      return dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: { type: "error", message: "Invitation ID missing" },
+      });
+    }
+
+    // 1️⃣ API call
+    const response = await axios.post(
+      acceptInvitationApi,
+      { invitationId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const result = response.data;
+
+    // 2️⃣ Show success message
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "success",
+        message: result.message || "Invitation accepted successfully!",
+      },
+    });
+
+    // 3️⃣ Return response data for UI usage
+    return result;
+  } catch (error) {
+    console.error("Invitation acceptance error:", error);
+
+    const errorMsg =
+      error.response?.data?.message || "Failed to accept the invitation";
+
+    dispatch({
+      type: "SHOW_SNACKBAR",
+      payload: {
+        type: "error",
+        message: errorMsg,
+      },
+    });
+
+    throw error;
   }
 };

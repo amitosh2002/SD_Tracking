@@ -1,4 +1,4 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi} from "../../../Api/Plat/TicketsApi"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints} from "../../../Api/Plat/TicketsApi"
 import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
@@ -218,3 +218,29 @@ export const searchTicketByQuery = (searchQuery) => async(dispatch) => {
  }
 
     }
+
+
+
+
+export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
+    console.log(point,userId,ticketId)
+    try {
+        const res = await apiClient.post(`${addStoryPoints}`,{
+            userId,
+            ticketId,
+            storyPoint:point
+        })
+
+        if (res.status===200) {
+            console.log(res)
+        }
+    } catch (error) {
+          dispatch({
+                    type:SHOW_SNACKBAR,
+                    payload:{
+                        type:"error",
+                        message:error?.response?.data?.message || "Failed to fetch the data"
+                    }
+                })
+    }
+}

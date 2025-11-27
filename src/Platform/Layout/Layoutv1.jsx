@@ -14,6 +14,7 @@ import { fetchPlatformKeyValueAction } from "../../Redux/Actions/KeyValueActions
 import { fetchUserDetails } from "../../Redux/Actions/PlatformActions.js/userActions";
 import { initializeAuthAction } from "../../Redux/Actions/Auth/AuthActions";
 import { useLocation } from "react-router-dom";
+import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/InvitaionAcceptancePage";
 
 const Layoutv1 = () => {
     const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const Layoutv1 = () => {
     const { isAuthenticated, requiresRegistration, loading } = useSelector((state) => state.auth);
     const { TicketType, TicketStatus } = useSelector((state) => state.keyValuePair);
     
-    console.log("Layout Rendered", { isAuthenticated, requiresRegistration, loading });
+    // console.log("Layout Rendered", { isAuthenticated, requiresRegistration, loading });
     
     // Initialize authentication on app load
     useEffect(() => {
@@ -49,19 +50,14 @@ const Layoutv1 = () => {
     const loadAppData = useCallback(async () => {
         if (isAuthenticated) {
             try {
-                console.log("Loading app data after authentication...");
-                
                 // Fetch key-value pairs (ticket types, statuses, etc.)
                 if (!TicketType || !TicketStatus) {
-                    console.log("Fetching key-value pairs...");
                     await dispatch(fetchPlatformKeyValueAction());
                 }
                 
                 // Fetch user details
-                console.log("Fetching user details...");
                 await dispatch(fetchUserDetails());
                 
-                console.log("App data loaded successfully");
             } catch (error) {
                 console.error("Error loading app data:", error);
             }
@@ -79,7 +75,6 @@ const Layoutv1 = () => {
     useEffect(() => {
         const handlePageRefresh = () => {
             if (isAuthenticated && !loading) {
-                console.log("Page refreshed, reloading app data...");
                 loadAppData();
             }
         };
@@ -91,6 +86,28 @@ const Layoutv1 = () => {
             document.removeEventListener('visibilitychange', handlePageRefresh);
         };
     }, [isAuthenticated, loading, loadAppData]);
+
+
+        // Define all PUBLIC ROUTES
+const publicRoutes = [
+  "/invitation",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+];
+
+const routeComponents = {
+  "/invitation": <FullInvitationPage />,
+//   "/login": <LoginPage />,
+//   "/register": <HoraRegistration />,
+};
+
+const pathname = window.location.pathname;
+
+// If route is public → render the mapped component
+if (publicRoutes.includes(pathname)) {
+  return routeComponents[pathname] || <div>404 Page Not Found</div>;
+}
 
     // Show loading state while initializing auth
     if (loading) {
@@ -111,16 +128,13 @@ const Layoutv1 = () => {
 
     // Check requiresRegistration FIRST, then isAuthenticated
     if (requiresRegistration === true) {
-        console.log("Rendering HoraRegistration");
         return <HoraRegistration />;
     }
     
     if (isAuthenticated === false || isAuthenticated === undefined || isAuthenticated === null && requiresRegistration===false) {
-        console.log("Rendering LoginPage");
         return <LoginPage />;
     }
     
-    console.log("Rendering main layout");
 
     return (
         <div className="app-container">
