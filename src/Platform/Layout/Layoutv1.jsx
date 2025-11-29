@@ -36,7 +36,7 @@ const Layoutv1 = () => {
     const [hideNavbar,setHideNavbar]=useState(false);
     
      useEffect(() => {
-    const hideNavbarRoutes = ["/login", "/register", "/Hora-prelogin","/partner","/invite","/create/project"];
+    const hideNavbarRoutes = ["/login", "/register", "/Hora-prelogin","/partner","/invite","/create/project","/admin"];
     const currentPath = location.pathname;
 
     if (hideNavbarRoutes.includes(currentPath)) {
