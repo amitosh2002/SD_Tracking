@@ -1,108 +1,150 @@
+
+
 import React, { useCallback, useEffect, useState } from 'react';
 import './styles/issueDetails.scss'; // Import the SCSS file
 import { ButtonUD, ButtonV1 } from '../customFiles/customComponent/CustomButtons';
 import defaultUser from"../assets/platformIcons/defaultUser.svg"
-import { addTimeLogForWork, assignTaskApi, changeTicketStatus } from '../Redux/Actions/TicketActions/ticketAction';
+// Assuming updateStoryPointApi exists in your TicketActions
+import { addStoryPointToTicket, addTimeLogForWork, assignTaskApi, changeTicketStatus, getTicketById, } from '../Redux/Actions/TicketActions/ticketAction'; 
 import { useDispatch, useSelector } from 'react-redux';
 import { DropDownForTicketStatus } from '../customFiles/customComponent/DropDown';
 import { PopupV1 } from '../customFiles/customComponent/popups';
 import { convertInputToSeconds, formatMinutesToCustomDays } from '../utillity/helper';
 import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
+import { GET_TICKET_UPDATED_DETAILS } from '../Redux/Constants/ticketReducerConstants';
+
 const IssueDetails = ({task}) => {
   const dispatch = useDispatch()
-  console.log("Task Details:", task);
-
-  const {status,storyPoint}=task || {};
-   const [timeLogged, setTimeLogged] = useState('');
-    const [error, setError] = useState(null);
-    const [timeLogPopup, setTimeLogPopup] = useState(false);
-
+  
+  // Destructure selectedTicket from Redux state for reliable access
+  const { ticketDetailsChange, selectedTicket } = useSelector((state) => state.worksTicket);
+  
+  // Use status and storyPoint from the up-to-date selectedTicket state
+  const { storyPoint, _id: ticketId } = selectedTicket || {};
+  
+  const [timeLogged, setTimeLogged] = useState('');
+  const [error, setError] = useState(null);
+  const [timeLogPopup, setTimeLogPopup] = useState(false);
+  
+  // Initialize local state based on the Redux state (selectedTicket)
   const [storyPoints, setStoryPoints] = useState(storyPoint || 0);
 
-  const {
-    TicketStatus:ticketStatus
-  }=useSelector((state)=>state.keyValuePair)||{}
+  const {TicketStatus:ticketStatus}=useSelector((state)=>state.keyValuePair)||{}
   const {userDetails}=useSelector((state)=>state.user);
-  useEffect(()=>{})
 
- const handleTimeLogChange = (e) => {
+  // -----------------------------------------------------------
+  // 1. Initial/Refetch Data Effect (Triggers on task ID or flag change)
+  useEffect(()=>{
+    if (task?._id) {
+        dispatch(getTicketById(task._id));
+    }
+    // Runs when task ID changes or when ticketDetailsChange (the flag) flips
+  },[dispatch, task?._id, ticketDetailsChange])
+
+  // 2. Sync local storyPoints state with Redux state
+  useEffect(() => {
+    // Only update local state if the Redux state value is different
+    if (selectedTicket && selectedTicket.storyPoint !== storyPoints) {
+        setStoryPoints(selectedTicket.storyPoint || 0);
+    }
+  }, [selectedTicket?.storyPoint,selectedTicket,storyPoints]); // Only re-run when the Redux storyPoint changes
+  // -----------------------------------------------------------
+
+
+  const handleTimeLogChange = (e) => {
     let timeLog = e.target.value.trim(); // Trim whitespace
-    
-    // Regex allows digits, d, m, h (if needed), and spaces.
-    // It filters out invalid characters as the user types.
     const allowedCharsRegex = /^[0-9dhms\s]*$/i; 
 
-    // Regex to fully validate the format (e.g., "2d 5h 30m") 
-    // This looks for one or more segments (e.g., 2d, 3h, 15m) separated by spaces.
-    // The units are optional, but if present, must be d, h, or m.
-    const validationRegex = /^(\s*\d+\s*[dhm]\s*)*$/i; 
-
-    // 1. Filter out disallowed characters (e.g., letters, symbols) immediately
+    // 1. Filter out disallowed characters
     if (!allowedCharsRegex.test(timeLog)) {
-        // If an invalid character is detected, do NOT update the state
-        // You can optionally show an error message here.
         console.log("Invalid character entered.");
-        setError(true)
+        setError("Invalid characters detected. Use d, h, m for units.");
         return; 
-
     }
 
     // 2. Update the state with the raw input (contains only allowed chars)
     setTimeLogged(e.target.value); 
-    
-    // 3. Optional: If you need to ONLY allow saving/submitting if the format is perfect:
-    // This check should ideally be done in the submit handler, not the change handler.
-    if (validationRegex.test(timeLog) || timeLog === '') {
-        setTimeLogged(e.target.value);
-        console.log(timeLog)
-    }
-};
-
-  const handleSubmit=(e)=>{
-     e.preventDefault();
-    let totalTimeLog = convertInputToSeconds(timeLogged)
-    const note =""
-    dispatch(addTimeLogForWork(task?._id,userDetails?.id,totalTimeLog,note))
-    setTimeLogPopup(false);
-    setTimeLogged("")
-      dispatch({
-        type: SHOW_SNACKBAR,
-        payload: {
-          message: `Successful added the timelog for "${task?.type} ${task?.sequenceNumber}"`,
-          type: "success"
-        }
-      });
-
-    
-
-  }
-
-  const handleStoryPointChange = (e) => {
-    setStoryPoints(e.target.value);
+    setError(null);
   };
 
-  const handleAssingTask=(id)=>{
-    
-    // console.log(id);
-    if (!id) {
-      console.log("ticket not found")
-      return;
-      
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let totalTimeLog = convertInputToSeconds(timeLogged);
+    const note = "";
+
+    if (!ticketId || !userDetails?.id) {
+        console.error("Missing Ticket ID or User ID for time log.");
+        return;
     }
-    dispatch(assignTaskApi(id,userDetails?.id));
-  }
 
+    dispatch(addTimeLogForWork(ticketId, userDetails.id, totalTimeLog, note));
+    setTimeLogPopup(false);
+    
+    // ✅ FIX 1: Toggle the flag to force useEffect to call getTicketById
+    dispatch({type: GET_TICKET_UPDATED_DETAILS});
+    
+    setTimeLogged("");
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        message: `Successful added the timelog for "${selectedTicket?.type} ${selectedTicket?.sequenceNumber}"`,
+        type: "success"
+      }
+    });
+  };
+let storyPointTimeout; // put this outside component OR useRef
 
-     const handleStatusChange = useCallback((data) => {
-        if (!task?._id) {
-            console.error("Task ID not found for status change.");
-            return;
+const handleStoryPointChange = async (e) => {
+    const value = e.target.value;
+
+    // Always update local state immediately
+    setStoryPoints(value);
+
+    // Prevent empty / invalid values from triggering API
+    if (value === "" || isNaN(Number(value))) {
+        return;
+    }
+
+    // Debounce API to avoid sending too many calls
+    if (storyPointTimeout) clearTimeout(storyPointTimeout);
+
+    storyPointTimeout = setTimeout(async () => {
+        if (task?._id) {
+            await dispatch(addStoryPointToTicket({
+                point: Number(value),
+                userId: userDetails.id,
+                ticketId: task._id
+            }));
+
+            dispatch({ type: GET_TICKET_UPDATED_DETAILS });
         }
-        // Dispatch the action to update the status in the backend and Redux store
-        dispatch(changeTicketStatus(task?._id, data?.newStatus));
-        // Remove local state update - let Redux handle the state
+    }, 600); // waits 600ms after user stops typing
+};
+
+
+  const handleAssingTask = (id) => {
+    if (!id || !userDetails?.id) {
+      console.log("Ticket ID or User ID not found");
+      return;
+    }
+    
+    dispatch(assignTaskApi(id, userDetails.id));
+    
+    // ✅ FIX 3: Toggle the flag to force useEffect to call getTicketById
+    dispatch({type: GET_TICKET_UPDATED_DETAILS});
+  };
+
+  const handleStatusChange = useCallback((data) => {
+    if (!ticketId) {
+        console.error("Task ID not found for status change.");
+        return;
+    }
+    dispatch(changeTicketStatus(ticketId, data?.newStatus));
+    
+    // ✅ FIX 4: Toggle the flag to force useEffect to call getTicketById
+    dispatch({type: GET_TICKET_UPDATED_DETAILS});
         
-    }, [task?._id, dispatch]);
+  }, [ticketId, dispatch]);
   
   return (
     <div className="issue-container">
@@ -111,12 +153,12 @@ const IssueDetails = ({task}) => {
         <div className="action-bar__left">
         <DropDownForTicketStatus
           ticketTypes={ticketStatus}
-          value={task?.status || "OPEN"}
+          value={selectedTicket?.status || "OPEN"}
           onStatusChange={(statusData) => {
             handleStatusChange(statusData);
           }}
           className="status-dropdown"
-          ticketId={task?._id}
+          ticketId={selectedTicket?._id}
         />
       </div>
         <div className="action-bar__right">
@@ -134,14 +176,14 @@ const IssueDetails = ({task}) => {
           <div className="assigne_detail_value">
            <div className="assigne_detail">
            {
-            task?.assignee !== "Unassigned"? (
+            selectedTicket?.assignee !== "Unassigned"? (
                 <div className='assignie_controll'>
                <div className="assigne-avtar" >
-                 <span className="avatar">{task?.assignee[0] ?? ""}</span>
-                <span className="user-name">{task?.assignee ?? ""}</span>
+                 <span className="avatar">{selectedTicket?.assignee[0] ?? ""}</span>
+                <span className="user-name">{selectedTicket?.assignee ?? ""}</span>
                </div>
               {
-                 task.assignee===userDetails?.username &&  <ButtonUD text={"Unassigned"}/>
+                 selectedTicket?.assignee===userDetails?.username &&  <ButtonUD text={"Unassigned"}/>
               }
            
                 </div>
@@ -153,16 +195,16 @@ const IssueDetails = ({task}) => {
             )
            }
            </div>{
-            task.assignee!==userDetails?.username &&
-            <ButtonUD text={"Assign to me"} onClick={()=>handleAssingTask(task._id)}/>
+            selectedTicket?.assignee!==userDetails?.username &&
+            <ButtonUD text={"Assign to me"} onClick={()=>handleAssingTask(selectedTicket._id)}/>
            }
           </div>
         </div>
         <div className="details-row">
           <span className="details-label">Reporter</span>
           <div className="details-value">
-            <span className="avatar">{task?.reporter[0] ?? ""}</span>
-            <span className="user-name">{task?.reporter ?? ""}</span>
+            <span className="avatar">{selectedTicket?.reporter[0] ?? ""}</span>
+            <span className="user-name">{selectedTicket?.reporter ?? ""}</span>
           </div>
         </div>
       </div>
@@ -184,12 +226,12 @@ const IssueDetails = ({task}) => {
         <h3 className="section-title">More Fields</h3>
         <div className="more-field-item">
           <span className="field-label">Priority:</span>
-          <span className="field-value">{task?.priority}</span>
+          <span className="field-value">{selectedTicket?.priority}</span>
           {/* <DropDownV1/> */}
         </div>
         <div className="more-field-item">
           <span className="field-label">Status:</span>
-          <span className="field-value">{task?.status}</span>
+          <span className="field-value">{selectedTicket?.status}</span>
         </div>
       </div>
       <div className="task_other_details">
@@ -201,8 +243,8 @@ const IssueDetails = ({task}) => {
             <input 
               type="text" 
               className="time-log-input" 
-              value={formatMinutesToCustomDays(task?.totalTimeLogged)}
-              onChange={handleTimeLogChange}
+              value={formatMinutesToCustomDays(selectedTicket?.totalTimeLogged)}
+              readOnly // Made readOnly to indicate this is a display field
               onClick={()=>setTimeLogPopup(true)}
             />
           </div>
@@ -214,13 +256,15 @@ const IssueDetails = ({task}) => {
           <div className="story-point-item">
             <span className="story-point-label">Points:</span>
             <input 
-              type="number" 
+              // type="number" 
               className="story-point-input" 
-              value={storyPoints}
+              value={storyPoints} // Used local state for controlled input
               onChange={handleStoryPointChange}
             />
           </div>
         </div>
+
+
       </div>
 
      { timeLogPopup && <PopupV1 
@@ -236,7 +280,6 @@ const IssueDetails = ({task}) => {
                     type="text"
                     value={timeLogged}
                     onChange={handleTimeLogChange}
-                    // 💡 ADDED: Clear description for the user in the placeholder
                     placeholder="e.g., 1d 4h 30m (1 day = 9 hours)"
                     style={{ 
                         border: error ? '1px solid red' : '1px solid #ccc', 
@@ -250,7 +293,6 @@ const IssueDetails = ({task}) => {
                 </ButtonV1>
             </div>
             
-            {/* 💡 ADDED: Concise instruction below the input */}
             <p style={{ 
                 fontSize: '12px', 
                 color: '#666', 
