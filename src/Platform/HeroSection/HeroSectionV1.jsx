@@ -1,26 +1,29 @@
-import { createProject, getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
-import {EmptyStateGraphic} from '../../customFiles/customComponent/emptyState';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, CheckSquare, Clock, BarChart3, Target, FolderKanban, Settings, Users, Bell, Tag } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-// import { getAllProjects } from './Redux/Actions/PlatformActions.js/projectsActions';
-// import { EmptyStateGraphic } from './customFiles/customComponent/emptyState';
+import { getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
+import { EmptyStateGraphic } from '../../customFiles/customComponent/emptyState';
 import "./styles/herosection.scss";
 import { useNavigate } from 'react-router-dom';
 import ProjectCreationFlow from '../GenerailForms/projectCreationFlow';
-// import { getAllProjects } from '../../Redux/Actions/PlatformActions/projectsActions.js';
+import TeamInvitationPage from '../AccessControl/invitationPage';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
   const [timer, setTimer] = useState("00:00:00");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [createProject, setCreateProject] = useState(false);
-    const {projectCreateSucess} = useSelector((state)=>state.projects)
   
   const dispatch = useDispatch();
-  const navigate=useNavigate();
-  const { userDetails } = useSelector((state) => state.user);
-  const { projects } = useSelector((state) => state.projects);
+  const navigate = useNavigate();
+  
+  // Better selectors
+  const userDetails = useSelector((state) => state.user.userDetails);
+  const projects = useSelector((state) => state.projects.projects);
+  const projectCreateSucess = useSelector((state) => state.projects.projectCreateSucess);
+  
+  // Track if we've fetched projects
+  const hasFetchedProjects = useRef(false);
 
   // Timer Effect
   useEffect(() => {
@@ -35,15 +38,24 @@ const HoraDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch Projects
+  // Fetch Projects - Only once when user is available
   useEffect(() => {
-    if (userDetails?.id) {
+    if (userDetails?.id && !hasFetchedProjects.current) {
+      hasFetchedProjects.current = true;
       dispatch(getAllProjects(userDetails.id));
     }
-    if(projectCreateSucess){
+  }, [userDetails?.id, dispatch]);
+
+  // Handle project creation success - Separate effect
+  useEffect(() => {
+    if (projectCreateSucess) {
       setCreateProject(false);
+      // Optionally refetch projects
+      if (userDetails?.id) {
+        dispatch(getAllProjects(userDetails.id));
+      }
     }
-  }, [dispatch, userDetails, projectCreateSucess]);
+  }, [projectCreateSucess, userDetails?.id, dispatch]);
 
   const menuItems = [
     { id: 'dashboard', icon: BarChart3, label: 'Dashboard' },
@@ -54,6 +66,17 @@ const HoraDashboard = () => {
     { id: 'goals', icon: Target, label: 'Goals' },
     { id: 'tags', icon: Tag, label: 'Tags' },
   ];
+
+  const componentMap = {
+    tasks: EmptyStateGraphic, 
+    calendar: EmptyStateGraphic,
+    timer: EmptyStateGraphic,
+    projects: TeamInvitationPage,
+    goals: EmptyStateGraphic,
+    tags: EmptyStateGraphic,
+  };
+
+  const ActiveComponent = componentMap[activeItem] || EmptyStateGraphic;
 
   const secondaryItems = [
     { id: 'team', icon: Users, label: 'Team' },
@@ -70,21 +93,25 @@ const HoraDashboard = () => {
               <h2 className="projects__title">My Recent Projects</h2>
             </div>
 
-              {projects && !createProject&& projects.length > 0? (
-                projects.map((project) => (
-                  <div className="projects__grid" onClick={()=>{
-                        navigate(`/projects/${project?.projectId}/tasks`);
-                      }}>
-                  <div key={project._id} className="project-card">
+            {projects && !createProject && projects.length > 0 ? (
+              <div className="projects__grid">
+                {projects.map((project) => (
+                  <div 
+                    key={project._id} 
+                    className="project-card"
+                    onClick={() => {
+                      navigate(`/projects/${project?.projectId}/tasks`);
+                    }}
+                  >
                     <div className="project-card__header">
                       <div className="project-card__icon">
                         {project.image && project.image !== "" ? (
                           <img src={project.image} alt={project.name} />
                         ) : (
-                          <p>{project?.name?.charAt(0) ?? project?.projectName.charAt[0]}</p>
+                          <p>{project?.name?.charAt(0) ?? project?.projectName?.charAt(0)}</p>
                         )}
                       </div>
-                      <div className="project-card__info" >
+                      <div className="project-card__info">
                         <h3 className="project-card__name">{project.name ?? project?.projectName}</h3>
                         <p className="project-card__client">{project.partnerCode}</p>
                       </div>
@@ -99,16 +126,13 @@ const HoraDashboard = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-                ))
-              ) : (
-                // <EmptyStateGraphic message="No projects assigned" />
-                !createProject && <ProjectCreationFlow/>
-              )}
+                ))}
+              </div>
+            ) : (
+              !createProject && <ProjectCreationFlow />
+            )}
 
-              {
-                createProject && <ProjectCreationFlow createNew={createProject}/>
-              }
+            {createProject && <ProjectCreationFlow createNew={createProject} />}
           </section>
         </>
       );
@@ -123,10 +147,7 @@ const HoraDashboard = () => {
              secondaryItems.find(item => item.id === activeItem)?.label}
           </h2>
         </div>
-        <EmptyStateGraphic 
-          message="Under Development"
-          submessage="This feature is being built and will be available soon"
-        />
+        <ActiveComponent />
       </section>
     );
   };
@@ -216,14 +237,21 @@ const HoraDashboard = () => {
           <div className="header__top">
             <div className="header__brand">
               <div className="header__logo">H</div>
-              <h1 className="header__title">Hora - {menuItems.find(item => item.id === activeItem)?.label || 'Dashboard'}</h1>
+              <h1 className="header__title">
+                Hora - {menuItems.find(item => item.id === activeItem)?.label || 'Dashboard'}
+              </h1>
             </div>
             <div className="header__actions">
               <button className="btn btn--outline">EXPORT</button>
-              <button className="btn btn--primary" onClick={()=>{
-                setActiveItem('dashboard'),
-                setCreateProject(true);
-              }}>NEW PROJECT</button>
+              <button 
+                className="btn btn--primary" 
+                onClick={() => {
+                  setActiveItem('dashboard');
+                  setCreateProject(true);
+                }}
+              >
+                NEW PROJECT
+              </button>
             </div>
           </div>
         </header>

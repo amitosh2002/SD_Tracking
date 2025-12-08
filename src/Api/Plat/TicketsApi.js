@@ -6,6 +6,7 @@ export const assignTask =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/ti
 export const ticketStatusurl =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets`;
 export const tickettimelogsurl =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/time-log`;
 export const ticketbyKeyurl =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/by-key/`;
+export const addStoryPoints =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/update/storyPoint`;
 export const ticketSearchQueryApi =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/fetch/searchTicket`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const createProjectApi =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/projects`;// if using axiosClient do not use import from env it already imported into axiosclient
 
