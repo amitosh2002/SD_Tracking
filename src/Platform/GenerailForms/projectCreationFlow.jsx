@@ -86,7 +86,7 @@ export default function ProjectCreationFlow(createNew) {
       setTimeout(() => {
         
         setStep('success');
-        set
+        
       }, 2000);
       console.log('Project Created with answers:', answers);
     }

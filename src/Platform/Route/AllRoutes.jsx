@@ -17,6 +17,8 @@ import HoraShowcase from "../Onboarding/prelogin";
 import CreateProject from "../AccessControl/createProject";
 import TeamInvitationPage from "../AccessControl/invitationPage";
 import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/InvitaionAcceptancePage";
+import HoraAdminDashboard from "../AccessControl/Administration/AdminDashBoard";
+import DeveloperMetricsMatrix from "../AccessControl/Analytics/DoraDash";
 
 // import { useSelector } from "react-redux";
 
@@ -48,6 +50,8 @@ const AllRoutes = () => {
                 {/* // letter it turn down into popup */}
                 <Route path="/create/project" element={<CreateProject />} />
                 <Route path="/invitation" element={<FullInvitationPage />} />
+                <Route path="/admin" element={<HoraAdminDashboard />} />
+                <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
                 {/* // letter it turn down into popup */}
 
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}

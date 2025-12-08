@@ -15,8 +15,8 @@ const TaskManager = () => {
   // Fetch tickets: if projectId is present, fetch by project; otherwise by user
  useEffect(() => {
   if (projectId) {
-    dispatch(getAllWorkTicket({ projectId ,userId: userDetails.id}));
-  } else if (userDetails && userDetails.id) {
+    dispatch(getAllWorkTicket({ projectId ,userId: userDetails?.id}));
+  } else if (userDetails && userDetails?.id) {
     dispatch(getAllWorkTicket({ userId: userDetails.id }));
   }
 }, [dispatch, projectId, userDetails]);

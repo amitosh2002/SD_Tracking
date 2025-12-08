@@ -1,133 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, AlertCircle, Loader, Mail, Clock, User, Briefcase, Building2, Users, Shield, ArrowRight } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
+import  { useState, useEffect } from 'react';
+import { CheckCircle, AlertCircle, Loader, Mail, Clock, User, Briefcase, Shield, ArrowRight } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import './styles/fullInvitation.scss';
+import { acceptProjectInvitation, fetchInvitationDetails } from '../../../Redux/Actions/PlatformActions.js/projectsActions';
 
-const FullInvitationPage = ({ navigate }) => {
+const FullInvitationPage = () => {
   const dispatch = useDispatch();
-  const { userDetails } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
-  const [inviteToken, setInviteToken] = useState('');
+  // const [inviteToken, setInviteToken] = useState('');
   const [tokenData, setTokenData] = useState(null);
-  const [projectData, setProjectData] = useState(null);
-  const [partnerData, setPartnerData] = useState(null);
-  const [inviterData, setInviterData] = useState(null);
+  const [projectName, setProjectName] = useState('');
+  const [inviterName, setInviterName] = useState('');
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(false);
   const [error, setError] = useState('');
   const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('inviteToken');
+    
+    const token = searchParams.get('inviteToken');
+    
     
     if (!token) {
+      console.error('No token found in URL');
       setError('Invalid invitation link. No token provided.');
       setLoading(false);
       return;
     }
 
-    setInviteToken(token);
     verifyToken(token);
-  }, []);
+  }, [searchParams,]);
+  
 
   const verifyToken = async (token) => {
+    // console.log('Verifying token:', token);
     setLoading(true);
     setError('');
 
     try {
       const decoded = decodeJWT(token);
-      
+      // console.log('Decoded token:', decoded);
+
       if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-        setError('This invitation has expired. Please request a new invitation.');
+        setError("This invitation has expired.");
         setLoading(false);
         return;
       }
 
       setTokenData(decoded);
-      
-      // Fetch all related details
-      await Promise.all([
-        fetchProjectDetails(decoded.projectId),
-        fetchPartnerDetails(decoded.partnerId),
-        fetchInviterDetails(decoded.invitedBy)
-      ]);
-      
+
+      // console.log('Fetching invitation details for:', {
+      //   projectId: decoded.projectId,
+      //   invitedBy: decoded.invitedBy
+      // });
+
+      const response = await dispatch(fetchInvitationDetails({
+        projectId: decoded.projectId,
+        invitedBy: decoded.invitedBy
+      }));
+
+      // console.log("INVITATION DETAILS FROM API =>", response);
+
+      if (response?.data) {
+        setProjectName(response.data.project || 'Unknown Project');
+        setInviterName(response.data.invitedBy || 'Team Member');
+      }
+
       setLoading(false);
+
     } catch (err) {
-      console.error('Token verification error:', err);
-      setError('Invalid invitation link. Please check the URL and try again.');
+      console.error('Error verifying token:', err);
+      setError("Invalid or expired invitation link.");
       setLoading(false);
     }
   };
 
   const decodeJWT = (token) => {
     try {
-      const base64Url = token.split('.')[1];
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        throw new Error('Invalid token format');
+      }
+
+      const base64Url = parts[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      
       return JSON.parse(jsonPayload);
     } catch (error) {
+      console.error('JWT decode error:', error);
       throw new Error('Invalid token format');
-    }
-  };
-
-  const fetchProjectDetails = async (projectId) => {
-    try {
-      // API call to fetch project details
-      // const response = await dispatch(getProjectById(projectId));
-      // setProjectData(response.data);
-      
-      // For now, using mock data - replace with actual API call
-      const mockProject = {
-        name: 'Smart Grid Analytics Platform',
-        description: 'Advanced energy management and analytics system for modern infrastructure',
-        category: 'Energy Tech',
-        status: 'Active',
-        teamSize: 8,
-        startDate: '2025-01-15'
-      };
-      setProjectData(mockProject);
-    } catch (err) {
-      console.error('Failed to fetch project details:', err);
-    }
-  };
-
-  const fetchPartnerDetails = async (partnerId) => {
-    try {
-      // API call to fetch partner details
-      // const response = await dispatch(getPartnerById(partnerId));
-      // setPartnerData(response.data);
-      
-      // Mock data - replace with actual API call
-      const mockPartner = {
-        businessName: 'TechCorp Solutions',
-        industry: 'Technology',
-        location: 'Patna, Bihar'
-      };
-      setPartnerData(mockPartner);
-    } catch (err) {
-      console.error('Failed to fetch partner details:', err);
-    }
-  };
-
-  const fetchInviterDetails = async (inviterId) => {
-    try {
-      // API call to fetch inviter details
-      // const response = await dispatch(getUserById(inviterId));
-      // setInviterData(response.data);
-      
-      // Mock data - replace with actual API call
-      const mockInviter = {
-        name: 'Rahul Sharma',
-        role: 'Project Manager',
-        email: 'rahul.sharma@techcorp.com'
-      };
-      setInviterData(mockInviter);
-    } catch (err) {
-      console.error('Failed to fetch inviter details:', err);
     }
   };
 
@@ -136,33 +106,21 @@ const FullInvitationPage = ({ navigate }) => {
     setAccepting(true);
 
     try {
-      // API call to accept invitation
-      // const response = await dispatch(acceptProjectInvitation({
-      //   token: inviteToken,
-      //   email: tokenData.invitedEmail,
-      //   projectId: tokenData.projectId,
-      //   partnerId: tokenData.partnerId,
-      //   invitedBy: tokenData.invitedBy,
-      //   userId: userDetails?.id // If user is logged in
-      // }));
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      setAccepted(true);
+      const res = await dispatch(acceptProjectInvitation(tokenData?.invitationId));
+      
+      setAccepted(res?.success);
       setAccepting(false);
+
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to accept invitation. Please try again.');
+      console.error('Error accepting invitation:', err);
+      setError('Failed to accept invitation. Please try again.');
       setAccepting(false);
     }
   };
 
   const handleGoToDashboard = () => {
-    if (navigate) {
-      navigate('/dashboard');
-    } else {
-      window.location.href = '/dashboard';
-    }
+    navigate('/dashboard');
   };
 
   const formatDate = (timestamp) => {
@@ -177,20 +135,12 @@ const FullInvitationPage = ({ navigate }) => {
 
   const getAccessLevelName = (level) => {
     const levels = {
-      300: 'Admin',
-      200: 'Manager',
+      300: 'Manager',
+      400: 'Admin',
+      200: 'Editor',
       100: 'Viewer'
     };
     return levels[level] || 'Member';
-  };
-
-  const getAccessLevelDescription = (level) => {
-    const descriptions = {
-      300: 'Full access to manage projects, team members, and settings',
-      200: 'Can manage project tasks, assign work, and monitor progress',
-      100: 'Read-only access to view projects and reports'
-    };
-    return descriptions[level] || 'Standard team member access';
   };
 
   // Loading state
@@ -200,7 +150,7 @@ const FullInvitationPage = ({ navigate }) => {
         <div className="full-invitation-container">
           <div className="loading-state">
             <div className="loading-spinner">
-              <Loader size={48} />
+              <Loader size={48} className="spinner-animate" />
             </div>
             <h2>Verifying your invitation...</h2>
             <p>Please wait while we validate your invitation link</p>
@@ -221,7 +171,7 @@ const FullInvitationPage = ({ navigate }) => {
             <p>{error}</p>
             <button 
               className="btn btn--primary"
-              onClick={() => window.location.href = '/'}
+              onClick={() => navigate('/')}
             >
               Go to Home
             </button>
@@ -231,7 +181,7 @@ const FullInvitationPage = ({ navigate }) => {
     );
   }
 
-  // Success state - After acceptance
+  // Success state
   if (accepted) {
     return (
       <div className="full-invitation-page">
@@ -243,16 +193,16 @@ const FullInvitationPage = ({ navigate }) => {
             <h1 className="success-title">Welcome to the Team! 🎉</h1>
             <p className="success-message">
               You have successfully accepted the invitation to join{' '}
-              <strong>{projectData?.name || 'the project'}</strong>
+              <strong>{projectName}</strong>
             </p>
             
             <div className="success-details">
               <div className="success-detail-item">
                 <Shield size={24} />
                 <div>
-                  <span className="detail-label">Your Access Level</span>
+                  <span className="detail-label">Your Role</span>
                   <span className="detail-value">
-                    {getAccessLevelName(tokenData?.accessLevel)}
+                    {getAccessLevelName(tokenData?.accessType)}
                   </span>
                 </div>
               </div>
@@ -261,13 +211,6 @@ const FullInvitationPage = ({ navigate }) => {
                 <div>
                   <span className="detail-label">Email</span>
                   <span className="detail-value">{tokenData?.invitedEmail}</span>
-                </div>
-              </div>
-              <div className="success-detail-item">
-                <Building2 size={24} />
-                <div>
-                  <span className="detail-label">Organization</span>
-                  <span className="detail-value">{partnerData?.businessName}</span>
                 </div>
               </div>
             </div>
@@ -289,7 +232,7 @@ const FullInvitationPage = ({ navigate }) => {
     );
   }
 
-  // Main invitation details page
+  // Main invitation page
   return (
     <div className="full-invitation-page">
       <div className="full-invitation-container">
@@ -297,7 +240,7 @@ const FullInvitationPage = ({ navigate }) => {
           <div className="invitation-header__logo">H</div>
           <h1 className="invitation-header__title">You're Invited!</h1>
           <p className="invitation-header__subtitle">
-            Join {partnerData?.businessName || 'the team'} on Hora
+            Join {projectName} on Hora
           </p>
         </div>
 
@@ -310,85 +253,40 @@ const FullInvitationPage = ({ navigate }) => {
           )}
 
           {/* Inviter Information */}
-          {inviterData && (
-            <div className="info-section">
-              <div className="inviter-card">
-                <div className="inviter-avatar">
-                  {inviterData.name?.charAt(0).toUpperCase()}
-                </div>
-                <div className="inviter-info">
-                  <p className="inviter-message">
-                    <strong>{inviterData.name}</strong> invited you to collaborate
-                  </p>
-                  <p className="inviter-role">{inviterData.role}</p>
-                </div>
+          <div className="info-section">
+            <div className="inviter-card">
+              <div className="inviter-avatar">
+                {inviterName?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
+              <div className="inviter-info">
+                <p className="inviter-message">
+                  <strong>{inviterName}</strong> invited you to collaborate
+                </p>
               </div>
             </div>
-          )}
-
-          {/* Organization Information */}
-          {partnerData && (
-            <div className="info-section">
-              <h2 className="info-section__title">
-                <Building2 size={24} />
-                Organization
-              </h2>
-              <div className="organization-card">
-                <h3 className="organization-name">{partnerData.businessName}</h3>
-                <div className="organization-meta">
-                  {partnerData.industry && (
-                    <span className="meta-tag">{partnerData.industry}</span>
-                  )}
-                  {partnerData.location && (
-                    <span className="meta-tag">{partnerData.location}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+          </div>
 
           {/* Project Information */}
-          {projectData && (
-            <div className="info-section">
-              <h2 className="info-section__title">
-                <Briefcase size={24} />
-                Project Details
-              </h2>
-              <div className="project-card">
-                <div className="project-card__header">
-                  <h3 className="project-name">{projectData.name}</h3>
-                  <span className={`project-status project-status--${projectData.status.toLowerCase()}`}>
-                    {projectData.status}
-                  </span>
-                </div>
-                <p className="project-description">{projectData.description}</p>
-                <div className="project-meta">
-                  <div className="meta-item">
-                    <Users size={18} />
-                    <span>{projectData.teamSize} Team Members</span>
-                  </div>
-                  <div className="meta-item">
-                    <Briefcase size={18} />
-                    <span>{projectData.category}</span>
-                  </div>
-                </div>
-              </div>
+          <div className="info-section">
+            <h2 className="info-section__title">
+              <Briefcase size={24} />
+              Project
+            </h2>
+            <div className="project-card">
+              <h3 className="project-name">{projectName}</h3>
             </div>
-          )}
+          </div>
 
-          {/* Your Access Level */}
+          {/* Your Role */}
           <div className="info-section">
             <h2 className="info-section__title">
               <Shield size={24} />
-              Your Access Level
+              Your Role
             </h2>
             <div className="role-card">
               <div className="role-badge">
                 {getAccessLevelName(tokenData?.accessLevel)}
               </div>
-              <p className="role-description">
-                {getAccessLevelDescription(tokenData?.accessLevel)}
-              </p>
             </div>
           </div>
 
@@ -425,7 +323,7 @@ const FullInvitationPage = ({ navigate }) => {
               <ul>
                 <li>
                   <CheckCircle size={18} />
-                  <span>You'll be added to {projectData?.name || 'the project'} team</span>
+                  <span>You'll be added to {projectName} team</span>
                 </li>
                 <li>
                   <CheckCircle size={18} />
@@ -433,11 +331,11 @@ const FullInvitationPage = ({ navigate }) => {
                 </li>
                 <li>
                   <CheckCircle size={18} />
-                  <span>Collaborate with {projectData?.teamSize || 'your'} team members</span>
+                  <span>Collaborate with team members</span>
                 </li>
                 <li>
                   <CheckCircle size={18} />
-                  <span>Receive real-time project updates and notifications</span>
+                  <span>Receive real-time project updates</span>
                 </li>
               </ul>
             </div>
@@ -452,7 +350,7 @@ const FullInvitationPage = ({ navigate }) => {
             >
               {accepting ? (
                 <>
-                  <Loader className="btn-spinner" size={20} />
+                  <Loader className="btn-spinner spinner-animate" size={20} />
                   Accepting Invitation...
                 </>
               ) : (
