@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { GET_OTP } from '../../Redux/Constants/AuthConstants';
 import { getOtpAction, resendOtpRequest, verifyOtpAction } from '../../Redux/Actions/Auth/AuthActions';
 import { useNavigate } from 'react-router-dom';
+import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
+import GoogleAuthButton from './googleSSO';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1); // 1 for email, 2 for OTP
@@ -70,10 +72,8 @@ const LoginPage = () => {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      alert('Login successful!');
     }, 3000);
   };
-
   const resendOtp = async() => {
     setLoading(true);
     console.log("resending otp to",email);
@@ -85,8 +85,14 @@ const LoginPage = () => {
     await dispatch(resendOtpRequest(email));
     setTimeout(() => {
       setLoading(false);
-      alert('OTP sent successfully!');
     }, 1000);
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          message: `OTP sent successfully!`,
+          type: "success"
+        }
+      });
   };
 
   const styles = {
@@ -460,6 +466,7 @@ const LoginPage = () => {
             {step === 1 ? (
               <div className="email-form">
                 <div style={styles.inputGroup}>
+                  <GoogleAuthButton/>
                   <label htmlFor="email" style={styles.inputLabel}>Email Address</label>
                   <div style={styles.inputWrapper}>
                     <i className="fas fa-envelope" style={styles.inputIcon}></i>

@@ -80,3 +80,86 @@ export const formatMinutesToCustomDays = (totalMinutes) => {
 // console.log(formatMinutesToHhMm(60));    // Output: "1h"
 // console.log(formatMinutesToHhMm(45));    // Output: "45m"
 // console.log(formatMinutesToHhMm(0));     // Output: "0m"
+
+/**
+ * Converts a date string, Date object, or timestamp into a readable format.
+ * * @param {Date | string | number} dateInput - The date value to format.
+ * @param {string} locale - The locale to use for formatting (e.g., 'en-US', 'en-GB').
+ * @returns {string} The formatted date string.
+ */
+export function formatCreatedAtDate(dateInput, locale = 'en-US') {
+    // 1. Ensure the input is a valid Date object
+    const date = new Date(dateInput);
+
+    // 2. Check for invalid date
+    if (isNaN(date.getTime())) {
+        return "Invalid Date";
+    }
+
+    // 3. Define formatting options
+    const options = {
+        year: 'numeric',
+        month: 'short', // e.g., 'Oct'
+        day: 'numeric', // e.g., '11'
+        hour: 'numeric',
+        minute: '2-digit', // e.g., '05'
+        hour12: true, // Use AM/PM format
+    };
+
+    // 4. Use Intl.DateTimeFormat for robust, localized formatting
+    // The format will be something like "Oct 11, 2025, 3:49 PM"
+    const formattedDate = new Intl.DateTimeFormat(locale, options).format(date);
+    
+    // Optional: Clean up the output to match "Date at Time" format
+    // e.g., changes "Oct 11, 2025, 3:49 PM" to "Oct 11, 2025 at 3:49 PM"
+    return formattedDate.replace(',', ' at'); 
+}
+
+// --- Example Usage ---
+
+// 1. Using an ISO string (like the one from your database)
+// const dbDateString = "2025-10-11T06:30:54.595Z";
+// console.log("DB String:", formatCreatedAtDate(dbDateString));
+// Output: DB String: 10/11/2025 at 12:00 PM (Note: Time depends on user's timezone)
+
+// 2. Using the desired format
+// const customFormatted = formatCreatedAtDate(dbDateString, 'en-US');
+// console.log("Custom Format:", customFormatted);
+// Output: Custom Format: Oct 11, 2025 at 12:00 PM 
+
+// 3. Example with a different locale (if needed)
+// const frenchFormat = formatCreatedAtDate(dbDateString, 'fr-FR');
+// console.log("French Format:", frenchFormat);
+// Output: French Format: 11 oct. 2025 à 08:30
+
+/**
+ * Transforms the dailyAggregates object into a structured array for charting.
+ * It also reorders the days to start from Monday (ISO standard).
+ *
+ * @param {Object} dailyAggregates - The object containing day names and time totals.
+ * @returns {Array<Object>} An array of daily log objects with day and hours properties.
+ */
+export function transformWeeklyAggregates(dailyAggregates) {
+    // ⚠️ FIX: Check if dailyAggregates is undefined, null, or not an object
+    console.log(dailyAggregates,"from helper")
+    if (!dailyAggregates || typeof dailyAggregates !== 'object') {
+        // Return an empty array to prevent crashing and signal no data
+        return []; 
+    }
+    
+    // Define the desired order of days
+    const orderedDays = [
+        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+        "Friday", "Saturday",
+    ];
+
+    return orderedDays.map(dayName => {
+        // The inner check is still good, but the outer check prevents the crash
+        const data = dailyAggregates[dayName] || { totalHours: "0.00", totalMinutes: 0 };
+        
+        return {
+            day: dayName.substring(0, 3), 
+            hours: parseFloat(data.totalHours)
+        };
+    });
+}

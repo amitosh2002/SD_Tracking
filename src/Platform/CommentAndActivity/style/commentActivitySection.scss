@@ -1,0 +1,305 @@
+.comment-section-container {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  .tabs-container {
+    display: flex;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+
+    .tab {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: transparent;
+      border: none;
+      font-weight: 500;
+      color: #64748b;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &.active {
+        color: #a855f7;
+        background: #ffffff;
+        border-bottom: 2px solid #a855f7;
+      }
+
+      .badge {
+        background: #e2e8f0;
+        color: #64748b;
+        padding: 0.125rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .content {
+    padding: 1.5rem;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .comment-form {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1.5rem;
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7, #06b6d4);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .input-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .toolbar {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+
+        button {
+          border: none;
+          background: transparent;
+          color: #64748b;
+          cursor: pointer;
+          padding: 0.5rem;
+          border-radius: 0.375rem;
+          transition: all 0.2s;
+
+          &:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+          }
+        }
+      }
+
+      textarea {
+        width: 100%;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        resize: vertical;
+        outline: none;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+
+        &:focus {
+          border-color: #a855f7;
+        }
+      }
+
+      .submit-container {
+        display: flex;
+        justify-content: flex-end;
+
+        .submit-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: linear-gradient(135deg, #a855f7, #06b6d4);
+          color: #fff;
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+
+          &:hover:not(:disabled) {
+            transform: scale(1.03);
+          }
+        }
+      }
+    }
+  }
+
+  .comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+
+    .comment-item {
+      display: flex;
+      gap: 1rem;
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a855f7, #06b6d4);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+
+      .comment-content {
+        flex: 1;
+        .header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          .author {
+            font-weight: 600;
+            color: #1e293b;
+          }
+
+          .time {
+            color: #94a3b8;
+            font-size: 0.75rem;
+          }
+        }
+
+        .text {
+          color: #475569;
+          font-size: 0.875rem;
+          line-height: 1.6;
+        }
+      }
+    }
+  }
+
+  .activity-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .activity-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 0.75rem;
+      border: 1px solid #e2e8f0;
+
+      .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .activity-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .activity-header {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+
+          .avatar-small {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7, #06b6d4);
+            color: #fff;
+            font-size: 0.625rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+          }
+
+          .user {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.875rem;
+          }
+
+          .action {
+            color: #64748b;
+            font-size: 0.875rem;
+          }
+
+          .status-badge {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+          }
+        }
+
+        .activity-time {
+          display: flex;
+          align-items: center;
+          gap: 0.375rem;
+          color: #94a3b8;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  /* 📱 Responsive adjustments */
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .tabs-container {
+      flex-direction: column;
+
+      .tab {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    .comment-form {
+      flex-direction: column;
+
+      .avatar {
+        margin: 0 auto;
+      }
+
+      .input-container {
+        width: 100%;
+      }
+    }
+
+    .activity-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}

@@ -1,41 +1,84 @@
 .task-details {
-    h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
-    }
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  background: #f8fafc;
 
-    p {
-        font-size: 1rem;
-        line-height: 1.5;
-        margin-bottom: 10px;
-    }
-
-    strong {
-        font-weight: bold;
-        color: #555;
-    }
-    position: relative;
-    // padding: 20px;
-    display: flex;
-    flex-direction: row;
-    // gap: 20px;
-
-    @media screen and (max-width: 768px) {
-        flex-direction: column;
-        
-    }
-
-}
-.task-details-container{
-    display: flex;
+  @media screen and (max-width: 768px) {
     flex-direction: column;
-    gap: 8px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 5px;
+  }
+}
 
-    @media screen and (max-width: 768px) {
-        padding: 10px;
-    }
+.task-details-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  overflow-y: auto;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.task-id {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.2;
+   @media screen and (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+
+.task-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0;
+  letter-spacing: 0.025em;
+
+  @media screen and (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #64748b;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+}
+
+// Editor container styling
+.task-details-container > div {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 2rem;
+  min-height: 400px;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
 }

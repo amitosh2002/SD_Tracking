@@ -84,33 +84,36 @@ const authReducer = createReducer(initialState, (builder) => {
         state.isAuthenticated = true;
       }
     })
-    .addCase(ACCOUNT_VERIFIACTION_SUCESS,(state)=>{
-      state.isAuthenticated = true; // ✅ Fixed: Set authentication to true
+   
+      .addCase(ACCOUNT_VERIFIACTION_SUCESS, (state, action) => {
+        state.loading = false;
+        state.error = null;
         
-    })
-    .addCase(ACCOUNT_VERIFIACTION_FAIL,(state)=>{
-      state.isAuthenticated = false; // ✅ Fixed: Set authentication to true
-        
+        // This action should trigger the final state change and potentially 
+        // receive the final verified user object and token (if not done in a separate login)
+        state.isAuthenticated = true; 
+        state.user = action.payload; // Assuming payload contains the verified user data and token 
+        state.registerData = null; // Clear the temporary registration data
+        state.verifiedEmail = null; 
     })
     
     .addCase(REGISTER_USER_SUCCESS, (state, action) => {
       state.loading = false;
       state.registerData = action.payload;
       state.error = null;
+      state.isAuthenticated = false; 
       // Don't authenticate yet - wait for account verification if needed
     })
     
-    .addCase(VERIFIED_USER_AND_LOGIN, (state, action) => {
-      state.loading = false;
-      state.user = action.payload;
-      state.requiresRegistration = false; // ✅ Clear registration requirement
-      state.error = null;
-      
-      // Clear temporary data after successful login
-      state.otpData = null;
-      state.verifiedEmail = null;
-      
-      console.log("User authenticated successfully:", action.payload);
+  .addCase(VERIFIED_USER_AND_LOGIN, (state, action) => {
+        // This case is for subsequent direct login or token validation
+        state.loading = false;
+        state.user = action.payload;
+        state.requiresRegistration = false;
+        state.isAuthenticated = true; // ✅ Ensure isAuthenticated is TRUE on final login
+        state.error = null;
+        state.otpData = null;
+        state.verifiedEmail = null;
     })
     
     .addCase(TOKEN_VALIDATION_SUCCESS, (state, action) => {

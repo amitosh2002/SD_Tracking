@@ -1,10 +1,14 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET } from "../Constants/ticketReducerConstants";
+import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS } from "../Constants/ticketReducerConstants";
 
 const initialState = {
   tickets: [],
   selectedTicket: null, // Add a state for a single ticket
-  createPopup: false
+  createPopup: false,
+  filteredTickets: [], // Add a state for ,filtered tickets if needed
+  filteredTicketsLenth:0,
+  ticketDetailsChange:false,
+
 };
 
 export const ticketReducer = createReducer(initialState,(builder=>{
@@ -16,7 +20,7 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.selectedTicket = state.tickets.find(ticket => ticket.id === action.payload);
         })
         .addCase(CREATE_TICKET, (state, action) => {
-            state.tickets.push(action.payload);
+            state.tickets.push(action.payload.data);
         })
         .addCase(UPDATE_TICKET, (state, action) => {
             const index = state.tickets.findIndex(ticket => ticket.id === action.payload.id);
@@ -71,5 +75,12 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             if (state.selectedTicket && state.selectedTicket._id === ticketId) {
                 state.selectedTicket.assignee = assignee;
             }
+        })
+        .addCase(SET_FILTERED_TICKETS,(state,action)=>{
+            state.filteredTickets=action.payload.resultTicket;
+            state.filteredTicketsLenth=action.payload.total;
+        })
+        .addCase(GET_TICKET_UPDATED_DETAILS,(state)=>{
+            state.ticketDetailsChange=!state.ticketDetailsChange;
         })
 }))

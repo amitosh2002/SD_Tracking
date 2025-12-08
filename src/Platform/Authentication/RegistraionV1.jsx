@@ -445,6 +445,7 @@ import './HoraRegistration.scss';
 import { registerUserAction, verifyAccountAction } from '../../Redux/Actions/Auth/AuthActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
 
 const HoraRegistration = () => {
     const [formData, setFormData] = useState({
@@ -525,13 +526,21 @@ const HoraRegistration = () => {
               dispatch(registerUserAction(formData));
             setTimeout(() => {
                 console.log('Registration data:', formData);
-                alert('OTP sent to your email!');
+               
                 setIsOtpSent(true);
                 setIsLoading(false);
             }, 2000);
+              dispatch({
+                    type: SHOW_SNACKBAR,
+                    payload: {
+                      message: `Otp sent to your mail id"`,
+                      type: "success"
+                    }
+                  });
         } else {
             setIsLoading(false);
         }
+        
     };
 
     const handleOtpSubmit = async (e) => {

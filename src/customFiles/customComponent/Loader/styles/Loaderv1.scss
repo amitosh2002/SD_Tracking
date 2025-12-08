@@ -1,0 +1,155 @@
+
+
+        .loader-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        //   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+          background: #ffffff67;
+          position: relative;
+        }
+
+        .loader-wrapper {
+          position: relative;
+          width: clamp(100px, 20vw, 160px);
+          height: clamp(100px, 20vw, 160px);
+        }
+
+        .ring-outer {
+          position: absolute;
+          inset: 0;
+          border: clamp(3px, 0.5vw, 5px) solid transparent;
+          border-top-color: #a855f7;
+          border-right-color: #c084fc;
+          border-radius: 50%;
+          animation: spin 2s linear infinite;
+        }
+
+        .ring-middle {
+          position: absolute;
+          inset: clamp(6px, 1vw, 10px);
+          border: clamp(3px, 0.5vw, 5px) solid transparent;
+          border-bottom-color: #06b6d4;
+          border-left-color: #67e8f9;
+          border-radius: 50%;
+          animation: spin-reverse 1.5s linear infinite;
+        }
+
+        .inner-glow {
+          position: absolute;
+          inset: clamp(12px, 2vw, 20px);
+          background: radial-gradient(circle, rgba(168, 85, 247, 0.3), rgba(6, 182, 212, 0.3));
+          border-radius: 50%;
+          filter: blur(clamp(8px, 2vw, 15px));
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        .letter-container {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .letter-h {
+          font-size: clamp(3rem, 10vw, 5rem);
+          font-weight: 700;
+          background: linear-gradient(135deg, #c084fc 0%, #67e8f9 50%, #c084fc 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          animation: pulse 2s ease-in-out infinite;
+          filter: drop-shadow(0 0 clamp(10px, 3vw, 30px) rgba(168, 85, 247, 0.5));
+          position: relative;
+          overflow: hidden;
+        }
+
+        .scan-line {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+        }
+
+        .scan-line::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: clamp(2px, 0.3vw, 4px);
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+          animation: scan 2s ease-in-out infinite;
+        }
+
+        .loading-text {
+          position: absolute;
+          bottom: clamp(-35px, -8vw, -50px);
+          left: 50%;
+          transform: translateX(-50%);
+          white-space: nowrap;
+        }
+
+        .loading-text p {
+          color: #d8b4fe;
+          font-size: clamp(0.75rem, 2vw, 0.875rem);
+          font-weight: 500;
+          letter-spacing: 0.15em;
+        }
+
+        .dot {
+          display: inline-block;
+          animation: bounce 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) {
+          animation-delay: 0.15s;
+        }
+
+        .dot:nth-child(3) {
+          animation-delay: 0.3s;
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes spin-reverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+
+        @keyframes scan {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(800%); }
+        }
+
+        @keyframes bounce {
+          0%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-0.5em); }
+        }
+
+        @media (max-width: 768px) {
+          .loader-wrapper {
+            width: clamp(80px, 25vw, 120px);
+            height: clamp(80px, 25vw, 120px);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .loader-wrapper {
+            width: clamp(70px, 30vw, 100px);
+            height: clamp(70px, 30vw, 100px);
+          }
+          .loading-text {
+            bottom: clamp(-30px, -10vw, -40px);
+          }
+        }
+      
