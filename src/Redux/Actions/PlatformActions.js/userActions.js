@@ -10,7 +10,6 @@ export const fetchUserDetails = () => async (dispatch) => {
             token: localStorage.getItem("token")
         });
         
-        console.log(res, "user details");
         
         if (res?.data?.success) {
             dispatch({ type: SUCESS_FETCH_USER_DETAILS, payload: res?.data?.success });

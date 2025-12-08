@@ -232,7 +232,13 @@ export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
         })
 
         if (res.status===200) {
-            console.log(res)
+              dispatch({
+                    type:SHOW_SNACKBAR,
+                    payload:{
+                        type:"error",
+                        message: `Added the story point:${point}`
+                    }
+                })
         }
     } catch (error) {
           dispatch({

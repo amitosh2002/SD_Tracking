@@ -19,6 +19,7 @@ import TeamInvitationPage from "../AccessControl/invitationPage";
 import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/InvitaionAcceptancePage";
 import HoraAdminDashboard from "../AccessControl/Administration/AdminDashBoard";
 import DeveloperMetricsMatrix from "../AccessControl/Analytics/DoraDash";
+import SprintManagement from "../Sprint/sprintHome";
 
 // import { useSelector } from "react-redux";
 
@@ -52,6 +53,7 @@ const AllRoutes = () => {
                 <Route path="/invitation" element={<FullInvitationPage />} />
                 <Route path="/admin" element={<HoraAdminDashboard />} />
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
+                <Route path="/sprint" element={<SprintManagement />} />
                 {/* // letter it turn down into popup */}
 
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}
