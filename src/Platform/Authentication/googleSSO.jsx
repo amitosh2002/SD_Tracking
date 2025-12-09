@@ -20,6 +20,7 @@ export default function GoogleAuthButton() {
         "http://localhost:8000/api/auth/sso/google-login",
         { token }
       );
+      
 
       const { success, token: jwtToken, user } = res.data;
 
@@ -55,6 +56,8 @@ export default function GoogleAuthButton() {
       <GoogleLogin
         onSuccess={handleGoogleSuccess}
         onError={() => console.log("Google Login Failed")}
+          ux_mode="popup"      // <-- IMPORTANT
+
       />
     </div>
   );
