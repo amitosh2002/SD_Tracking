@@ -16,11 +16,17 @@ export default function GoogleAuthButton() {
       const token = credentialResponse.credential;
 
       // Send Google token to backend
+      // const res = await axios.post(
+      //   `${import.meta.env.VITE_BACKEND_URL}/api/auth/sso/google-login`,
+      //   { token }
+      // );
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/sso/google-login`,
-        { token }
+        { token },
+        {
+          headers: { "Content-Type": "application/json" }
+        }
       );
-      
 
       const { success, token: jwtToken, user } = res.data;
 
