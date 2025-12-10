@@ -17,7 +17,7 @@ export default function GoogleAuthButton() {
 
       // Send Google token to backend
       const res = await axios.post(
-        "http://localhost:8000/api/auth/sso/google-login",
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/sso/google-login`,
         { token }
       );
       
