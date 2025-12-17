@@ -20,6 +20,9 @@ import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/Invitai
 import HoraAdminDashboard from "../AccessControl/Administration/AdminDashBoard";
 import DeveloperMetricsMatrix from "../AccessControl/Analytics/DoraDash";
 import SprintManagement from "../Sprint/sprintHome";
+import SprintBoard from "../Sprint/sprintBoard";
+import WorkflowManager from "../Sprint/component/WorkFlow";
+import SprintBoardManager from "../Sprint/component/sprintBoardConfriguratro";
 
 // import { useSelector } from "react-redux";
 
@@ -54,6 +57,9 @@ const AllRoutes = () => {
                 <Route path="/admin" element={<HoraAdminDashboard />} />
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
                 <Route path="/sprint" element={<SprintManagement />} />
+                <Route path="/sprint/board" element={<SprintBoard />} />
+                <Route path="/confrigurator/flow" element={<WorkflowManager />} />
+                <Route path="/confrigurator/sprintBoard" element={<SprintBoardManager />} />
                 {/* // letter it turn down into popup */}
 
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}

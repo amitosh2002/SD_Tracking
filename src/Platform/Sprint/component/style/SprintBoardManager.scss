@@ -1,0 +1,904 @@
+// Variables
+$primary-color: #3b82f6;
+$primary-hover: #2563eb;
+$danger-color: #ef4444;
+$danger-hover: #dc2626;
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$warning-bg: #fef3c7;
+$warning-border: #fbbf24;
+$border-color: #e5e7eb;
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+$border-radius: 8px;
+$transition: all 0.2s ease;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Main Container
+.sprint-board-container {
+  min-height: 100vh;
+  background-color: $bg-light;
+  padding: 1.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  &.sprint-loading {
+    @include flex-center;
+  }
+
+  .sprint-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+
+// Loading State
+.sprint-loading-content {
+  text-align: center;
+
+  .sprint-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid $border-color;
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    animation: sprint-spin 1s linear infinite;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: 0.875rem;
+  }
+}
+
+@keyframes sprint-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Header Card
+.sprint-header-card {
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sprint-header-top {
+  @include flex-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sprint-header-info {
+  .sprint-main-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  .sprint-main-subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: $text-secondary;
+  }
+}
+
+.sprint-btn-refresh {
+  @include flex-center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: $bg-light;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $border-color;
+  }
+
+  .sprint-icon {
+    font-size: 1rem;
+  }
+}
+
+// View Tabs
+.sprint-view-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sprint-tab {
+  @include flex-center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: $bg-light;
+  color: $text-secondary;
+  border: 1px solid transparent;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  .sprint-icon {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background: $border-color;
+    color: $text-primary;
+  }
+
+  &.sprint-tab-active {
+    background: $primary-color;
+    color: white;
+    box-shadow: $shadow-sm;
+  }
+}
+
+// Content Card
+.sprint-content-card {
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sprint-section-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.sprint-card-header {
+  @include flex-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+// Board Preview
+.sprint-board-preview {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $bg-light;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 4px;
+
+    &:hover {
+      background: $text-secondary;
+    }
+  }
+}
+
+.sprint-board-column {
+  flex-shrink: 0;
+  width: 300px;
+  background: $bg-light;
+  border-radius: $border-radius;
+  border-top: 4px solid;
+  padding: 1rem;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+.sprint-column-header {
+  @include flex-between;
+  margin-bottom: 1rem;
+}
+
+.sprint-column-info {
+  .sprint-column-name {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .sprint-wip-limit {
+    margin: 0;
+    font-size: 0.75rem;
+    color: $text-secondary;
+  }
+}
+
+.sprint-icon-btn {
+  padding: 0.375rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: white;
+    transform: scale(1.1);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &.sprint-danger:hover {
+    color: $danger-color;
+  }
+}
+
+.sprint-status-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sprint-status-card {
+  padding: 0.75rem;
+  border-radius: 6px;
+  border-left: 3px solid;
+  transition: $transition;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: $shadow-sm;
+  }
+
+  .sprint-status-label {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+.sprint-add-column-card {
+  @include flex-center;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 300px;
+  min-height: 200px;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius;
+  background: transparent;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    border-color: $primary-color;
+    background: rgba(59, 130, 246, 0.05);
+    color: $primary-color;
+
+    .sprint-add-icon {
+      transform: scale(1.2);
+    }
+  }
+
+  .sprint-add-icon {
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    transition: $transition;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+// Configuration View
+.sprint-config-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sprint-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sprint-column-item {
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 1rem;
+  transition: $transition;
+
+  &:hover {
+    border-color: $text-secondary;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.sprint-column-item-header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sprint-column-item-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .sprint-color-indicator {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .sprint-column-item-name {
+    margin: 0 0 0.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .sprint-column-item-meta {
+    margin: 0;
+    font-size: 0.875rem;
+    color: $text-secondary;
+  }
+}
+
+.sprint-column-item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sprint-wip-info {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid $border-color;
+  font-size: 0.875rem;
+  color: $text-secondary;
+
+  span {
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+// Warning Card
+.sprint-warning-card {
+  background: $warning-bg;
+  border: 1px solid $warning-border;
+  border-radius: $border-radius;
+  padding: 1.5rem;
+
+  .sprint-warning-title {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #92400e;
+  }
+
+  .sprint-warning-text {
+    margin: 0.75rem 0 0 0;
+    font-size: 0.875rem;
+    color: #78350f;
+  }
+}
+
+.sprint-status-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sprint-status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+// Status Mapping
+.sprint-mapping-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sprint-mapping-section {
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 1rem;
+}
+
+.sprint-mapping-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  .sprint-color-indicator {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .sprint-mapping-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.sprint-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.sprint-status-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: $bg-light;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $border-color;
+  }
+
+  &.sprint-checked {
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 2px $primary-color;
+  }
+
+  input[type='checkbox'] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  }
+
+  .sprint-status-chip {
+    flex: 1;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    border: 1px solid;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+// JSON Viewer
+.sprint-json-viewer {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #1e293b;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  max-height: 400px;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #0f172a;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+
+    &:hover {
+      background: #64748b;
+    }
+  }
+
+  pre {
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 0.8125rem;
+    color: #e2e8f0;
+    line-height: 1.5;
+  }
+}
+
+.sprint-btn-copy {
+  @include flex-center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: $bg-light;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $border-color;
+  }
+}
+
+// Buttons
+.sprint-btn-primary {
+  @include flex-center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: $primary-color;
+  color: white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  box-shadow: $shadow-sm;
+
+  .sprint-icon {
+    font-size: 1rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.sprint-btn-cancel {
+  padding: 0.625rem 1rem;
+  background: $bg-white;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $bg-light;
+  }
+}
+
+// Modal
+.sprint-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: sprint-fadeIn 0.2s ease;
+}
+
+.sprint-modal-content {
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-xl;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: sprint-slideUp 0.3s ease;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $bg-light;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 4px;
+
+    &:hover {
+      background: $text-secondary;
+    }
+  }
+}
+
+.sprint-modal-header {
+  @include flex-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid $border-color;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .sprint-close-btn {
+    @include flex-center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.25rem;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      background: $bg-light;
+      color: $text-primary;
+    }
+  }
+}
+
+.sprint-modal-body {
+  padding: 1.5rem;
+}
+
+.sprint-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid $border-color;
+}
+
+// Form Elements
+.sprint-form-group {
+  margin-bottom: 1.25rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $text-primary;
+  }
+
+  input[type='text'],
+  input[type='number'] {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    font-size: 0.875rem;
+    color: $text-primary;
+    transition: $transition;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    &::placeholder {
+      color: $text-secondary;
+    }
+  }
+}
+
+// Color Grid
+.sprint-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+}
+
+.sprint-color-option {
+  padding: 0.75rem;
+  border: 2px solid transparent;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &.sprint-color-active {
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    transform: scale(1.05);
+  }
+}
+
+// Status Select Grid
+.sprint-status-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $bg-light;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 3px;
+
+    &:hover {
+      background: $text-secondary;
+    }
+  }
+}
+
+.sprint-status-select-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  background: $bg-light;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $border-color;
+  }
+
+  &.sprint-checked {
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 2px $primary-color;
+  }
+
+  input[type='checkbox'] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+  }
+
+  .sprint-status-chip {
+    flex: 1;
+    padding: 0.375rem 0.625rem;
+    border-radius: 4px;
+    border: 1px solid;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+// Animations
+@keyframes sprint-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sprint-slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .sprint-board-container {
+    padding: 1rem;
+  }
+
+  .sprint-header-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sprint-board-preview {
+    flex-direction: column;
+
+    .sprint-board-column,
+    .sprint-add-column-card {
+      width: 100%;
+    }
+  }
+
+  .sprint-status-grid,
+  .sprint-status-select-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sprint-color-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+
+  .sprint-column-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sprint-column-item-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

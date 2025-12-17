@@ -5,6 +5,7 @@ import authReducer from "./Reducer/authReducer";
 import { keyValueReducer } from "./Reducer/keyValueReducer";
 import { PlatformReducer } from "./Reducer/platformReducer";
 import { userReducer } from "./Reducer/userReducer";
+import { sprintReducerV1 } from "./Reducer/sprintReducerV1";
 
 
 export const store = configureStore({
@@ -16,6 +17,7 @@ export const store = configureStore({
     keyValuePair:keyValueReducer,
     platform:PlatformReducer,
     user:userReducer,
+    sprint:sprintReducerV1
 
   },
 });

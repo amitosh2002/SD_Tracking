@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './SprintManagement.scss';
-import { getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
-import { createSprintForPartner } from '../../Redux/Actions/SprintActions/sprintActionsV1';
+import { getAllProjects, getProjectWithHigherAccess } from '../../Redux/Actions/PlatformActions.js/projectsActions';
+import { createSprintForPartner, fetchProjectSprintOverview } from '../../Redux/Actions/SprintActions/sprintActionsV1';
+import CreateSprint from './component/createSprint';
+import SprintCard from './component/sprintCard';
+import EditSprint from './component/EditSprint';
 
 const SprintManagement = () => {
   const dispatch = useDispatch();
@@ -11,34 +14,28 @@ const SprintManagement = () => {
 
   useEffect(()=>{
     dispatch(getAllProjects(userDetails?.id))
+
+    dispatch(fetchProjectSprintOverview())
   },[dispatch,userDetails])
 //   const { projects } = useSelector((state) => state.project);
 //   const { sprints, loading } = useSelector((state) => state.sprint);
   const {projectWithAccess,sucessFetchProjects,projects}= useSelector((state)=>state.projects)
+  const {sprintOverview}= useSelector((state)=>state.sprint)
 
+console.log(projectWithAccess)
   const [activeTab, setActiveTab] = useState('active');
   const [selectedProject, setSelectedProject] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedSprint, setSelectedSprint] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [formData,setFormData]=useState({
+       projectId: '',       // Required - from dropdown
+  sprintName: '',      // Optional - auto-generated if empty
+  startDate: '',       // Required - YYYY-MM-DD
+  endDate: '' 
+  })
 
-  const [formData, setFormData] = useState({
-    name: '',
-    projectId: '',
-    startDate: '',
-    endDate: '',
-    goal: '',
-    duration: 2,
-  });
-
-  // Mock projects data
-  const [projectsData] = useState([
-    { id: 'proj-1', name: 'E-Commerce Platform', key: 'ECP', color: '#6366f1' },
-    { id: 'proj-2', name: 'Mobile App', key: 'MOB', color: '#10b981' },
-    { id: 'proj-3', name: 'Analytics Dashboard', key: 'ANA', color: '#f59e0b' },
-    { id: 'proj-4', name: 'API Gateway', key: 'API', color: '#ec4899' },
-  ]);
 
   // Mock sprints data with project association
   const [sprintsData, setSprintsData] = useState([
@@ -138,43 +135,34 @@ const SprintManagement = () => {
       : sprintsData.filter(s => s.projectId === selectedProject);
 
     return {
-      active: filteredByProject.filter(s => s.status === 'active').length,
-      planned: filteredByProject.filter(s => s.status === 'planned').length,
-      completed: filteredByProject.filter(s => s.status === 'completed').length,
+      active: filteredByProject.filter(s => s.status === 'ACTIVE').length,
+      planned: filteredByProject.filter(s => s.status === 'PLANNED').length,
+      completed: filteredByProject.filter(s => s.status === 'COMPLETED').length,
       avgVelocity: (filteredByProject.reduce((sum, s) => sum + s.velocity, 0) / filteredByProject.length || 0).toFixed(1)
     };
   };
-  console.log(projects)
+
+  // fetch project details 
+  const getProjectDetails = (projectId) => {
+    return projects.find(
+      (project) => project.projectId === projectId
+    )
+  };
+
+
   const stats = getStatsForProject();
 
   const handleCreateSprint = () => {
-    const selectedProj = projectsData.find(p => p.id === formData.projectId);
-    console.log(formData)
-    const newSprint = {
-      id: `sprint-${Date.now()}`,
-      ...formData,
-      projectName: selectedProj?.name,
-      projectKey: selectedProj?.key,
-      projectColor: selectedProj?.color,
-      status: 'planned',
-      tickets: 0,
-      completed: 0,
-      inProgress: 0,
-      todo: 0,
-      storyPoints: 0,
-      completedPoints: 0,
-      velocity: 0,
-      health: 'pending'
-    };
-    console.log(newSprint)
-    setSprintsData([...sprintsData, newSprint]);
+   
+    // setSprintsData([...sprintsData, newSprint]);
     setShowCreateModal(false);
-    dispatch(createSprintForPartner(formData.startDate,formData.endDate,formData.projectId,formData.name))
+    console.log(formData)
+    dispatch(createSprintForPartner(formData.startDate,formData.endDate,formData.projectId,formData.sprintName))
     resetForm();
   };
 
   const handleUpdateSprint = () => {
-    const selectedProj = projectsData.find(p => p.id === formData.projectId);
+    const selectedProj = projectWithAccess.find(p => p.id === formData.projectId);
     setSprintsData(
       sprintsData.map((sprint) =>
         sprint.id === selectedSprint.id
@@ -221,13 +209,13 @@ const SprintManagement = () => {
 
   const openEditModal = (sprint) => {
     setSelectedSprint(sprint);
+    console.log(sprint)
     setFormData({
-      name: sprint.name,
-      projectId: sprint.projectId,
-      startDate: sprint.startDate,
-      endDate: sprint.endDate,
-      goal: sprint.goal,
-      duration: calculateDuration(sprint.startDate, sprint.endDate)
+           projectId: sprint?.projectId,       // Required - from dropdown
+  sprintName: sprint?.sprintName,      // Optional - auto-generated if empty
+  startDate: sprint?.startDate,       // Required - YYYY-MM-DD
+  endDate: sprint?.endDate 
+    
     });
     setShowEditModal(true);
   };
@@ -251,24 +239,24 @@ const SprintManagement = () => {
     return diffWeeks;
   };
 
-  const getHealthColor = (health) => {
-    switch (health) {
-      case 'excellent': return 'health-excellent';
-      case 'good': return 'health-good';
-      case 'warning': return 'health-warning';
-      case 'critical': return 'health-critical';
-      default: return 'health-pending';
-    }
-  };
+  // const getHealthColor = (health) => {
+  //   switch (health) {
+  //     case 'excellent': return 'health-excellent';
+  //     case 'good': return 'health-good';
+  //     case 'warning': return 'health-warning';
+  //     case 'critical': return 'health-critical';
+  //     default: return 'health-pending';
+  //   }
+  // };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'active': return 'badge-active';
-      case 'planned': return 'badge-planned';
-      case 'completed': return 'badge-completed';
-      default: return 'badge-default';
-    }
-  };
+  // const getStatusBadge = (status) => {
+  //   switch (status) {
+  //     case 'active': return 'badge-active';
+  //     case 'planned': return 'badge-planned';
+  //     case 'completed': return 'badge-completed';
+  //     default: return 'badge-default';
+  //   }
+  // };
 
   return (
     <div className="sprint-management">
@@ -311,7 +299,7 @@ const SprintManagement = () => {
               {project.name ??project.projectName}
                       {project.partnerCode}
 
-              {projectWithAccess}
+              {/* {projectWithAccess} */}
             </button>
           ))}
         </div>
@@ -388,268 +376,31 @@ const SprintManagement = () => {
         </div>
       ) : (
         <div className="sprint-grid">
-          {filteredSprints.map((sprint) => (
-            <div key={sprint.id} className={`sprint-card ${getHealthColor(sprint.health)}`}>
-              <div className="card-header">
-                <div className="card-title-section">
-                  <div className="project-badge" style={{ backgroundColor: sprint.projectColor }}>
-                    {sprint.projectKey}
-                  </div>
-                  <div>
-                    <h3 className="card-title">{sprint.name}</h3>
-                    <p className="project-name">{sprint.projectName}</p>
-                  </div>
-                  <span className={`status-badge ${getStatusBadge(sprint.status)}`}>
-                    {sprint.status}
-                  </span>
-                </div>
-                <div className="card-actions">
-                  <button className="action-btn" onClick={() => openEditModal(sprint)}>
-                    ✏️
-                  </button>
-                  <button className="action-btn" onClick={() => handleDeleteSprint(sprint.id)}>
-                    🗑️
-                  </button>
-                </div>
-              </div>
+      {sprintOverview.map((project) =>
+          project.sprints.map((sprint) => (
+            <SprintCard
+              key={sprint.sprintId}
+              project={getProjectDetails(project?.projectId)}
+              sprint={sprint}
+              setFormData={setFormData}
+              projectId={project.projectId}
+              openEditModal={openEditModal}
+              handleDeleteSprint={handleDeleteSprint}
+              handleStartSprint={handleStartSprint}
+              handleCompleteSprint={handleCompleteSprint}
+            />
+          ))
+        )}
 
-              <p className="sprint-goal">{sprint.goal}</p>
-
-              <div className="sprint-dates">
-                <span>📅 {new Date(sprint.startDate).toLocaleDateString()}</span>
-                <span>→</span>
-                <span>{new Date(sprint.endDate).toLocaleDateString()}</span>
-              </div>
-
-              <div className="progress-section">
-                <div className="progress-header">
-                  <span className="progress-label">Progress</span>
-                  <span className="progress-value">
-                    {sprint.completed}/{sprint.tickets} tickets
-                  </span>
-                </div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{
-                      width: `${(sprint.completed / sprint.tickets) * 100 || 0}%`,
-                      backgroundColor: sprint.projectColor
-                    }}
-                  ></div>
-                </div>
-              </div>
-
-              <div className="sprint-metrics">
-                <div className="metric">
-                  <span className="metric-label">Story Points</span>
-                  <span className="metric-value">
-                    {sprint.completedPoints}/{sprint.storyPoints}
-                  </span>
-                </div>
-                <div className="metric">
-                  <span className="metric-label">Velocity</span>
-                  <span className="metric-value">{sprint.velocity}</span>
-                </div>
-              </div>
-
-              <div className="ticket-breakdown">
-                <div className="breakdown-item done">
-                  <span className="breakdown-dot"></span>
-                  <span>{sprint.completed} Done</span>
-                </div>
-                <div className="breakdown-item progress">
-                  <span className="breakdown-dot"></span>
-                  <span>{sprint.inProgress} In Progress</span>
-                </div>
-                <div className="breakdown-item todo">
-                  <span className="breakdown-dot"></span>
-                  <span>{sprint.todo} To Do</span>
-                </div>
-              </div>
-
-              <div className="card-footer">
-                {sprint.status === 'planned' && (
-                  <button
-                    className="btn-primary"
-                    onClick={() => handleStartSprint(sprint.id)}
-                  >
-                    Start Sprint
-                  </button>
-                )}
-                {sprint.status === 'active' && (
-                  <button
-                    className="btn-secondary"
-                    onClick={() => handleCompleteSprint(sprint.id)}
-                  >
-                    Complete Sprint
-                  </button>
-                )}
-                {sprint.status === 'completed' && (
-                  <button className="btn-view">View Report</button>
-                )}
-              </div>
-            </div>
-          ))}
         </div>
       )}
 
       {showCreateModal && (
-        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Create New Sprint</h2>
-              <button className="close-btn" onClick={() => setShowCreateModal(false)}>
-                ✕
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>Project *</label>
-                <select
-                  value={formData.projectId}
-                  onChange={(e) => setFormData({ ...formData, projectId: e.target.value })}
-                  className="project-select"
-                >
-                  <option value="">Select a project</option>
-                  {projects.map((project) => (
-                    <option key={project._id} value={project.projectId}>
-                      {project.name?? project.projectName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Sprint Name *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g., Sprint 25 - Jan 2026"
-                />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Start Date *</label>
-                  <input
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>End Date *</label>
-                  <input
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <label>Duration (weeks)</label>
-                <input
-                  type="number"
-                  value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                  min="1"
-                  max="4"
-                />
-              </div>
-              <div className="form-group">
-                <label>Sprint Goal</label>
-                <textarea
-                  value={formData.goal}
-                  onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
-                  placeholder="What do you want to achieve?"
-                  rows={3}
-                />
-              </div>
-              <div className="modal-actions">
-                <button className="btn-cancel" onClick={() => setShowCreateModal(false)}>
-                  Cancel
-                </button>
-                <button 
-                  className="btn-submit" 
-                  onClick={handleCreateSprint}
-                  disabled={!formData.projectId || !formData.name}
-                >
-                  Create Sprint
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CreateSprint formData={formData} projects={projects} setShowCreateModal={setShowCreateModal} setFormData={setFormData} handleCreateSprint={handleCreateSprint} />
       )}
 
       {showEditModal && (
-        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Edit Sprint</h2>
-              <button className="close-btn" onClick={() => setShowEditModal(false)}>
-                ✕
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>Project *</label>
-                <select
-                  value={formData.projectId}
-                  onChange={(e) => setFormData({ ...formData, projectId: e.target.value })}
-                  className="project-select"
-                >
-                  {projectsData.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.key} - {project.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Sprint Name *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Start Date *</label>
-                  <input
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>End Date *</label>
-                  <input
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <label>Sprint Goal</label>
-                <textarea
-                  value={formData.goal}
-                  onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
-                  rows={3}
-                />
-              </div>
-              <div className="modal-actions">
-                <button className="btn-cancel" onClick={() => setShowEditModal(false)}>
-                  Cancel
-                </button>
-                <button className="btn-submit" onClick={handleUpdateSprint}>
-                  Update Sprint
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <EditSprint setFormData={setFormData} setShowEditModal={setShowEditModal} formData={formData} projectsData={projects} handleUpdateSprint={handleUpdateSprint} />
       )}
     </div>
   );
