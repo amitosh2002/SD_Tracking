@@ -256,3 +256,113 @@ export function refactorSprintData(sprintObject) {
 
   return sprintData;
 }
+
+
+export const buildSprintBoardConfig = (data, source) => {
+  if (!data) return null;
+
+  // 🟢 CASE 1: BOARD SOURCE (already has columns)
+  if (source === "BOARD") {
+    const sortedColumns = [...data.columns].sort(
+      (a, b) => a.order - b.order
+    );
+
+    return {
+      boardName: data.boardName || "Sprint Board",
+      columns: sortedColumns.map((col) => {
+        // Pick first valid status for column
+        const primaryStatus = col.statusKeys.find(
+          (s) => data.ticketFlowTypes.includes(s)
+        );
+
+        return {
+          id: col.columnId,
+          name: col.name,
+          statusKeys: primaryStatus ? [primaryStatus] : [],
+          color: col.color,
+          wipLimit: col.wipLimit ?? null,
+        };
+      }),
+    };
+  }
+
+  // 🟡 CASE 2: FLOW SOURCE (no board exists)
+  if (source === "FLOW") {
+    return {
+      boardName: "Sprint Board",
+      columns: data.ticketFlowTypes.map((status, index) => ({
+        id: `col_${index + 1}`,
+        name: formatStatusName(status),
+        statusKeys: [status],
+        color: data.statusColors?.[status]?.text ?? "#64748b",
+        wipLimit: null,
+      })),
+    };
+  }
+
+  return null;
+};
+const formatStatusName = (status) =>
+  status
+    .toLowerCase()
+    .split("_")
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(" ");
+
+
+    export const normalizeSprintBoard = ({
+  type,
+  boardData,
+  flowData,
+}) => {
+  // =========================
+  // CASE 1: BOARD EXISTS
+  // =========================
+  if (type === "BOARD" && boardData?.columns?.length) {
+    const sortedColumns = [...boardData.columns].sort(
+      (a, b) => a.order - b.order
+    );
+
+    return {
+      boardName: boardData.boardName || "Sprint Board",
+      columns: sortedColumns.map((col) => {
+        // pick ONE primary status per column
+        const primaryStatus =
+          col.statusKeys?.[0] ?? null;
+
+        return {
+          id: col.columnId,
+          name: col.name,
+          statusKeys: primaryStatus ? [primaryStatus] : [],
+          color: col.color,
+          wipLimit: col.wipLimit ?? null,
+        };
+      }),
+    };
+  }
+
+  // =========================
+  // CASE 2: FLOW ONLY
+  // =========================
+  if (type === "FLOW" && flowData?.ticketFlowTypes?.length) {
+    return {
+      boardName: "Sprint Board",
+      columns: flowData.ticketFlowTypes.map((status, index) => ({
+        id: `col_${index + 1}`,
+        name: formatStatus(status),
+        statusKeys: [status],
+        color: flowData.statusColors?.[status]?.text ?? "#64748b",
+        wipLimit: null,
+      })),
+    };
+  }
+
+  return null;
+};
+
+const formatStatus = (status) =>
+  status
+    .toLowerCase()
+    .split("_")
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(" ");

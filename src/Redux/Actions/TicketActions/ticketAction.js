@@ -1,5 +1,5 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints} from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS } from "../../Constants/ticketReducerConstants"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs} from "../../../Api/Plat/TicketsApi"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
@@ -239,6 +239,7 @@ export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
                         message: `Added the story point:${point}`
                     }
                 })
+                
         }
     } catch (error) {
           dispatch({
@@ -250,3 +251,37 @@ export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
                 })
     }
 }
+
+export const getActivityLogs = (ticketId) => async (dispatch) => {
+  try {
+    if (!ticketId) {
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: "Ticket id required",
+        },
+      });
+      return; // ✅ stop execution
+    }
+
+    dispatch({ type: GET_ACTIVITY_LOGS_REQUEST });
+
+    const res = await apiClient.post(`${ticketLogs}`, { ticketId });
+
+    dispatch({
+      type: GET_ACTIVITY_LOGS_SUCCESS,
+      payload: res.data?.logs,
+    });
+  } catch (error) {
+    console.error("getActivityLogs error:", error);
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message:
+          error?.response?.data?.message || "Failed to fetch activity logs",
+      },
+    });
+  }
+};

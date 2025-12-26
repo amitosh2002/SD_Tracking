@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS } from "../Constants/ticketReducerConstants";
+import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS, GET_ACTIVITY_LOGS_REQUEST, GET_ACTIVITY_LOGS_SUCCESS } from "../Constants/ticketReducerConstants";
 
 const initialState = {
   tickets: [],
@@ -8,6 +8,8 @@ const initialState = {
   filteredTickets: [], // Add a state for ,filtered tickets if needed
   filteredTicketsLenth:0,
   ticketDetailsChange:false,
+  activityLogLoading:false,
+  activityLogs:null
 
 };
 
@@ -82,5 +84,12 @@ export const ticketReducer = createReducer(initialState,(builder=>{
         })
         .addCase(GET_TICKET_UPDATED_DETAILS,(state)=>{
             state.ticketDetailsChange=!state.ticketDetailsChange;
+        })
+        .addCase(GET_ACTIVITY_LOGS_REQUEST,(state)=>{
+            state.activityLogLoading=true;
+        })
+        .addCase(GET_ACTIVITY_LOGS_SUCCESS,(state,action)=>{
+            state.activityLogLoading=false;
+            state.activityLogs=action.payload
         })
 }))

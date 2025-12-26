@@ -10,7 +10,7 @@ import { PopupV1 } from '../customFiles/customComponent/popups';
 import { convertInputToSeconds, formatMinutesToCustomDays, refactorSprintData } from '../utillity/helper';
 import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
 import { GET_TICKET_UPDATED_DETAILS } from '../Redux/Constants/ticketReducerConstants';
-import { assignSprintToTicket, fetctCurrentProjectSprint } from '../Redux/Actions/SprintActions/sprintActionsV1';
+import { assignSprintToTicket, fetchProjectScrumFlow, fetctCurrentProjectSprint } from '../Redux/Actions/SprintActions/sprintActionsV1';
 
 const IssueDetails = ({task}) => {
   const dispatch = useDispatch()
@@ -47,8 +47,9 @@ const IssueDetails = ({task}) => {
   useEffect(()=>{
     if (task?._id) {
         dispatch(getTicketById(task._id));
+        dispatch(fetchProjectScrumFlow(task?.projectId))
     }
-  },[dispatch, task?._id, ticketDetailsChange])
+  },[dispatch, task?._id, ticketDetailsChange,task?.projectId])
 
   useEffect(() => {
     if (selectedTicket && selectedTicket.storyPoint !== storyPoints) {

@@ -1,0 +1,306 @@
+$primary-color: #3b82f6;
+$primary-hover: #2563eb;
+$danger-color: #ef4444;
+$danger-hover: #dc2626;
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$warning-bg: #fef3c7;
+$warning-border: #fbbf24;
+$border-color: #e5e7eb;
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$border-radius: 8px;
+$transition: all 0.2s ease;
+
+.admin-config-page {
+  padding: 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  background-color: $bg-light;
+  min-height: 100vh;
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    .icon { color: $primary-color; width: 32px; height: 32px; }
+    h1 { font-size: 1.5rem; color: $text-primary; font-weight: 700; margin: 0; }
+    p { color: $text-secondary; font-size: 0.9rem; margin: 4px 0 0 0; }
+  }
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 2rem;
+  align-items: start;
+
+  @media (max-width: 850px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.config-card {
+  background: $bg-white;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+
+  .card-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: $text-primary;
+    h2 { font-size: 1rem; font-weight: 600; margin: 0; }
+  }
+
+  .form-body {
+    padding: 1.5rem;
+  }
+}
+
+.input-group {
+  margin-bottom: 1.25rem;
+  label { display: block; font-size: 0.85rem; font-weight: 600; color: $text-primary; margin-bottom: 0.5rem; }
+  input, select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    &:focus { outline: none; border-color: $primary-color; }
+  }
+  small { color: $text-secondary; font-size: 0.75rem; margin-top: 4px; display: block; }
+}
+
+.preview-container {
+  margin-top: 2rem;
+  background: $bg-light;
+  border: 1.5px dashed $primary-color;
+  border-radius: $border-radius;
+  padding: 1.5rem;
+  text-align: center;
+  .badge { font-size: 0.65rem; font-weight: 800; color: $primary-color; letter-spacing: 0.05em; }
+  .ticket-id-preview { font-size: 2rem; font-weight: 800; color: $text-primary; margin-top: 0.5rem; }
+}
+
+.priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .priority-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    transition: $transition;
+
+    &:hover { background: $bg-light; }
+
+    .color-picker-wrapper {
+      width: 32px;
+      height: 32px;
+      overflow: hidden;
+      border-radius: 4px;
+      input[type="color"] { border: none; width: 50px; height: 50px; cursor: pointer; transform: translate(-9px, -9px); }
+    }
+
+    .label-input { flex: 1; border: none; background: transparent; font-weight: 500; &:focus { outline: none; } }
+    .delete-btn { color: $text-secondary; border: none; background: none; cursor: pointer; &:hover { color: $danger-color; } }
+  }
+}
+
+.add-priority-btn {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px dashed $primary-color;
+  color: $primary-color;
+  background: transparent;
+  border-radius: $border-radius;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  &:hover { background: rgba($primary-color, 0.05); }
+}
+
+.form-actions {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  .btn-save { background: $primary-color; color: white; border: none; padding: 0.75rem 2rem; border-radius: $border-radius; font-weight: 600; cursor: pointer; &:hover { background: $primary-hover; } }
+  .btn-cancel { background: white; color: $text-secondary; border: 1px solid $border-color; padding: 0.75rem 2rem; border-radius: $border-radius; cursor: pointer; }
+}
+
+$primary-color: #3b82f6;
+$primary-hover: #2563eb;
+$danger-color: #ef4444;
+$danger-hover: #dc2626;
+$border-color: #e5e7eb;
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$border-radius: 8px;
+$transition: all 0.2s ease;
+
+.workspace-page {
+  min-height: 100vh;
+  background-color: $bg-light;
+  font-family: 'Inter', sans-serif;
+}
+
+.main-header {
+  background: $bg-white;
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $border-color;
+  box-shadow: $shadow-md;
+
+  .project-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .project-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba($primary-color, 0.1);
+      color: $primary-color;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dropdown-area {
+      .label { font-size: 0.7rem; font-weight: 700; color: $text-secondary; text-transform: uppercase; }
+      .current-select { 
+        font-size: 1rem; font-weight: 600; color: $text-primary; 
+        display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+      }
+    }
+  }
+
+  .btn-save-main {
+    background: $primary-color;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: $border-radius;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition;
+    &:hover { background: $primary-hover; }
+  }
+}
+
+.config-layout {
+  padding: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2rem;
+  @media (max-width: 950px) { grid-template-columns: 1fr; }
+}
+
+.config-card {
+  background: $bg-white;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-md;
+
+  .card-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    h2 { flex: 1; font-size: 1rem; font-weight: 700; color: $text-primary; margin: 0; }
+    .add-btn { 
+      background: none; border: 1.5px dashed $primary-color; color: $primary-color;
+      border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      &:hover { background: rgba($primary-color, 0.05); }
+    }
+  }
+
+  .card-body { padding: 1.5rem; }
+}
+
+.convention-item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $bg-light;
+
+  .item-inputs {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+
+    input, select {
+      padding: 0.5rem;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      &:focus { outline: none; border-color: $primary-color; }
+    }
+
+    .icon-picker { font-size: 1.2rem; padding: 0.25rem; cursor: pointer; width: 55px; }
+    .prefix { width: 80px; font-weight: 800; text-align: center; color: $primary-color; }
+    .separator { width: 60px; }
+    .delete-btn { background: none; border: none; color: $text-secondary; cursor: pointer; &:hover { color: $danger-color; } }
+  }
+
+  .item-preview {
+    margin-top: 0.5rem;
+    margin-left: 63px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $text-secondary;
+    span { color: $primary-color; background: rgba($primary-color, 0.05); padding: 2px 6px; border-radius: 4px; }
+  }
+}
+
+.priority-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+  .color-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    overflow: hidden;
+    input[type="color"] { border: none; width: 50px; height: 50px; transform: translate(-9px, -9px); cursor: pointer; }
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+  }
+  .delete-btn { background: none; border: none; color: $text-secondary; cursor: pointer; &:hover { color: $danger-color; } }
+}

@@ -1,7 +1,7 @@
-import { assignSprintApi, createSprint, getAllSprint, getCurrentSprint } from "../../../Api/Plat/sprintApi";
+import { assignSprintApi, createSprint, fetchSprintBoard, fetchSprintFlow, getAllSprint, getCurrentSprint, UpdateSprintFlow } from "../../../Api/Plat/sprintApi";
 import apiClient from "../../../utils/axiosConfig";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
-import { GET_PROJECT_SPRINT_OVERVIEW_FAIL, GET_PROJECT_SPRINT_OVERVIEW_REQUEST, GET_PROJECT_SPRINT_OVERVIEW_SUCCESS, SUCCESS_FETCH_CURRENT_TICKET_SPRINT } from "../../Constants/PlatformConstatnt/sprintConstantV1";
+import { GET_PROJECT_SPRINT_OVERVIEW_FAIL, GET_PROJECT_SPRINT_OVERVIEW_REQUEST, GET_PROJECT_SPRINT_OVERVIEW_SUCCESS, SET_PROJECT_SCRUM_MAPPING_LOADING, SET_PROJECT_SCRUM_MAPPING_SUCCESS, SUCCESS_FETCH_CURRENT_TICKET_SPRINT } from "../../Constants/PlatformConstatnt/sprintConstantV1";
 
 export const createSprintForPartner =
   (startDate, endDate, projectId, sprintName) => async (dispatch) => {
@@ -138,3 +138,242 @@ export const fetchProjectSprintOverview = (projectId) => async (dispatch) => {
     });
   }
 };
+
+
+// flow for ticket 
+// /api/sprint/configurator
+
+
+
+export const fetchProjectScrumFlow = (projectId)=>async(dispatch)=>{
+
+try {
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:true });
+    console.debug('fetchProjectScrumFlow: calling', { url: fetchSprintFlow, projectId });
+    const res = await apiClient.post(fetchSprintFlow, { projectId });
+    if (res.status===200) {
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
+      dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
+    }
+
+
+  } catch (error) {
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message:
+          error?.response?.data?.message ||
+          "Unable to fetch sprint overview",
+      },
+    });
+    console.error('fetchProjectScrumFlow error:', error?.response || error);
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
+  }
+
+}
+
+
+export const fetchProjectScrumBoard = (projectId)=>async(dispatch)=>{
+
+try {
+     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:true });
+    console.debug('fetchProjectScrumBoard: calling', { url: fetchSprintBoard, projectId });
+    const res = await apiClient.post(fetchSprintBoard, { projectId });
+        if (res.status===200) {
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
+      dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
+
+      dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "success",
+        message:
+        "Scrum Board Loaded Sucessfully !",
+      },
+    });
+    }
+
+  } catch (error) {
+    console.error('fetchProjectScrumBoard error:', error?.response || error);
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message:
+          error?.response?.data?.message ||
+          "Unable to fetch sprint overview",
+      },
+    });
+  }
+
+}
+
+export const saveProjectScrumBoard = (projectId)=>async(dispatch)=>{
+
+try {
+     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:true });
+
+
+    const res = await apiClient.post(
+      `${fetchSprintBoard}`,
+      {
+         projectId 
+      }
+    );
+        if (res.status===200) {
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
+      dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
+
+      dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "success",
+        message:
+        "Scrum Board Loaded Sucessfully !",
+      },
+    });
+    }
+
+  } catch (error) {
+ 
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message:
+          error?.response?.data?.message ||
+          "Unable to fetch sprint overview",
+      },
+    });
+  }
+
+}
+
+export const updateProjectScrumBoard = (projectId)=>async(dispatch)=>{
+
+try {
+     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:true });
+
+
+    const res = await apiClient.post(
+      `${fetchSprintBoard}`,
+      {
+         projectId 
+      }
+    );
+        if (res.status===200) {
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
+      dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
+
+      dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "success",
+        message:
+        "Scrum Board Loaded Sucessfully !",
+      },
+    });
+    }
+
+  } catch (error) {
+ 
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message:
+          error?.response?.data?.message ||
+          "Unable to fetch sprint overview",
+      },
+    });
+  }
+
+}
+
+export const saveProjectScrumFlow = (projectId)=>async(dispatch)=>{
+
+try {
+     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:true });
+
+
+    const res = await apiClient.post(
+      `${fetchSprintBoard}`,
+      {
+         projectId 
+      }
+    );
+        if (res.status===200) {
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
+      dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
+
+      dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "success",
+        message:
+        "Scrum Board Loaded Sucessfully !",
+      },
+    });
+    }
+
+  } catch (error) {
+ 
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message:
+          error?.response?.data?.message ||
+          "Unable to fetch sprint overview",
+      },
+    });
+  }
+
+}
+export const updateProjectScrumFlow = (projectId,flowBody) => async (dispatch) => {
+  try {
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING, payload: true });
+
+    const res = await apiClient.post(`${UpdateSprintFlow}`, { projectId ,flowBody});
+
+    if (res.status === 200) {
+      dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING, payload: false });
+      dispatch({ type: SET_PROJECT_SCRUM_MAPPING_SUCCESS, payload: res.data });
+
+      // Dynamically use the message from backend, or a default fallback
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "success",
+          message: res.data?.msg || "Scrum Board Updated Successfully!",
+        },
+      });
+      //fetch the new flow of the project
+      dispatch(fetchProjectScrumFlow(projectId));
+      
+    }
+  } catch (error) {
+    // Crucial: Turn off loading even if the request fails
+    dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING, payload: false });
+
+    const errorMessage = 
+      error?.response?.data?.msg ||  // Matches your backend "msg" key
+      error?.response?.data?.message || 
+      "Unable to update scrum flow";
+
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message: errorMessage,
+      },
+    });
+  }
+};
+
+//  saveProjectScrumBoard,
+//   updateProjectScrumBoard,
+//   saveProjectScrumFlow,
+//   updateProjectScrumFlow

@@ -5,3 +5,16 @@ export const updateSprintApi = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/u
 export const closeSprintApi = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/deactivate/:sprintId`;
 export const getAllSprint = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/allsprint`;
 
+
+
+
+
+//==============================sprint flows. and Boards =============================
+
+export const UpdateSprintFlow = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/configurator/key-flow/update`;
+export const fetchSprintFlow = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/configurator/key-flow`;
+export const fetchSprintBoard = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/configurator/key-board`;
+export const UpdateSprintBoard = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/configurator/key-board`;
+
+
+

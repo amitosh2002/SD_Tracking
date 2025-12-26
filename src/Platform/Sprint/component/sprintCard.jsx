@@ -102,7 +102,7 @@ console.log(project)
           </span>
         </div>
         <div className="card-actions">
-          <button className="action-btn" onClick={() => openEditModal(sprint)} title="Edit">
+          <button className="action-btn" onClick={() => openEditModal(sprint, project?.projectId)} title="Edit">
             ✏️
           </button>
           <button className="action-btn" onClick={() => handleDeleteSprint(sprint?.sprintId)} title="Delete">
