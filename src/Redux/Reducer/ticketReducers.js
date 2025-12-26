@@ -25,9 +25,12 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.tickets.push(action.payload.data);
         })
         .addCase(UPDATE_TICKET, (state, action) => {
-            const index = state.tickets.findIndex(ticket => ticket.id === action.payload.id);
-            if (index !== -1) {
-                state.tickets[index] = action.payload;
+            const index = state.tickets.items?.findIndex(ticket => ticket._id === action.payload._id);
+            if (index !== -1 && state.tickets.items) {
+                state.tickets.items[index] = action.payload;
+            }
+             if (state.selectedTicket && state.selectedTicket._id === action.payload._id) {
+                state.selectedTicket = action.payload;
             }
         })
         .addCase(DELETE_TICKET, (state, action) => {

@@ -1,5 +1,5 @@
 import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs} from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST } from "../../Constants/ticketReducerConstants"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
@@ -120,6 +120,35 @@ export const changeTicketStatus = (ticketId, status) => async (dispatch) => {
 
     } catch (error) {
         console.error("Error updating ticket status:", error.response?.data || error.message);
+    }
+};
+
+export const updateTicket = (ticketId, data) => async (dispatch) => {
+    try {
+        const response = await apiClient.patch(`${getAllTicketApiv1}/update/${ticketId}`, data);
+        
+        if (response.status === 200) {
+            dispatch({
+                type: UPDATE_TICKET,
+                payload: response.data
+            });
+            dispatch({
+                type: SHOW_SNACKBAR,
+                payload: {
+                    message: "Ticket updated successfully",
+                    type: "success"
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Error updating ticket:", error);
+        dispatch({
+            type: SHOW_SNACKBAR,
+            payload: {
+                message: error.response?.data?.message || "Failed to update ticket",
+                type: "error"
+            }
+        });
     }
 };
 

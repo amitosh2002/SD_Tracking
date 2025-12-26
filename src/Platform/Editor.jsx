@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateTicket } from '../Redux/Actions/TicketActions/ticketAction';
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
@@ -12,6 +14,7 @@ const TextEditor = ({ initialData, onSave,taskId }) => {
   const editorHolderRef = useRef(null);
   const editorInstanceRef = useRef(null);
   const [isDirty, setIsDirty] = useState(false); // track if content changed
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (editorHolderRef.current && !editorInstanceRef.current) {
@@ -60,7 +63,10 @@ const TextEditor = ({ initialData, onSave,taskId }) => {
         const outputData = await editorInstanceRef.current.save();
         console.log('Content saved:', outputData);
         if (onSave) onSave(outputData);
-        if(taskId) console.log(" update data ",outputData)
+        if(taskId) {
+            console.log(" update data ",outputData);
+            dispatch(updateTicket(taskId, { description: outputData }));
+        }
         setIsDirty(false); // reset state after save
       } catch (error) {
         console.error('Saving failed:', error);

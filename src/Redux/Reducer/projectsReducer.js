@@ -6,7 +6,10 @@ const initialState = {
   selectedProject: null, // Add a state for a single project
   projectCreateSucess:false,
   projectWithAccess:null,
-  sucessFetchProjects:false
+  sucessFetchProjects:false,
+  userProjectAgg: [],
+  loadingUserProjectAgg: false,
+  errorUserProjectAgg: false
 };
 
 const projectsReducer = createReducer(initialState, (builder) => {
@@ -43,6 +46,19 @@ const projectsReducer = createReducer(initialState, (builder) => {
       state.sucessFetchProjects=action.payload.sucessFetchProjects;
       
       // Filter returns a new array, which Immer handles
+    })
+    .addCase("USER_PROJECT_AGG_LOADING", (state) => {
+      state.loadingUserProjectAgg = true;
+      state.errorUserProjectAgg = false;
+    })
+    .addCase("USER_PROJECT_AGG_SUCCESS", (state, action) => {
+      state.loadingUserProjectAgg = false;
+      state.userProjectAgg = action.payload; // hierarchical data
+      state.errorUserProjectAgg = false;
+    })
+    .addCase("USER_PROJECT_AGG_ERROR", (state) => {
+      state.loadingUserProjectAgg = false;
+      state.errorUserProjectAgg = true;
     });
 });
 

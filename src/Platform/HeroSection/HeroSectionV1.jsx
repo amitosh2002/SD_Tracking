@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import ProjectCreationFlow from '../GenerailForms/projectCreationFlow';
 import TeamInvitationPage from '../AccessControl/invitationPage';
 import TimeLogTracker from './Components/TimeLogTracker';
+import AnimatedEmptyState from '../../customFiles/customComponent/EmptyStateAnimated';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
@@ -70,7 +71,7 @@ const HoraDashboard = () => {
 
   const componentMap = {
     tasks: EmptyStateGraphic, 
-    calendar: EmptyStateGraphic,
+    calendar: AnimatedEmptyState,
     timer: TimeLogTracker,
     projects: TeamInvitationPage,
     goals: EmptyStateGraphic,

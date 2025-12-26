@@ -359,7 +359,7 @@ $tablet: 768px;
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
-  animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideDown {

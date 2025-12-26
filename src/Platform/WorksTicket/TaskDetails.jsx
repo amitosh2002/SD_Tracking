@@ -26,7 +26,7 @@ const TaskDetails = ({ task }) => {
       <p className="task-id" onClick={()=>navigate(`/tickets/${task?._id}`)}>ID: {task.ticketKey}</p>
       <h2 className="task-title">{task.title}</h2>
       {/* <p className="task-description">{task.description || 'No description available.'}</p> */}
-      <TextEditor initialData={task?.description} taskId={task?.task_id}/>
+      <TextEditor initialData={task?.description} taskId={task?._id}/>
       <CommentActivitySection task={task}/>
       
       </div>
