@@ -2,6 +2,7 @@ import React from 'react';
 import './TaskItem.scss';
 
 const TaskItem = ({ task, isSelected, onClick }) => {
+  
   return (
     <div
       className={`task-item ${isSelected ? 'selected' : ''}`}

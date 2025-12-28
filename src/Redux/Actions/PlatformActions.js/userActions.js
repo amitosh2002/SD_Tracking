@@ -1,7 +1,7 @@
 import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK } from "../../Constants/PlatformConstatnt/userConstant"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
-import { getRescentUserTimeLogApi, getRescentUserWorkApi } from "../../../Api/Plat/userPlatformApi";
+import { getRescentUserTimeLogApi, getRescentUserWorkApi, getUserMembers } from "../../../Api/Plat/userPlatformApi";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
 export const fetchUserDetails = () => async (dispatch) => {
@@ -10,7 +10,6 @@ export const fetchUserDetails = () => async (dispatch) => {
             token: localStorage.getItem("token")
         });
         
-        console.log(res, "user details");
         
         if (res?.data?.success) {
             dispatch({ type: SUCESS_FETCH_USER_DETAILS, payload: res?.data?.success });
@@ -108,4 +107,41 @@ export const getRescentUserTimeLog =(userId)=>async(dispatch)=>{
     } catch (error) {
         console.log(error)
     }
+}
+
+export const getUserTeamMembers =()=>async(dispatch)=>{
+
+try {
+
+    const res= await apiClient.get(getUserMembers)
+    dispatch({type:"USER_ACTION_LOADING",})
+    if (res.data.success) {
+     dispatch({
+        type:"USER_TEAM_MEMBERS",payload:{
+            teamMembers:res.data.data
+        }
+     })   
+    }
+    else{
+        dispatch({type:SHOW_SNACKBAR,
+            payload:{
+                type:"error",
+                message:"Someting Went Wrong"
+            }
+        })
+        
+    }
+
+
+} catch (error) {
+   dispatch({type:SHOW_SNACKBAR,
+            payload:{
+                type:"error",
+                message:error.message
+            }
+        })
+}
+
+
+
 }

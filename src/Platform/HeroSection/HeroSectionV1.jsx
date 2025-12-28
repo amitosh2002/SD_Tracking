@@ -7,6 +7,10 @@ import "./styles/herosection.scss";
 import { useNavigate } from 'react-router-dom';
 import ProjectCreationFlow from '../GenerailForms/projectCreationFlow';
 import TeamInvitationPage from '../AccessControl/invitationPage';
+import TimeLogTracker from './Components/TimeLogTracker';
+import AnimatedEmptyState from '../../customFiles/customComponent/EmptyStateAnimated';
+import TeamDirectory from './Components/TeamDirectory';
+import TeamsPage from './TeamsPage';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
@@ -69,17 +73,18 @@ const HoraDashboard = () => {
 
   const componentMap = {
     tasks: EmptyStateGraphic, 
-    calendar: EmptyStateGraphic,
-    timer: EmptyStateGraphic,
+    calendar: AnimatedEmptyState,
+    timer: TimeLogTracker,
     projects: TeamInvitationPage,
     goals: EmptyStateGraphic,
     tags: EmptyStateGraphic,
+    teams:TeamsPage,
   };
 
   const ActiveComponent = componentMap[activeItem] || EmptyStateGraphic;
 
   const secondaryItems = [
-    { id: 'team', icon: Users, label: 'Team' },
+    { id: 'teams', icon: Users, label: 'Team' },
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];

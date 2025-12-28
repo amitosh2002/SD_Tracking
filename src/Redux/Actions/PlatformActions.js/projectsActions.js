@@ -1,7 +1,8 @@
 import axios from "axios";
 import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS } from "../../Constants/projectConstant";
-import { acceptInvitationApi, getAlluserAccessProject, invitationDetails, inviteUsersToProject, userProjectWithRights } from "../../../Api/Plat/projectApi";
+import { acceptInvitationApi, getAlluserAccessProject, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, userProjectWithRights } from "../../../Api/Plat/projectApi";
 import { createProjectApi, getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
+import apiClient from "../../../utils/axiosConfig";
 
 export const getAllProjects = (userId) =>async( dispatch)=>{
 
@@ -313,3 +314,51 @@ export const acceptProjectInvitation = (invitationId) => async (dispatch) => {
     throw error;
   }
 };
+
+
+// actions/userAnalyticsActions.js
+
+export const getUserProjectAggreation =
+  (startDate, endDate) =>
+  async (dispatch) => {
+    try {
+      // 🔄 Start loading
+      dispatch({
+        type: "USER_PROJECT_AGG_LOADING",
+      });
+
+      // 🔗 Build query params
+      const params = {};
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
+      const res = await apiClient.get(getUserProjectsLogsAgg, {
+        params,
+      });
+
+      // ✅ Success
+      dispatch({
+        type: "USER_PROJECT_AGG_SUCCESS",
+        payload: res.data.data,
+      });
+    } catch (error) {
+      const errorMsg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to fetch project analytics";
+
+      // ❌ Failure state
+      dispatch({
+        type: "USER_PROJECT_AGG_ERROR",
+      });
+
+      // 🔔 Snackbar error
+      dispatch({
+        type: "SHOW_SNACKBAR",
+        payload: {
+          type: "error",
+          message: errorMsg,
+        },
+      });
+    }
+  };

@@ -1,0 +1,205 @@
+// Variables
+$low: #09eb7a;
+$medium: #e9f908;
+$high: rgb(210, 54, 54);
+$primary-color: #a855f7;
+$primary-light: #c084fc;
+$primary-hover: #9333ea; // Used for interactive states
+$secondary-color: #06b6d4;
+$border-color: #e2e8f0;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$hover-bg: #f8fafc;
+$animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+.team-container {
+  padding: 2.5rem 1.5rem;
+  background-color: $bg-light;
+  min-height: 100vh;
+
+  .team-header {
+    max-width: 1400px;
+    margin: 0 auto 2.5rem;
+    .header-text {
+      h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: $text-primary;
+        font-size: 1.8rem;
+        font-weight: 800;
+        svg { color: $primary-color; }
+      }
+      p { color: $text-secondary; margin-left: 44px; margin-top: 4px; }
+    }
+  }
+}
+
+.projects-flex-wrapper {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.project-group-card {
+  background: $bg-white;
+  border: 1px solid $border-color;
+  border-radius: 14px;
+  flex: 1 1 380px; 
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  animation: $animation;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: $primary-light;
+    box-shadow: 0 12px 20px -8px rgba($primary-color, 0.15);
+  }
+
+  .project-card-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .icon-wrap {
+        background: rgba($primary-color, 0.08);
+        color: $primary-color;
+        padding: 8px;
+        border-radius: 10px;
+      }
+      h3 { font-size: 1.05rem; font-weight: 700; color: $text-primary; margin: 0; }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      .member-pill {
+        font-size: 0.7rem;
+        font-weight: 700;
+        background: rgba($secondary-color, 0.1);
+        color: $secondary-color;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+      .menu-btn {
+        background: none; border: none; color: $text-secondary; cursor: pointer;
+        &:hover { color: $text-primary; }
+      }
+    }
+  }
+
+  .members-flex-list {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+
+    .member-flex-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 12px;
+      gap: 14px;
+      transition: background 0.2s;
+
+      &:hover {
+        background: $hover-bg;
+        .verify-btn { color: $low; }
+      }
+
+      .avatar-section {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+
+        img, .initials {
+          width: 100%; height: 100%;
+          border-radius: 12px; object-fit: cover;
+        }
+        .initials {
+          background: $primary-light;
+          color: $bg-white;
+          display: flex; align-items: center; justify-content: center;
+          font-weight: 700;
+        }
+        .online-indicator {
+          position: absolute; bottom: -2px; right: -2px;
+          width: 12px; height: 12px; background: $low;
+          border: 2px solid $bg-white; border-radius: 50%;
+        }
+      }
+
+      .info-section {
+        flex: 1;
+        .name { font-size: 0.9rem; font-weight: 600; color: $text-primary; margin: 0; }
+        .email { font-size: 0.75rem; color: $text-secondary; margin: 0; }
+      }
+
+      .verify-btn {
+        background: none; border: none; color: $border-color; cursor: pointer;
+        padding: 6px; transition: color 0.2s;
+      }
+    }
+  }
+
+  .project-card-footer {
+    padding: 1rem;
+    border-top: 1px solid $border-color;
+    
+    .footer-action-btn {
+      width: 100%;
+      background: $primary-color;
+      color: $bg-white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: $primary-hover; // Using primary-hover color
+      }
+    }
+  }
+}
+
+// Tablet and Mobile responsiveness
+@media (max-width: 900px) {
+  .project-group-card {
+    flex: 1 1 calc(50% - 24px);
+  }
+}
+
+@media (max-width: 600px) {
+  .project-group-card {
+    flex: 1 1 100%;
+  }
+  .team-header p { margin-left: 0; text-align: center; }
+  .team-header h1 { justify-content: center; }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
