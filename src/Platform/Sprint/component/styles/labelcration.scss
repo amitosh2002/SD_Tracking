@@ -1,0 +1,104 @@
+
+@use "../../../../customFiles//customDesign/customColor.scss" as colors;
+.label-manager-section {
+  .label-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .label-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: colors.$bg-white;
+    border: 1px solid colors.$border-color;
+    border-radius: colors.$border-radius;
+    // transition: $transition;
+
+    &:hover {
+      border-color: colors.$primary-color;
+      box-shadow: colors.$shadow-md;
+    }
+
+    // Matching the Priority Manager Color Box logic
+    .color-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.05);
+
+      input[type="color"] {
+        border: none;
+        width: 50px;
+        height: 50px;
+        transform: translate(-9px, -9px);
+        cursor: pointer;
+        background: none;
+      }
+    }
+
+    .label-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: colors.$text-primary;
+      width: 100%;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: colors.$text-secondary;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+    //   transition: $transition;
+
+      &:hover {
+        color: colors.$danger-color;
+      }
+    }
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 2rem;
+    text-align: center;
+    color: colors.$text-secondary;
+    border: 2px dashed colors.$border-color;
+    border-radius: colors.$border-radius;
+    font-size: 0.85rem;
+  }
+}
+
+.label-manager-section {
+  .label-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); // Creates the "inside" grid
+    gap: 1rem;
+    padding: 1rem 0;
+    min-height: 100px; // Ensures the container is visible
+  }
+
+  .label-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+}

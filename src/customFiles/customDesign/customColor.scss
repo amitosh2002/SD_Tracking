@@ -1,3 +1,33 @@
 $low: #09eb7a;
 $medium: #e9f908;
 $high: rgb(210, 54, 54);
+
+// Variables
+$primary-color: #3b82f6;
+$primary-hover: #2563eb;
+$danger-color: #ef4444;
+$danger-hover: #dc2626;
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$warning-bg: #fef3c7;
+$warning-border: #fbbf24;
+$border-color: #e5e7eb;
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+$border-radius: 8px;
+$transition: all 0.2s ease;
+$primary-color: #a855f7;
+$primary-light: #c084fc;
+$secondary-color: #06b6d4;
+$border-color: #e2e8f0;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$hover-bg: #f8fafc;
+$animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
