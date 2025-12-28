@@ -68,17 +68,19 @@ const AllRoutes = () => {
                 <Route path="/confrigurator/flow" element={<WorkflowManager />} />
                 <Route path="/confrigurator" element={<ScrumMasterDashboard />} />
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
+                <Route path="/workspace/:projectId" element={<ConfigurationPage />} />
+
 
                 {/* // letter it turn down into popup */}
 
-                {/* <Route path="/register" element={<HoraRegistration />} /> */}
+                {/* <Route path="/register" element={<HoraRegisration />} /> */}
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 
                 {/* Add other routes as needed */}
 
 
-                <Route path="/test" element={<SprintFLowBoard />} />
-                {/* <Route path="/test" element={<ConfigurationPage />} /> */}
+                {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
+                <Route path="/test" element={<ConfigurationPage />} />
 
             </Routes>
         // </BrowserRouter>
