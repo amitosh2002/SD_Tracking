@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProjectScrumFlow, updateProjectScrumFlow } from '../../../Redux/Actions/SprintActions/sprintActionsV1';
 
 
-const SprintFLowBoard = ({projectId}) => {
+const SprintFLowBoard = ({projectId,Flow}) => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const type = searchParams.get('type'); // FLOW | BOARD
+  const type = searchParams.get('type') || Flow|| "FLOW"; // FLOW | BOARD
 
   /* ================= REDUX ================= */
   const {
