@@ -1,5 +1,6 @@
 .task-details {
   display: flex;
+  width: 100%;
   flex-direction: row;
   height: 100%;
   background: #f8fafc;
@@ -27,11 +28,35 @@
   font-weight: 700;
   color: #1e293b;
   margin: 0;
+  cursor: pointer;
   line-height: 1.2;
-   @media screen and (max-width: 768px) {
+
+  /* Important */
+  display: inline-block;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+
+    width: 0;
+    height: 0.2rem;
+    background-color: #6366f1;
+
+    transition: width 0.25s ease-in-out;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 768px) {
     font-size: 1.5rem;
   }
 }
+
 
 .task-title {
   font-size: 0.875rem;
@@ -75,6 +100,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
   padding: 2rem;
+  width: 100%;
   min-height: 400px;
 
   @media screen and (max-width: 768px) {
