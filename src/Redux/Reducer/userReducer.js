@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK } from "../Constants/PlatformConstatnt/userConstant";
+import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_TEAM_MEMBERS } from "../Constants/PlatformConstatnt/userConstant";
 const initialState={
     userDetails:null,
     sucessFetch:false,
@@ -9,8 +9,8 @@ const initialState={
     totalWorkHours:0,
     currentWeektotalWorkHours:0,
     currentMonthtotalWorkHours:0,
-    currentWeek:null
-
+    currentWeek:null,
+    teamMembers:[]
 }
 
 
@@ -35,5 +35,8 @@ export const userReducer=createReducer(initialState,(builder)=>{
         state.currentWeektotalWorkHours=action.payload.currentWeektotalWorkHours;
         state.currentMonthtotalWorkHours=action.payload.currentMonthtotalWorkHours;
         state.currentWeek=action.payload.currentWeek;
+    })
+    .addCase(USER_TEAM_MEMBERS,(state,action)=>{
+        state.teamMembers=action.payload.teamMembers;
     })
 })

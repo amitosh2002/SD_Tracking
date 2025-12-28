@@ -4,3 +4,4 @@ export const userProjectWithRights = `${import.meta.env.VITE_BACKEND_URL}/api/pl
 export const inviteUsersToProject = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/invite/invitaion`; 
 export const invitationDetails = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/invite/invitation-details`; 
 export const acceptInvitationApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/invite/invitation-accept`; 
+export const getUserProjectsLogsAgg = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/user-projects/getAll`; 

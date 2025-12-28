@@ -1,5 +1,5 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints} from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS } from "../../Constants/ticketReducerConstants"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs} from "../../../Api/Plat/TicketsApi"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
@@ -32,9 +32,11 @@ export const getAllWorkTicket =
       );
 
       dispatch({
-        type: GET_ALL_TICKETS,
+        type: type === "append" || page > 1 ? APPEND_TICKETS : GET_ALL_TICKETS,
         payload: response.data,
       });
+
+      return response.data;
 
     } catch (error) {
       console.error("❌ Error fetching tickets:", error);
@@ -42,6 +44,7 @@ export const getAllWorkTicket =
         type: "GET_ALL_TICKETS_FAIL",
         payload: error.response?.data?.message || "Failed to fetch work tickets",
       });
+      throw error;
     }
   };
 
@@ -120,6 +123,35 @@ export const changeTicketStatus = (ticketId, status) => async (dispatch) => {
 
     } catch (error) {
         console.error("Error updating ticket status:", error.response?.data || error.message);
+    }
+};
+
+export const updateTicket = (ticketId, data) => async (dispatch) => {
+    try {
+        const response = await apiClient.patch(`${getAllTicketApiv1}/update/${ticketId}`, data);
+        
+        if (response.status === 200) {
+            dispatch({
+                type: UPDATE_TICKET,
+                payload: response.data
+            });
+            dispatch({
+                type: SHOW_SNACKBAR,
+                payload: {
+                    message: "Ticket updated successfully",
+                    type: "success"
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Error updating ticket:", error);
+        dispatch({
+            type: SHOW_SNACKBAR,
+            payload: {
+                message: error.response?.data?.message || "Failed to update ticket",
+                type: "error"
+            }
+        });
     }
 };
 
@@ -232,7 +264,14 @@ export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
         })
 
         if (res.status===200) {
-            console.log(res)
+              dispatch({
+                    type:SHOW_SNACKBAR,
+                    payload:{
+                        type:"error",
+                        message: `Added the story point:${point}`
+                    }
+                })
+                
         }
     } catch (error) {
           dispatch({
@@ -244,3 +283,37 @@ export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
                 })
     }
 }
+
+export const getActivityLogs = (ticketId) => async (dispatch) => {
+  try {
+    if (!ticketId) {
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: "Ticket id required",
+        },
+      });
+      return; // ✅ stop execution
+    }
+
+    dispatch({ type: GET_ACTIVITY_LOGS_REQUEST });
+
+    const res = await apiClient.post(`${ticketLogs}`, { ticketId });
+
+    dispatch({
+      type: GET_ACTIVITY_LOGS_SUCCESS,
+      payload: res.data?.logs,
+    });
+  } catch (error) {
+    console.error("getActivityLogs error:", error);
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        type: "error",
+        message:
+          error?.response?.data?.message || "Failed to fetch activity logs",
+      },
+    });
+  }
+};
