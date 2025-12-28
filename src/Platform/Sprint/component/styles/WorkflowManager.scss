@@ -1,0 +1,596 @@
+// Variables
+$primary-color: #6366f1;
+$primary-hover: #4f46e5;
+$danger-color: #ef4444;
+$danger-hover: #dc2626;
+$border-color: #e5e7eb;
+$text-primary: #111827;
+$text-secondary: #6b7280;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$border-radius: 8px;
+$transition: all 0.2s ease;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Main Container
+.workflow-manager {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: $bg-light;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+// Header
+.workflow-header {
+  @include flex-between;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+}
+
+.header-content {
+  .page-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  .page-subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: $text-secondary;
+  }
+}
+
+.btn-add-status {
+  @include flex-center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: $primary-color;
+  color: white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  box-shadow: $shadow-sm;
+
+  &:hover {
+    background: $primary-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+
+  .btn-icon {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+}
+
+// Section Titles
+.section-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.section-description {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: $text-secondary;
+}
+
+// Workflow Visualization
+.workflow-visualization {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+}
+
+.flow-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $bg-light;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 4px;
+
+    &:hover {
+      background: $text-secondary;
+    }
+  }
+}
+
+.flow-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-node {
+  min-width: 200px;
+  padding: 1rem;
+  border: 2px solid;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.status-header {
+  @include flex-between;
+  margin-bottom: 0.5rem;
+
+  .status-label {
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+
+  .terminal-badge {
+    padding: 0.125rem 0.5rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.status-actions {
+  display: flex;
+  gap: 0.5rem;
+
+  .action-icon {
+    padding: 0.25rem;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: $transition;
+    font-size: 1rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: scale(1.1);
+    }
+  }
+}
+
+.flow-arrow {
+  font-size: 1.5rem;
+  color: $text-secondary;
+  font-weight: 700;
+}
+
+// Transition Matrix
+.transition-matrix {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+}
+
+.matrix-container {
+  overflow-x: auto;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $bg-white;
+
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border: 1px solid $border-color;
+  }
+
+  thead th {
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-bottom: 2px solid $border-color;
+  }
+
+  .matrix-corner {
+    background: $bg-light;
+    color: $text-secondary;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .matrix-row-header {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: left;
+  }
+
+  .matrix-cell {
+    background: $bg-light;
+  }
+}
+
+.checkbox-container {
+  @include flex-center;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+
+    &:checked + .checkbox-custom {
+      background: $primary-color;
+      border-color: $primary-color;
+
+      &::after {
+        display: block;
+      }
+    }
+
+    &:disabled + .checkbox-custom {
+      background: $border-color;
+      border-color: $border-color;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  .checkbox-custom {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border: 2px solid $border-color;
+    border-radius: 4px;
+    background: white;
+    transition: $transition;
+
+    &::after {
+      content: '';
+      position: absolute;
+      display: none;
+      left: 5px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+}
+
+// Workflow JSON
+.workflow-json {
+  padding: 1.5rem;
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+}
+
+.json-viewer {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: $bg-light;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  max-height: 400px;
+  overflow: auto;
+
+  pre {
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 0.8125rem;
+    color: $text-primary;
+    line-height: 1.5;
+  }
+}
+
+.btn-copy {
+  @include flex-center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: $bg-light;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $border-color;
+  }
+}
+
+// Modal
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $shadow-lg;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  @include flex-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid $border-color;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .close-btn {
+    @include flex-center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.25rem;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      background: $bg-light;
+      color: $text-primary;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid $border-color;
+}
+
+// Form Elements
+.form-group {
+  margin-bottom: 1.25rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $text-primary;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    font-size: 0.875rem;
+    color: $text-primary;
+    transition: $transition;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    &.readonly-input {
+      background: $bg-light;
+      color: $text-secondary;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.checkbox-label {
+  @include flex-center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 0 !important;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  span {
+    font-size: 0.875rem;
+    color: $text-primary;
+  }
+}
+
+// Color Grid
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+}
+
+.color-option {
+  padding: 0.75rem;
+  border: 2px solid;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &.active {
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+    transform: scale(1.05);
+  }
+}
+
+// Buttons
+.btn-cancel {
+  padding: 0.625rem 1.25rem;
+  background: $bg-white;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $bg-light;
+  }
+}
+
+.btn-submit {
+  padding: 0.625rem 1.25rem;
+  background: $primary-color;
+  color: white;
+  border: none;
+  border-radius: $border-radius;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .workflow-manager {
+    padding: 1rem;
+  }
+
+  .workflow-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .flow-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .flow-arrow {
+    transform: rotate(90deg);
+    align-self: center;
+  }
+
+  .color-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+}

@@ -9,6 +9,7 @@ export const ticketbyKeyurl =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v
 export const addStoryPoints =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/update/storyPoint`;
 export const ticketSearchQueryApi =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/fetch/searchTicket`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const createProjectApi =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/projects`;// if using axiosClient do not use import from env it already imported into axiosclient
+export const ticketLogs =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/getAll`;// if using axiosClient do not use import from env it already imported into axiosclient
 
 
 /*
