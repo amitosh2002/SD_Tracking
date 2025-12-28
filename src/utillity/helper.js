@@ -163,3 +163,206 @@ export function transformWeeklyAggregates(dailyAggregates) {
         };
     });
 }
+
+
+
+// sprint data cleaner and organizer for sprintsystem.
+export function refactorSprintDataV2(sprintObject) {
+  const sprintData=[];
+  const sprintMap = new Map();
+  const previousSprint = {
+    id:sprintObject?.previousSprint['sprintNumber']??'',
+    name: sprintObject?.previousSprint['sprintName'] ??"",
+    status: sprintObject?.previousSprint['isActive'] ? 'active' : 'completed' ,
+    startDate: sprintObject?.previousSprint['startDate'] ?? "",
+    endDate: sprintObject?.previousSprint['endDate'],
+  }
+  const currentSprint = {
+    id:sprintObject?.previousSprint['sprintNumber'] ?? "",
+    name: sprintObject?.previousSprint['sprintName'] ??'',
+    status: sprintObject?.previousSprint['status']??"",
+    startDate: sprintObject?.previousSprint['startDate']??"",
+    endDate: sprintObject?.previousSprint['endDate']??"",
+  }
+  const nextSprint = {
+    id:sprintObject?.previousSprint['sprintNumber']??"",
+    name: sprintObject?.previousSprint['sprintName']??"",
+    status: sprintObject?.previousSprint['status']??"",
+    startDate: sprintObject?.previousSprint['startDate']??"",
+    endDate: sprintObject?.previousSprint['endDate']??"",
+  }
+    if (sprintObject?.previousSprint !==null && sprintObject?.previousSprint !==undefined){ 
+        sprintMap.set(previousSprint.id,previousSprint);
+    }
+    sprintMap.set(currentSprint.id,currentSprint);
+      if (sprintObject?.nextSprint !==null && sprintObject?.nextSprint !==undefined){ 
+        sprintMap.set(nextSprint.id,nextSprint);
+    }
+
+    sprintMap.forEach((value)=>{
+      sprintData.push(value);
+    })
+    return sprintData;
+}
+export function formatSprintForUI(sprint) {
+  if (!sprint) return null;
+
+  const start = sprint.startDate ? new Date(sprint.startDate) : null;
+
+  const monthYear = start
+    ? start.toLocaleString("en-US", { month: "short", year: "numeric" })
+    : "";
+
+  const displayName = sprint.sprintName
+    ? sprint.sprintName
+    : sprint.sprintNumber
+    ? `Sprint ${sprint.sprintNumber} - ${monthYear}`
+    : "Sprint";
+
+  return {
+    // Prefer server-provided id (sprint.id). Fall back to sprintNumber where necessary.
+    id: sprint.id ?? (sprint.sprintNumber ? String(sprint.sprintNumber) : undefined),
+    sprintId: sprint.id,
+    name: displayName,
+    status: sprint.status ? String(sprint.status).toLowerCase() : sprint.isActive ? "active" : "completed",
+    startDate: sprint.startDate
+      ? new Date(sprint.startDate).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : "",
+
+    endDate: sprint.endDate
+      ? new Date(sprint.endDate).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : "",
+  };
+}
+
+export function refactorSprintData(sprintObject) {
+  const sprintData = [];
+
+  const previous = formatSprintForUI(sprintObject?.previousSprint);
+  const current = formatSprintForUI(sprintObject?.currentSprint);
+  const next = formatSprintForUI(sprintObject?.nextSprint);
+
+  if (previous) sprintData.push(previous);
+  if (current) sprintData.push(current);
+  if (next) sprintData.push(next);
+
+  return sprintData;
+}
+
+
+export const buildSprintBoardConfig = (data, source) => {
+  if (!data) return null;
+
+  // 🟢 CASE 1: BOARD SOURCE (already has columns)
+  if (source === "BOARD") {
+    const sortedColumns = [...data.columns].sort(
+      (a, b) => a.order - b.order
+    );
+
+    return {
+      boardName: data.boardName || "Sprint Board",
+      columns: sortedColumns.map((col) => {
+        // Pick first valid status for column
+        const primaryStatus = col.statusKeys.find(
+          (s) => data.ticketFlowTypes.includes(s)
+        );
+
+        return {
+          id: col.columnId,
+          name: col.name,
+          statusKeys: primaryStatus ? [primaryStatus] : [],
+          color: col.color,
+          wipLimit: col.wipLimit ?? null,
+        };
+      }),
+    };
+  }
+
+  // 🟡 CASE 2: FLOW SOURCE (no board exists)
+  if (source === "FLOW") {
+    return {
+      boardName: "Sprint Board",
+      columns: data.ticketFlowTypes.map((status, index) => ({
+        id: `col_${index + 1}`,
+        name: formatStatusName(status),
+        statusKeys: [status],
+        color: data.statusColors?.[status]?.text ?? "#64748b",
+        wipLimit: null,
+      })),
+    };
+  }
+
+  return null;
+};
+const formatStatusName = (status) =>
+  status
+    .toLowerCase()
+    .split("_")
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(" ");
+
+
+    export const normalizeSprintBoard = ({
+  type,
+  boardData,
+  flowData,
+}) => {
+  // =========================
+  // CASE 1: BOARD EXISTS
+  // =========================
+  if (type === "BOARD" && boardData?.columns?.length) {
+    const sortedColumns = [...boardData.columns].sort(
+      (a, b) => a.order - b.order
+    );
+
+    return {
+      boardName: boardData.boardName || "Sprint Board",
+      columns: sortedColumns.map((col) => {
+        // pick ONE primary status per column
+        const primaryStatus =
+          col.statusKeys?.[0] ?? null;
+
+        return {
+          id: col.columnId,
+          name: col.name,
+          statusKeys: primaryStatus ? [primaryStatus] : [],
+          color: col.color,
+          wipLimit: col.wipLimit ?? null,
+        };
+      }),
+    };
+  }
+
+  // =========================
+  // CASE 2: FLOW ONLY
+  // =========================
+  if (type === "FLOW" && flowData?.ticketFlowTypes?.length) {
+    return {
+      boardName: "Sprint Board",
+      columns: flowData.ticketFlowTypes.map((status, index) => ({
+        id: `col_${index + 1}`,
+        name: formatStatus(status),
+        statusKeys: [status],
+        color: flowData.statusColors?.[status]?.text ?? "#64748b",
+        wipLimit: null,
+      })),
+    };
+  }
+
+  return null;
+};
+
+const formatStatus = (status) =>
+  status
+    .toLowerCase()
+    .split("_")
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(" ");

@@ -19,6 +19,16 @@ import TeamInvitationPage from "../AccessControl/invitationPage";
 import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/InvitaionAcceptancePage";
 import HoraAdminDashboard from "../AccessControl/Administration/AdminDashBoard";
 import DeveloperMetricsMatrix from "../AccessControl/Analytics/DoraDash";
+import SprintBoard from "../Sprint/sprintBoard";
+import WorkflowManager from "../Sprint/component/WorkFlow";
+import SprintBoardManager from "../Sprint/component/SprintBoardManager";
+import ScrumMasterDashboard from "../Sprint/component/sprintBoardConfriguratro";
+import SprintManagement from "../Sprint/SprintManagement";
+import SprintHome from "../Sprint/sprintHome";
+import ConfigurationPage from "../Sprint/TicketConfigurator";
+import WorkspaceConfig from "../Sprint/TicketConfigurator";
+import SprintFLowBoard from "../Sprint/Board/sprintFlowBoard";
+import TeamsPage from "../HeroSection/TeamsPage";
 
 // import { useSelector } from "react-redux";
 
@@ -52,12 +62,24 @@ const AllRoutes = () => {
                 <Route path="/invitation" element={<FullInvitationPage />} />
                 <Route path="/admin" element={<HoraAdminDashboard />} />
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
+                <Route path="/sprint/dashboard" element={<SprintManagement />} />
+                <Route path="/sprint" element={<SprintHome />} />
+                <Route path="/sprint/board" element={<SprintBoard />} />
+                <Route path="/confrigurator/flow" element={<WorkflowManager />} />
+                <Route path="/confrigurator" element={<ScrumMasterDashboard />} />
+                <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
+
                 {/* // letter it turn down into popup */}
 
                 {/* <Route path="/register" element={<HoraRegistration />} /> */}
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 
                 {/* Add other routes as needed */}
+
+
+                <Route path="/test" element={<SprintFLowBoard />} />
+                {/* <Route path="/test" element={<ConfigurationPage />} /> */}
+
             </Routes>
         // </BrowserRouter>
     );

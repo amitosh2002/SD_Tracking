@@ -14,11 +14,26 @@ import {
   AlertCircle
 } from 'lucide-react';
 import './style/commentActivitySection.scss';
+import { useEffect } from 'react';
+import { getActivityLogs } from '../../Redux/Actions/TicketActions/ticketAction';
+import { useDispatch, useSelector } from 'react-redux';
+import ActivityLogCards from './ActivityLogCards';
+import NoLogsEmptyState from './NoLogState';
 
-const CommentActivitySection = ({ taskId }) => {
+const CommentActivitySection = ({ task }) => {
+  const dispatch= useDispatch();
+  useEffect(()=>{
+    dispatch(getActivityLogs(task?._id))
+  },[dispatch,task])
+
+
+
+  // ====================== Reducer calls ================
+      const {activityLogLoading,activityLogs}=useSelector((state)=>state.worksTicket)
+    console.log(activityLogLoading,activityLogs)
+
   const [activeTab, setActiveTab] = useState('comments');
   const [commentText, setCommentText] = useState('');
-
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -179,65 +194,24 @@ const CommentActivitySection = ({ taskId }) => {
             </div>
           </div>
         ) : (
-          <div className="activity-section">
-            {activities.map((activity) => {
-              const IconComponent = activity.icon;
-              return (
-                <div key={activity.id} className="activity-item">
-                  <div
-                    className="activity-icon"
-                    style={{
-                      backgroundColor: `${activity.color}15`,
-                      color: activity.color
-                    }}
-                  >
-                    <IconComponent size={16} />
+        <div className="activity-section">
+              {activityLogs && activityLogs.length > 0 ? (
+                activityLogs.map((activity) => (
+                  <div className="log_container_fill" key={activity._id}>
+                    <ActivityLogCards activity={activity} />
                   </div>
-                  <div className="activity-content">
-                    <div className="activity-header">
-                      <div className="avatar-small">{activity.avatar}</div>
-                      <span className="user">{activity.user}</span>
-                      <span className="action">{activity.action}</span>
+                ))
+              ) : (
+                <NoLogsEmptyState
+                  title="Start Tracking Activity"
+                  message="Create your first task to see activity logs"
+                  showAction={true}
+                  actionText="Create Task"
+                  // onActionClick={() => navigate('/create-task')}
+                />
+              )}
+            </div>
 
-                      {activity.from && (
-                        <>
-                          <span className="status-badge">{activity.from}</span>
-                          <span className="action">to</span>
-                          <span
-                            className="status-badge"
-                            style={{
-                              background: `${activity.color}15`,
-                              color: activity.color
-                            }}
-                          >
-                            {activity.to}
-                          </span>
-                        </>
-                      )}
-                      {activity.assignee && (
-                        <span className="user">{activity.assignee}</span>
-                      )}
-                      {activity.tag && (
-                        <span
-                          className="status-badge"
-                          style={{
-                            background: `${activity.color}15`,
-                            color: activity.color
-                          }}
-                        >
-                          {activity.tag}
-                        </span>
-                      )}
-                    </div>
-                    <div className="activity-time">
-                      <Clock size={12} />
-                      <span>{activity.timestamp}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         )}
       </div>
     </div>
