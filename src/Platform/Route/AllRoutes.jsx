@@ -27,6 +27,8 @@ import SprintManagement from "../Sprint/SprintManagement";
 import SprintHome from "../Sprint/sprintHome";
 import ConfigurationPage from "../Sprint/TicketConfigurator";
 import WorkspaceConfig from "../Sprint/TicketConfigurator";
+import SprintFLowBoard from "../Sprint/Board/sprintFlowBoard";
+import TeamsPage from "../HeroSection/TeamsPage";
 
 // import { useSelector } from "react-redux";
 
@@ -75,7 +77,7 @@ const AllRoutes = () => {
                 {/* Add other routes as needed */}
 
 
-                <Route path="/test" element={<WorkspaceConfig />} />
+                <Route path="/test" element={<SprintFLowBoard />} />
                 {/* <Route path="/test" element={<ConfigurationPage />} /> */}
 
             </Routes>

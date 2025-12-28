@@ -26,6 +26,7 @@ const ColumnStatusManager = () => {
     flowId,
     statusWorkFlow
   } = useSelector((state) => state.sprint);
+  console.log(boardId)
   
   // Status Flow State
   const [localStatuses, setLocalStatuses] = useState([]);

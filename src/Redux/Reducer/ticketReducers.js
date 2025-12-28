@@ -1,8 +1,8 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS, GET_ACTIVITY_LOGS_REQUEST, GET_ACTIVITY_LOGS_SUCCESS } from "../Constants/ticketReducerConstants";
+import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS, GET_ACTIVITY_LOGS_REQUEST, GET_ACTIVITY_LOGS_SUCCESS, APPEND_TICKETS } from "../Constants/ticketReducerConstants";
 
 const initialState = {
-  tickets: [],
+  tickets: { items: [], total: 0 },
   selectedTicket: null, // Add a state for a single ticket
   createPopup: false,
   filteredTickets: [], // Add a state for ,filtered tickets if needed
@@ -17,6 +17,20 @@ export const ticketReducer = createReducer(initialState,(builder=>{
     builder
         .addCase(GET_ALL_TICKETS, (state, action) => {
             state.tickets = action.payload;
+        })
+        .addCase(APPEND_TICKETS, (state, action) => {
+            // For cumulative limits, we can often just replace, but we deduplicate for safety
+            const existingItems = state.tickets?.items || [];
+            const newItems = action.payload?.items || [];
+            const combinedItems = [...existingItems, ...newItems];
+            const uniqueItems = Array.from(
+                new Map(combinedItems.map(item => [item._id, item])).values()
+            );
+
+            state.tickets = {
+                ...action.payload,
+                items: uniqueItems
+            };
         })
         .addCase(GET_TICKET_BY_ID, (state, action) => {
             state.selectedTicket = state.tickets.find(ticket => ticket.id === action.payload);

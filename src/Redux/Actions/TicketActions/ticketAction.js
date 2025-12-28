@@ -32,9 +32,11 @@ export const getAllWorkTicket =
       );
 
       dispatch({
-        type: GET_ALL_TICKETS,
+        type: type === "append" || page > 1 ? APPEND_TICKETS : GET_ALL_TICKETS,
         payload: response.data,
       });
+
+      return response.data;
 
     } catch (error) {
       console.error("❌ Error fetching tickets:", error);
@@ -42,6 +44,7 @@ export const getAllWorkTicket =
         type: "GET_ALL_TICKETS_FAIL",
         payload: error.response?.data?.message || "Failed to fetch work tickets",
       });
+      throw error;
     }
   };
 

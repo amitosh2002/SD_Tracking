@@ -1,834 +1,186 @@
 // Variables
-$primary-color: #3b82f6;
-$primary-hover: #2563eb;
-$success-color: #10b981;
-$warning-color: #f59e0b;
-$info-color: #06b6d4;
-$border-color: #e5e7eb;
-$text-primary: #111827;
-$text-secondary: #6b7280;
-$bg-light: #f9fafb;
-$bg-white: #ffffff;
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-$border-radius: 8px;
-$transition: all 0.2s ease;
+$primary: #6366f1;
+$primary-hover: #4f46e5;
+$bg-main: #f8fafc;
+$text-dark: #0f172a;
+$text-muted: #64748b;
+$glass: rgba(255, 255, 255, 0.7);
+$border: rgba(0, 0, 0, 0.05);
 
-// Mixins
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@mixin flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-// Container
 .scrum-dashboard-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  padding: 2.5rem;
+  background-color: $bg-main;
+  background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0, transparent 50%), 
+                    radial-gradient(at 50% 0%, rgba(232, 121, 249, 0.05) 0, transparent 50%);
 
-  &.scrum-loading {
-    @include flex-center;
+  &.centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .scrum-wrapper {
-    max-width: 1400px;
+  // --- Header ---
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 2.5rem;
+
+    h1 { font-size: 2rem; font-weight: 800; color: $text-dark; letter-spacing: -0.02em; }
+    p { color: $text-muted; margin-top: 0.3rem; }
+  }
+
+  // --- Search Bar ---
+  .search-filter-section {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 400px;
+
+      .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: $text-muted; }
+      input {
+        width: 100%;
+        padding: 0.8rem 1rem 0.8rem 2.8rem;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        transition: all 0.2s;
+        &:focus { outline: none; border-color: $primary; box-shadow: 0 0 0 4px rgba($primary, 0.1); }
+      }
+      .clear-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: $text-muted; }
+    }
+    .filter-stats { color: $text-muted; font-size: 0.9rem; }
+  }
+
+  // --- Grid & Cards ---
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
     margin: 0 auto;
   }
-}
 
-// Loading State
-.scrum-loading-content {
-  text-align: center;
-  color: white;
+  .project-glass-card {
+    background: $glass;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 24px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-  .scrum-spinner {
-    width: 3rem;
-    height: 3rem;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    margin: 0 auto 1rem;
-    animation: scrum-spin 1s linear infinite;
-  }
-
-  p {
-    font-size: 1rem;
-    opacity: 0.9;
-  }
-}
-
-@keyframes scrum-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-// Empty State
-.scrum-empty-state {
-  background: $bg-white;
-  border-radius: 16px;
-  box-shadow: $shadow-lg;
-  padding: 4rem 2rem;
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.scrum-empty-illustration {
-  position: relative;
-  margin-bottom: 2rem;
-  @include flex-center;
-
-  .scrum-empty-icon {
-    font-size: 6rem;
-    animation: scrum-bounce 2s infinite;
-    z-index: 2;
-  }
-
-  .scrum-empty-lines {
-    position: absolute;
-    width: 200px;
-    height: 200px;
-
-    .scrum-line {
-      position: absolute;
-      background: linear-gradient(90deg, transparent, $primary-color, transparent);
-      border-radius: 999px;
-      opacity: 0.2;
-      animation: scrum-pulse 3s infinite;
-
-      &.scrum-line-1 {
-        width: 100%;
-        height: 2px;
-        top: 30%;
-        animation-delay: 0s;
-      }
-
-      &.scrum-line-2 {
-        width: 100%;
-        height: 2px;
-        top: 50%;
-        animation-delay: 0.5s;
-      }
-
-      &.scrum-line-3 {
-        width: 100%;
-        height: 2px;
-        top: 70%;
-        animation-delay: 1s;
-      }
-    }
-  }
-}
-
-@keyframes scrum-bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes scrum-pulse {
-  0%, 100% {
-    opacity: 0.2;
-    transform: scaleX(0.8);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scaleX(1);
-  }
-}
-
-.scrum-empty-title {
-  margin: 0 0 1rem 0;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: $text-primary;
-}
-
-.scrum-empty-subtitle {
-  margin: 0 0 3rem 0;
-  font-size: 1.125rem;
-  color: $text-secondary;
-  line-height: 1.6;
-}
-
-.scrum-empty-actions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-.scrum-action-card {
-  background: $bg-light;
-  border: 2px solid $border-color;
-  border-radius: $border-radius;
-  padding: 2rem;
-  cursor: pointer;
-  transition: $transition;
-
-  &:hover {
-    border-color: $primary-color;
-    transform: translateY(-4px);
-    box-shadow: $shadow-md;
-
-    .scrum-action-icon {
-      transform: scale(1.1);
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
-    .scrum-arrow {
-      transform: translateX(4px);
+    .card-top {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      .icon-box { background: #fff; padding: 0.8rem; border-radius: 14px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); color: $primary; }
+      h3 { font-size: 1.15rem; font-weight: 700; color: $text-dark; }
+      .id-tag { font-size: 0.7rem; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; color: $text-muted; font-weight: 600; }
     }
   }
 
-  .scrum-action-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    transition: $transition;
-  }
+  // --- Buttons & Actions ---
+  .card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
 
-  h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-
-  p {
-    margin: 0 0 1.5rem 0;
-    font-size: 0.9375rem;
-    color: $text-secondary;
-  }
-
-  .scrum-action-btn {
-    @include flex-center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.75rem;
-    background: $primary-color;
-    color: white;
-    border: none;
-    border-radius: $border-radius;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: $transition;
-
-    .scrum-arrow {
-      transition: $transition;
-    }
-  }
-}
-
-.scrum-empty-features {
-  margin-top: 3rem;
-  padding-top: 3rem;
-  border-top: 1px solid $border-color;
-
-  h3 {
-    margin: 0 0 1.5rem 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    text-align: left;
-
-    li {
+    .action-link {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      font-size: 0.9375rem;
-      color: $text-secondary;
+      gap: 1rem;
+      padding: 0.8rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.2s;
 
-      .scrum-feature-icon {
-        @include flex-center;
-        width: 1.5rem;
-        height: 1.5rem;
-        background: $success-color;
-        color: white;
-        border-radius: 50%;
-        font-size: 0.875rem;
-        flex-shrink: 0;
+      .icon-circle {
+        padding: 0.5rem; border-radius: 10px;
+        &.workspace { background: #e0e7ff; color: $primary; }
+        &.flow { background: #fff7ed; color: #ea580c; }
+        &.board { background: #f0fdf4; color: #16a34a; }
+      }
+
+      span { flex: 1; text-align: left; font-weight: 600; font-size: 0.9rem; color: #334155; }
+      .arrow { opacity: 0; transform: translateX(-5px); transition: all 0.2s; }
+
+      &:hover {
+        background: white; border-color: #e2e8f0;
+        .arrow { opacity: 1; transform: translateX(0); }
+      }
+
+      &.primary-action {
+        border-color: rgba($primary, 0.2);
+        background: white;
+        &:hover { border-color: $primary; }
       }
     }
-  }
-}
 
-// Dashboard Header
-.scrum-dashboard-header {
-  @include flex-between;
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.scrum-dashboard-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
-  font-weight: 700;
-  color: $text-primary;
-}
-
-.scrum-dashboard-subtitle {
-  margin: 0;
-  font-size: 1rem;
-  color: $text-secondary;
-}
-
-.scrum-btn-create {
-  @include flex-center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: $primary-color;
-  color: white;
-  border: none;
-  border-radius: $border-radius;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: $transition;
-  box-shadow: $shadow-sm;
-
-  &:hover {
-    background: $primary-hover;
-    transform: translateY(-2px);
-    box-shadow: $shadow-md;
-  }
-
-  .scrum-icon {
-    font-size: 1.25rem;
-  }
-}
-
-// Stats Grid
-.scrum-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.scrum-stat-card {
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  transition: $transition;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-lg;
-  }
-
-  .scrum-stat-icon {
-    @include flex-center;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: $border-radius;
-    font-size: 1.75rem;
-    flex-shrink: 0;
-
-    &.scrum-stat-primary {
-      background: rgba(59, 130, 246, 0.1);
-      color: $primary-color;
-    }
-
-    &.scrum-stat-success {
-      background: rgba(16, 185, 129, 0.1);
-      color: $success-color;
-    }
-
-    &.scrum-stat-info {
-      background: rgba(6, 182, 212, 0.1);
-      color: $info-color;
+    .action-divider {
+      display: flex; align-items: center; margin: 0.5rem 0;
+      &::before, &::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+      span { font-size: 0.65rem; color: $text-muted; font-weight: 800; padding: 0 10px; text-transform: uppercase; }
     }
   }
 
-  .scrum-stat-content {
-    h3 {
-      margin: 0 0 0.25rem 0;
-      font-size: 2rem;
-      font-weight: 700;
-      color: $text-primary;
-    }
+  .card-footer {
+    margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;
+    display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: $text-muted;
+    &:hover { color: $primary; cursor: pointer; }
+  }
 
-    p {
-      margin: 0;
-      font-size: 0.9375rem;
-      color: $text-secondary;
+  // --- Global Elements ---
+  .btn-primary {
+    background: $primary; color: white; border: none; padding: 0.7rem 1.2rem;
+    border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;
+    cursor: pointer; transition: 0.2s;
+    &:hover { background: $primary-hover; transform: translateY(-1px); }
+  }
+
+  .btn-outline {
+    background: white; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 10px; cursor: pointer;
+    &:hover { background: #f8fafc; }
+  }
+
+  // --- Loading Ripple ---
+  .multi-ripple {
+    width: 50px; height: 50px; margin: 0 auto; position: relative;
+    div {
+      position: absolute; width: 40px; height: 40px; border-radius: 50%;
+      border: 4px solid $primary; animation: ripple 1s infinite;
+      &:nth-child(2) { animation-delay: -0.5s; }
     }
   }
 }
 
-// Projects Section
-.scrum-projects-section {
-  margin-bottom: 2rem;
+// Animations
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
-.scrum-section-title {
-  margin: 0 0 1.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: $bg-white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.scrum-projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.scrum-project-card {
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 1.5rem;
-  transition: $transition;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: $shadow-lg;
-  }
-}
-
-.scrum-project-header {
-  @include flex-between;
-  margin-bottom: 1rem;
-  gap: 1rem;
-
-  h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-}
-
-.scrum-project-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  &.scrum-badge-success {
-    background: rgba(16, 185, 129, 0.1);
-    color: $success-color;
-  }
-
-  &.scrum-badge-warning {
-    background: rgba(245, 158, 11, 0.1);
-    color: $warning-color;
-  }
-}
-
-.scrum-project-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid $border-color;
-}
-
-.scrum-project-stat {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  .scrum-stat-label {
-    font-size: 0.875rem;
-    color: $text-secondary;
-  }
-
-  .scrum-stat-value {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-}
-
-.scrum-project-actions {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.scrum-project-btn {
-  @include flex-center;
-  gap: 0.5rem;
-  flex: 1;
-  padding: 0.625rem;
-  border: 1px solid $border-color;
-  border-radius: $border-radius;
-  background: $bg-white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: $transition;
-
-  &.scrum-btn-workflow {
-    color: $primary-color;
-    
-    &:hover {
-      background: rgba(59, 130, 246, 0.1);
-      border-color: $primary-color;
-    }
-  }
-
-  &.scrum-btn-board {
-    color: $success-color;
-    
-    &:hover {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: $success-color;
-    }
-  }
-
-  .scrum-icon {
-    font-size: 1rem;
-  }
-}
-
-// Activity Section
-.scrum-activity-section {
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 2rem;
-}
-
-.scrum-activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.scrum-activity-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: $bg-light;
-  border-radius: $border-radius;
-  transition: $transition;
-
-  &:hover {
-    background: $border-color;
-  }
-
-  .scrum-activity-icon {
-    @include flex-center;
-    width: 2.5rem;
-    height: 2.5rem;
-    background: $bg-white;
-    border-radius: $border-radius;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-  }
-
-  .scrum-activity-content {
-    flex: 1;
-
-    h4 {
-      margin: 0 0 0.25rem 0;
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: $text-primary;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.875rem;
-      color: $text-secondary;
-    }
-  }
-
-  .scrum-activity-time {
-    font-size: 0.8125rem;
-    color: $text-secondary;
-  }
-
-  .scrum-activity-btn {
-    padding: 0.5rem 1rem;
-    background: $primary-color;
-    color: white;
-    border: none;
-    border-radius: $border-radius;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: $transition;
-
-    &:hover {
-      background: $primary-hover;
-    }
-  }
-}
-
-// Configurator Header
-.scrum-config-header {
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 2rem;
-  margin-bottom: 2rem;
-}
-
-.scrum-back-btn {
-  @include flex-center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: $bg-light;
-  border: 1px solid $border-color;
-  border-radius: $border-radius;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $text-primary;
-  cursor: pointer;
-  transition: $transition;
-  margin-bottom: 1rem;
-
-  &:hover {
-    background: $border-color;
-  }
-
-  .scrum-icon {
-    font-size: 1rem;
-  }
-}
-
-.scrum-config-title-section {
-  .scrum-config-title {
-    margin: 0 0 0.5rem 0;
-    font-size: 2rem;
-    font-weight: 700;
-    color: $text-primary;
-  }
-
-  .scrum-config-subtitle {
-    margin: 0;
-    font-size: 1rem;
-    color: $text-secondary;
-  }
-}
-
-// Configuration Controls
-.scrum-config-controls {
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.scrum-config-tabs {
-  display: flex;
-  gap: 0.5rem;
-  background: $bg-light;
-  padding: 0.25rem;
-  border-radius: $border-radius;
-}
-
-.scrum-config-tab {
-  @include flex-center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background: transparent;
-  border: none;
-  border-radius: calc(#{$border-radius} - 2px);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: $text-secondary;
-  cursor: pointer;
-  transition: $transition;
-
-  &:hover {
-    color: $text-primary;
-  }
-
-  &.scrum-tab-active {
-    background: $bg-white;
-    color: $primary-color;
-    box-shadow: $shadow-sm;
-  }
-
-  .scrum-tab-icon {
-    font-size: 1rem;
-  }
-}
-
-.scrum-project-selector {
-  flex: 1;
-  max-width: 400px;
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: $text-primary;
-  }
-
-  .scrum-select {
-    width: 100%;
-    padding: 0.625rem 0.75rem;
-    border: 1px solid $border-color;
-    border-radius: $border-radius;
-    font-size: 0.9375rem;
-    color: $text-primary;
-    background: $bg-white;
-    cursor: pointer;
-    transition: $transition;
-
-    &:focus {
-      outline: none;
-      border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-  }
-}
-
-// Config Empty State
-.scrum-config-empty {
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 4rem 2rem;
-  text-align: center;
-
-  .scrum-config-empty-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-  }
-
-  h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-
-  p {
-    margin: 0;
-    font-size: 1rem;
-    color: $text-secondary;
-  }
-}
-
-// Coming Soon
-.scrum-workflow-manager {
-  background: $bg-white;
-  border-radius: $border-radius;
-  box-shadow: $shadow-md;
-  padding: 2rem;
-}
-
-.scrum-coming-soon {
-  text-align: center;
-  padding: 4rem 2rem;
-
-  .scrum-coming-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-  }
-
-  h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: $text-primary;
-  }
-
-  p {
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    color: $text-secondary;
-  }
-
-  .scrum-project-info {
-    margin-top: 2rem;
-    padding: 1rem;
-    background: $bg-light;
-    border-radius: $border-radius;
-    font-size: 0.9375rem;
-    color: $text-secondary;
-
-    strong {
-      color: $text-primary;
-    }
-  }
-}
-
-// Responsive Design
+// Mobile
 @media (max-width: 768px) {
   .scrum-dashboard-container {
-    padding: 1rem;
-  }
-
-  .scrum-empty-title {
-    font-size: 2rem;
-  }
-
-  .scrum-empty-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .scrum-empty-features ul {
-    grid-template-columns: 1fr;
-  }
-
-  .scrum-dashboard-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .scrum-stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .scrum-projects-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .scrum-config-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .scrum-project-selector {
-    max-width: 100%;
+    padding: 1.2rem;
+    .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .search-filter-section { flex-direction: column; .search-input-wrapper { max-width: 100%; } }
+    .projects-grid { grid-template-columns: 1fr; }
   }
 }
