@@ -5,9 +5,10 @@ import {
   ChevronDown, Rocket, Bug, LifeBuoy, Tag, Bookmark, 
   CheckCircle, LayoutGrid, Info 
 } from 'lucide-react';
-import SprintBoardManager from './component/SprintBoardManager';
 import LabelManager from './component/LabelManager';
 import ColumnStatusManager from './component/BoardConfigration';
+import SprintFLowBoard from './Board/sprintFlowBoard';
+import { useParams } from 'react-router-dom';
 
 // This map stores the raw SVG strings that will be sent to your backend
 const SVG_LIB = {
@@ -19,7 +20,7 @@ const SVG_LIB = {
 
 const WorkspaceConfig = () => {
   const [selectedProject, setSelectedProject] = useState("Alpha CRM System");
-
+  const projectId = useParams().projectId;
   // Naming Conventions State (with icon svg code)
   const [conventions, setConventions] = useState([
     { id: 1, label: 'Feature', prefix: 'FEAT', separator: '-', iconKey: 'Rocket', svgCode: SVG_LIB.Rocket },
@@ -170,9 +171,9 @@ const WorkspaceConfig = () => {
 
         </div>
       </div>
-      <SprintBoardManager/>
-      <LabelManager/>
-      <ColumnStatusManager/>
+      <SprintFLowBoard projectId={projectId} Flow={"FLOW"}/>
+      <LabelManager projectId={projectId}/>
+      <ColumnStatusManager projectId={projectId}/>
     </div>
   );
 };
