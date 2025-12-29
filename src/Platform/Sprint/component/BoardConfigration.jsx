@@ -14,22 +14,18 @@ import './style/ColumnStatusManager.scss';
 const ColumnStatusManager = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
-  
+
   const [activeTab, setActiveTab] = useState('status');
   const [hasChanges, setHasChanges] = useState(false);
-  
+
   // Redux State
-  const {
-    scrumLoading,
-    boardId,
-    boardColumn,
-    flowId,
-    statusWorkFlow
-  } = useSelector((state) => state.sprint);
-  console.log(boardId)
-  
+  const { scrumLoading, boardId, boardColumn, flowId, statusWorkFlow } = useSelector(
+    (state) => state.sprint
+  );
+
   // Status Flow State
   const [localStatuses, setLocalStatuses] = useState([]);
+  const [localTransitions, setLocalTransitions] = useState([]);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [editingStatus, setEditingStatus] = useState(null);
   const [statusForm, setStatusForm] = useState({
@@ -76,6 +72,9 @@ const ColumnStatusManager = () => {
     if (statusWorkFlow?.statuses) {
       setLocalStatuses(JSON.parse(JSON.stringify(statusWorkFlow.statuses)));
     }
+    if (statusWorkFlow?.transitions) {
+      setLocalTransitions(JSON.parse(JSON.stringify(statusWorkFlow.transitions)));
+    }
   }, [statusWorkFlow]);
 
   useEffect(() => {
@@ -89,32 +88,34 @@ const ColumnStatusManager = () => {
   useEffect(() => {
     const statusChanged = JSON.stringify(localStatuses) !== JSON.stringify(statusWorkFlow?.statuses || []);
     const columnsChanged = JSON.stringify(localColumns) !== JSON.stringify(boardColumn || []);
-    setHasChanges(statusChanged || columnsChanged);
-  }, [localStatuses, localColumns, statusWorkFlow, boardColumn]);
+    const transitionsChanged = JSON.stringify(localTransitions) !== JSON.stringify(statusWorkFlow?.transitions || []);
+    setHasChanges(statusChanged || columnsChanged || transitionsChanged);
+  }, [localStatuses, localColumns, localTransitions, statusWorkFlow, boardColumn]);
 
-  // ========== SAVE ALL CHANGES ==========
+  // ======= SAVE ALL CHANGES =======
   const handleSaveAll = async () => {
     if (!hasChanges) return;
 
     try {
-      // Save Status Flow
+      // Merge existing transitions with new transitions (avoid duplicates)
+      const mergedTransitions = [
+        ...(statusWorkFlow?.transitions || []),
+        ...localTransitions
+      ].filter((v, i, a) => i === a.findIndex(t => t.from === v.from && t.to === v.to));
+
       const statusPayload = {
         statuses: localStatuses,
-        transitions: statusWorkFlow?.transitions || []
+        transitions: mergedTransitions
       };
-
+      console.log(statusPayload,"res for backend")
       if (flowId) {
         await dispatch(updateProjectScrumFlow(projectId, statusPayload));
       } else {
         await dispatch(saveProjectScrumFlow(projectId, statusPayload));
       }
 
-      // Save Board Columns
       const columnPayload = {
-        columns: localColumns.map((col, i) => ({
-          ...col,
-          order: i
-        }))
+        columns: localColumns.map((col, i) => ({ ...col, order: i }))
       };
 
       if (boardId) {
@@ -123,10 +124,8 @@ const ColumnStatusManager = () => {
         await dispatch(saveProjectScrumBoard(projectId, columnPayload));
       }
 
-      alert('Changes saved successfully!');
       setHasChanges(false);
-      
-      // Refresh data
+      setLocalTransitions([]);
       dispatch(fetchProjectScrumFlow(projectId));
       dispatch(fetchProjectScrumBoard(projectId));
     } catch (error) {
@@ -135,8 +134,8 @@ const ColumnStatusManager = () => {
     }
   };
 
-  // ========== STATUS FLOW HANDLERS ==========
-  const handleCreateStatus = () => {
+  // ======= STATUS FLOW HANDLERS =======
+  const handleCreateOrUpdateStatus = () => {
     if (!statusForm.key || !statusForm.label) {
       alert('Please fill required fields');
       return;
@@ -152,20 +151,22 @@ const ColumnStatusManager = () => {
     };
 
     if (editingStatus) {
-      setLocalStatuses(prev => prev.map(s => 
-        s.key === editingStatus.key ? newStatus : s
-      ));
-      
+      // Update existing status
+      setLocalStatuses(prev =>
+        prev.map(s => (s.key === editingStatus.key ? newStatus : s))
+      );
+
       // Update columns if key changed
       if (statusKey !== editingStatus.key) {
-        setLocalColumns(prev => prev.map(col => ({
-          ...col,
-          statusKeys: col.statusKeys.map(key => 
-            key === editingStatus.key ? statusKey : key
-          )
-        })));
+        setLocalColumns(prev =>
+          prev.map(col => ({
+            ...col,
+            statusKeys: col.statusKeys.map(key => (key === editingStatus.key ? statusKey : key))
+          }))
+        );
       }
     } else {
+      // Add new status
       setLocalStatuses(prev => [...prev, newStatus]);
     }
 
@@ -187,12 +188,13 @@ const ColumnStatusManager = () => {
 
   const handleDeleteStatus = (statusKey) => {
     if (!confirm('Delete this status? It will be removed from all columns.')) return;
-    
+
     setLocalStatuses(prev => prev.filter(s => s.key !== statusKey));
-    setLocalColumns(prev => prev.map(col => ({
-      ...col,
-      statusKeys: col.statusKeys.filter(key => key !== statusKey)
-    })));
+    setLocalColumns(prev =>
+      prev.map(col => ({ ...col, statusKeys: col.statusKeys.filter(key => key !== statusKey) }))
+    );
+    // Remove any transitions involving this status
+    setLocalTransitions(prev => prev.filter(t => t.from !== statusKey && t.to !== statusKey));
   };
 
   const resetStatusForm = () => {
@@ -206,8 +208,8 @@ const ColumnStatusManager = () => {
     setEditingStatus(null);
   };
 
-  // ========== COLUMN HANDLERS ==========
-  const handleCreateColumn = () => {
+  // ======= COLUMN HANDLERS =======
+  const handleCreateOrUpdateColumn = () => {
     if (!columnForm.name) {
       alert('Please enter column name');
       return;
@@ -224,9 +226,7 @@ const ColumnStatusManager = () => {
     };
 
     if (editingColumn) {
-      setLocalColumns(prev => prev.map(col => 
-        col.id === editingColumn.id ? newColumn : col
-      ));
+      setLocalColumns(prev => prev.map(col => (col.id === editingColumn.id ? newColumn : col)));
     } else {
       setLocalColumns(prev => [...prev, newColumn]);
     }
@@ -255,37 +255,36 @@ const ColumnStatusManager = () => {
   const moveColumn = (columnId, direction) => {
     const index = localColumns.findIndex(col => col.id === columnId);
     if (index === -1) return;
-    
     const newIndex = direction === 'left' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= localColumns.length) return;
-
     const newColumns = [...localColumns];
     [newColumns[index], newColumns[newIndex]] = [newColumns[newIndex], newColumns[index]];
     setLocalColumns(newColumns);
   };
 
   const resetColumnForm = () => {
-    setColumnForm({
-      name: '',
-      description: '',
-      color: '#3b82f6',
-      wipLimit: null,
-      statusKeys: []
-    });
+    setColumnForm({ name: '', description: '', color: '#3b82f6', wipLimit: null, statusKeys: [] });
     setEditingColumn(null);
   };
 
-  // ========== MAPPING HANDLERS ==========
+  // ======= TRANSITIONS HANDLER =======
+  // const addTransition = (from, to) => {
+  //   if (!from || !to) return;
+  //   const exists = localTransitions.some(t => t.from === from && t.to === to);
+  //   if (!exists) setLocalTransitions(prev => [...prev, { from, to }]);
+  // };
+
+  // ======= STATUS MAPPING =======
   const toggleStatusInColumn = (columnId, statusKey) => {
-    setLocalColumns(prev => prev.map(col => {
-      if (col.id !== columnId) return col;
-      
-      const statusKeys = col.statusKeys.includes(statusKey)
-        ? col.statusKeys.filter(key => key !== statusKey)
-        : [...col.statusKeys, statusKey];
-      
-      return { ...col, statusKeys };
-    }));
+    setLocalColumns(prev =>
+      prev.map(col => {
+        if (col.id !== columnId) return col;
+        const statusKeys = col.statusKeys.includes(statusKey)
+          ? col.statusKeys.filter(key => key !== statusKey)
+          : [...col.statusKeys, statusKey];
+        return { ...col, statusKeys };
+      })
+    );
   };
 
   const getUnassignedStatuses = useMemo(() => {
@@ -293,14 +292,8 @@ const ColumnStatusManager = () => {
     return localStatuses.filter(status => !assigned.has(status.key));
   }, [localStatuses, localColumns]);
 
-  if (scrumLoading) {
-    return (
-      <div className="column-status-container loading">
-        <div className="loading-spinner"></div>
-        <p>Loading configuration...</p>
-      </div>
-    );
-  }
+  if (scrumLoading) return <div className="column-status-container loading"><p>Loading...</p></div>;
+
 
   return (
     <div className="column-status-container">
@@ -646,7 +639,7 @@ const ColumnStatusManager = () => {
 
             <div className="cs-modal-footer">
               <button onClick={() => setShowStatusModal(false)} className="cs-btn-cancel">Cancel</button>
-              <button onClick={handleCreateStatus} className="cs-btn-primary">
+              <button onClick={handleCreateOrUpdateStatus} className="cs-btn-primary">
                 {editingStatus ? 'Update' : 'Create'}
               </button>
             </div>
@@ -762,7 +755,7 @@ const ColumnStatusManager = () => {
 
             <div className="cs-modal-footer">
               <button onClick={() => setShowColumnModal(false)} className="cs-btn-cancel">Cancel</button>
-              <button onClick={handleCreateColumn} className="cs-btn-primary">
+              <button onClick={handleCreateOrUpdateColumn} className="cs-btn-primary">
                 {editingColumn ? 'Update' : 'Create'}
               </button>
             </div>
