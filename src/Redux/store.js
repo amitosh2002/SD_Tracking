@@ -20,4 +20,5 @@ export const store = configureStore({
     sprint:sprintReducerV1
 
   },
+  devTools: process.env.NODE_ENV !== "PROD",
 });
