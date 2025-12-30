@@ -11,6 +11,7 @@ import TimeLogTracker from './Components/TimeLogTracker';
 import AnimatedEmptyState from '../../customFiles/customComponent/EmptyStateAnimated';
 import TeamDirectory from './Components/TeamDirectory';
 import TeamsPage from './TeamsPage';
+import UserCalendar from './Components/UserCalendar';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
@@ -73,7 +74,7 @@ const HoraDashboard = () => {
 
   const componentMap = {
     tasks: EmptyStateGraphic, 
-    calendar: AnimatedEmptyState,
+    calendar: UserCalendar,
     timer: TimeLogTracker,
     projects: TeamInvitationPage,
     goals: EmptyStateGraphic,
