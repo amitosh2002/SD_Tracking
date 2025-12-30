@@ -52,10 +52,14 @@ const LoginPage = () => {
       const prevInput = document.getElementById(`otp-${index - 1}`);
       if (prevInput) prevInput.focus();
     }
+    if (e.key === 'Enter') {
+      handleOtpSubmit(e); 
+      return;
+    }
   };
 
   const handleOtpSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const otpString = otp.join('');
     
     if (otpString.length !== 6) {
@@ -94,6 +98,25 @@ const LoginPage = () => {
         }
       });
   };
+
+  const handlePaste = (e) => {
+  e.preventDefault();
+  const pasteData = e.clipboardData.getData('text').slice(0, otp.length); // Get first X chars
+  const pasteArray = pasteData.split('');
+
+  const newOtp = [...otp];
+  pasteArray.forEach((char, index) => {
+    if (index < otp.length) {
+      newOtp[index] = char;
+    }
+  });
+
+  setOtp(newOtp);
+
+  // Optional: Focus the last filled input or the next empty one
+  const nextIndex = Math.min(pasteArray.length, otp.length - 1);
+  document.getElementById(`otp-${nextIndex}`)?.focus();
+};
 
   const styles = {
     loginContainer: {
@@ -524,6 +547,7 @@ const LoginPage = () => {
                         onKeyDown={(e) => handleOtpKeyDown(index, e)}
                         maxLength="1"
                         style={styles.otpInput}
+                        onPaste={handlePaste}
                         onFocus={(e) => e.target.style.borderColor = '#a8edea'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
                       />
