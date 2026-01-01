@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HeroSection from "../HeroSection";
 import CreateBranch from "../CreateBranch";
+import GithubAdminConfig from "../GithubAdminConfig";
 import TextEditor from "../Editor";
 import TaskGenerator from "../TaskManagement/TaskCreator";
 import LoginPage from "../Authentication/authPage";
@@ -43,6 +44,7 @@ const AllRoutes = () => {
         // <BrowserRouter>
             <Routes>
                 <Route path="/create-branch" element={<CreateBranch />} />
+                <Route path="/admin/github-config" element={<GithubAdminConfig />} />
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 <Route path="/create" element={<TaskGenerator />} />
                 <Route path="/all-work" element={<TaskManager />} />

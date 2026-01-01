@@ -1,5 +1,5 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs} from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET } from "../../Constants/ticketReducerConstants"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs, ticketbyKeyurl} from "../../../Api/Plat/TicketsApi"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET, APPEND_TICKETS } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
@@ -195,7 +195,7 @@ export const getTicketByKey=async(key)=>{
             console.log("invalid key")
         }
         const token = localStorage.getItem('token')
-          const res = await axios.get(`${getTicketByKey}/${key}`,{
+          const res = await axios.get(`${ticketbyKeyurl}${key}`,{
                 headers:{
                    'Content-Type': 'application/json',
                     // Add authorization header if needed

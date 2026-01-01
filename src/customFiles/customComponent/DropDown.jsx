@@ -595,10 +595,12 @@ export const DropDownForTicketStatus = ({
   disabled = false,
   className = "",
   required,
-  ticketId
+  ticketId,
+  statusWorkflow, // Accept workflow from props
+  statusColors // Accept colors from props
 }) => {
-  // Status color mapping
-  const statusColors = {
+  // Status color mapping - use prop or fallback to defaults
+  const defaultStatusColors = {
     "OPEN": { bg: "#dbeafe", text: "#1e40af", border: "#3b82f6" },
     "IN_PROGRESS": { bg: "#fef3c7", text: "#92400e", border: "#f59e0b" },
     "IN_REVIEW": { bg: "#e0e7ff", text: "#3730a3", border: "#6366f1" },
@@ -612,7 +614,7 @@ export const DropDownForTicketStatus = ({
     "CLOSED": { bg: "#e5e7eb", text: "#374151", border: "#6b7280" },
   };
 
-  const statusWorkflow = {
+  const defaultStatusWorkflow = {
     "OPEN": ["IN_PROGRESS", "IN_REVIEW", "ON_HOLD"],
     "IN_PROGRESS": ["IN_REVIEW", "ON_HOLD", "OPEN"],
     "IN_REVIEW": ["DEV_TESTING", "REJECTED", "ON_HOLD"],
@@ -626,12 +628,15 @@ export const DropDownForTicketStatus = ({
     "CLOSED": ["REOPENED"],
   };
 
+  // Use provided workflow/colors or fall back to defaults
+  const activeWorkflow = statusWorkflow || defaultStatusWorkflow;
+  const activeColors = statusColors || defaultStatusColors;
   const getAllowedStatuses = (currentStatus) => {
-    if (!currentStatus || !statusWorkflow[currentStatus]) {
+    if (!currentStatus || !activeWorkflow[currentStatus]) {
       return ticketTypes;
     }
     
-    const allowedNext = statusWorkflow[currentStatus];
+    const allowedNext = activeWorkflow[currentStatus];
     return [currentStatus, ...allowedNext].filter((status, index, self) => 
       self?.indexOf(status) === index && ticketTypes?.includes(status)
     );
@@ -639,7 +644,7 @@ export const DropDownForTicketStatus = ({
 
   const uniqueKey = `dropdown-${ticketId || Math.random()}`;
   const currentValue = value || defaultType || (ticketTypes && ticketTypes.length > 0 ? ticketTypes[0] : "");
-  const currentColors = statusColors[currentValue] || statusColors["OPEN"];
+  const currentColors = activeColors[currentValue] || activeColors["OPEN"];
   
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -719,7 +724,7 @@ export const DropDownForTicketStatus = ({
       <div className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
         <div className="dropdown-options" role="listbox">
           {Array.isArray(filteredOptions) && filteredOptions.map((type, id) => {
-            const optionColors = statusColors[type] || statusColors["OPEN"];
+            const optionColors = activeColors[type] || activeColors["OPEN"];
             return (
               <div
                 key={`${uniqueKey}-${id}`}

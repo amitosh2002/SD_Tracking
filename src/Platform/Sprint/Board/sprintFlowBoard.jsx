@@ -53,45 +53,29 @@ const SprintFLowBoard = ({projectId,Flow}) => {
   }, [projectId, type, dispatch]);
 
   /* ================= NORMALIZE ================= */
-  const normalizedConfig = useMemo(() => {
-    // Flow: build columns from statusWorkFlow
-    if (type === 'FLOW' && statusWorkFlow?.statuses) {
-      return {
-        name: flowName || 'Sprint Flow',
-        columns: statusWorkFlow.statuses.map((s, i) => ({
-          id: `flow_${i}`,
-          name: s.label || s.key,
-          statusKeys: [s.key],
-          color: s.color?.border || '#6366f1',
-          wipLimit: null,
-          order: i
-        }))
-      };
-    }
-
-    // // Board: normalize backend board columns
-    // if (type === 'BOARD' && boardColumn?.length) {
-    //   return {
-    //     name: boardName || 'Sprint Board',
-    //     columns: [...boardColumn]
-    //       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    //       .map((c) => ({
-    //         id: c.id || `col_${Math.random().toString(36).slice(2, 9)}`,
-    //         name: c.name || 'Column',
-    //         statusKeys: Array.isArray(c.statusKeys) ? c.statusKeys : [],
-    //         color: c.color || '#6366f1',
-    //         wipLimit: c.wipLimit ?? null,
-    //         order: c.order ?? 0
-    //       }))
-    //   };
-    // }
-
-    // Default: return empty config (avoid nulls in UI)
+const normalizedConfig = useMemo(() => {
+  if (type === 'FLOW' && statusWorkFlow?.statuses && statusWorkFlow?.workflow) {
     return {
-      name: type === 'FLOW' ? (flowName || 'Sprint Flow') : (boardName || 'Sprint Board'),
-      columns: []
+      name: flowName || 'Sprint Flow',
+      columns: statusWorkFlow.statuses.map((status, index) => ({
+        id: `flow_${status.key}`,
+        name: status.label,
+        statusKeys: Array.isArray(statusWorkFlow.workflow[status.key])
+          ? statusWorkFlow.workflow[status.key]
+          : [],
+        color: status.color?.border || '#6366f1',
+        wipLimit: null,
+        order: index
+      }))
     };
-  }, [type, statusWorkFlow, boardColumn, flowName, boardName]);
+  }
+
+  return {
+    name: flowName || 'Sprint Flow',
+    columns: []
+  };
+}, [type, statusWorkFlow, flowName]);
+
 
   /* ================= LOCAL EDITABLE COPY ================= */
   const [localConfig, setLocalConfig] = useState(null);
