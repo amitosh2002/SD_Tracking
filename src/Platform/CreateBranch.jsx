@@ -262,6 +262,24 @@ const CreateBranch = () => {
                                 disabled={isLoading}
                             />
                         </div>
+                         {focusedField === 'success' && createdBranchUrl && (
+                        <div className="success_action_box">
+                            <div className="branch_url_display">
+                                <span className="url_label">Branch URL:</span>
+                                <code className="branch_url">{createdBranchUrl}</code>
+                            </div>
+                            <div className="pulse_glow"></div>
+                            <a 
+                                href={createdBranchUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="premium_link_btn"
+                            >
+                                <GitBranch size={18} />
+                                Open Branch on GitHub
+                            </a>
+                        </div>
+                    )}
                     </div>
                 </div>
             </div>
@@ -286,7 +304,7 @@ const CreateBranch = () => {
                         ))}
                     </div>
 
-                    {focusedField === 'success' && createdBranchUrl && (
+                    {/* {focusedField === 'success' && createdBranchUrl && (
                         <div className="success_action_box">
                             <div className="branch_url_display">
                                 <span className="url_label">Branch URL:</span>
@@ -303,7 +321,7 @@ const CreateBranch = () => {
                                 Open Branch on GitHub
                             </a>
                         </div>
-                    )}
+                    )} */}
 
                     <div className="edu_footer">
                         <div className="security_notice">

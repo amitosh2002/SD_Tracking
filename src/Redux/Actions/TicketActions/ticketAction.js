@@ -5,18 +5,13 @@ import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
 export const getAllWorkTicket =
-  ({ userId, projectId, limit = 10, page = 1, type }) =>
+  ({ projectId, limit = 10, page = 1, type }) =>
   async (dispatch) => {
 
     dispatch({ type: "GET_ALL_TICKETS_REQUEST" });
 
     try {
       const params = new URLSearchParams();
-
-      if (userId) {
-        params.append("userId", String(userId));
-       
-      }
 
       if (projectId) {
         params.append("projectId", String(projectId));
@@ -48,17 +43,14 @@ export const getAllWorkTicket =
     }
   };
 
-export const createTicket = (ticketData, userId) => async (dispatch) => {
+export const createTicket = (ticketData) => async (dispatch) => {
     if (!ticketData) {
         console.log("No ticket data found");
         return;
     }
-    console.log("Creating ticket with data:", ticketData, "for user:", userId);
-    
     try {
         const response = await apiClient.post(`${createTicketV2}`, {
             ...ticketData,
-            userId: userId
         });
         
         if (response.status === 201 || response.status === 200) {
@@ -73,15 +65,11 @@ export const createTicket = (ticketData, userId) => async (dispatch) => {
     }
 };
 // api for assigning the task
-export const assignTaskApi = (taskId, userId) => async (dispatch) => {
-    console.log("Assigning task:", taskId, "to user:", userId);
-
+export const assignTaskApi = (taskId) => async (dispatch) => {
     try {
         const response = await apiClient.post(
             `${assignTask}/${taskId}/assignee`,
-            {
-                userId: userId
-            }
+          
         );
 
         console.log("Task assigned successfully:", response.data);
