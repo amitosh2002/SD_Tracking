@@ -700,9 +700,9 @@ export const DropDownForTicketStatus = ({
         aria-haspopup="listbox"
         tabIndex={disabled ? -1 : 0}
         style={{
-          backgroundColor: currentColors.bg,
-          color: currentColors.text,
-          borderColor: currentColors.border
+          backgroundColor: currentColors?.bg,
+          color: currentColors?.text,
+          borderColor: currentColors?.border
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -711,7 +711,7 @@ export const DropDownForTicketStatus = ({
           }
         }}
       >
-        <span className="status-dot" style={{ backgroundColor: currentColors.border }}></span>
+        <span className="status-dot" style={{ backgroundColor: currentColors?.border }}></span>
         <span className={`dropdown-text ${!currentValue ? 'placeholder' : ''}`}>
           {currentValue || "Select status"}
         </span>
