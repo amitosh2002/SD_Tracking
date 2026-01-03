@@ -1870,61 +1870,129 @@ $sidebar-error: #ef4444;
     margin-top: 0.5rem;
   }
 }
-
 .modern_popup_content {
+  
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
-  gap: 1rem;
+  gap: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  // max-width: 400px;
+  width: 100%;
+  animation: fadeIn 0.3s ease-out;
 
   .popup_hero_icon {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 2.5rem;
     animation: sidebar_float 3s ease-in-out infinite;
   }
 
   h3 {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: $sidebar-text-main;
     margin: 0;
   }
 
   p {
-    color: $sidebar-text-muted;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
+    font-size: 0.95rem;
+
+    &.admin_hint {
+      font-size: 0.8125rem;
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
   }
 
   .popup_actions {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
     width: 100%;
     margin-top: 1rem;
 
     button {
       flex: 1;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+
+      &.primary {
+        color: #fff;
+        border: none;
+      }
+
+      &.secondary {
+        border: 1px solid;
+      }
     }
   }
 
-  \u0026.error {
-    .admin_hint {
-      font-size: 0.8125rem;
-      color: $sidebar-error;
-      font-style: italic;
+  /* ==============================
+     STATE STYLES
+     ============================== */
+
+  &.error {
+    background-color: #FFF5F5;
+    border: 1px solid #F87171;
+    color: #7F1D1D;
+
+    .popup_hero_icon { color: #EF4444; }
+    h3 { color: #B91C1C; }
+    p, .admin_hint { color: #7F1D1D; }
+
+    .popup_actions {
+      button.primary { background-color: #EF4444; &:hover { background-color: #B91C1C; } }
+      button.secondary { background-color: #FEE2E2; color: #B91C1C; border-color: #F87171; &:hover { background-color: #FECACA; } }
+    }
+  }
+
+  &.success {
+    background-color: #ECFDF5;
+    border: 1px solid #34D399;
+    color: #065F46;
+
+    .popup_hero_icon { color: #10B981; }
+    h3 { color: #047857; }
+    p { color: #065F46; }
+
+    .popup_actions {
+      button.primary { background-color: #10B981; &:hover { background-color: #047857; } }
+      button.secondary { background-color: #D1FAE5; color: #065F46; border-color: #34D399; &:hover { background-color: #A7F3D0; } }
+    }
+  }
+
+  &.info {
+    background-color: #EFF6FF;
+    border: 1px solid #3B82F6;
+    color: #1E3A8A;
+
+    .popup_hero_icon { color: #3B82F6; }
+    h3 { color: #1D4ED8; }
+    p { color: #1E40AF; }
+
+    .popup_actions {
+      button.primary { background-color: #3B82F6; &:hover { background-color: #1D4ED8; } }
+      button.secondary { background-color: #DBEAFE; color: #1E3A8A; border-color: #3B82F6; &:hover { background-color: #BFDBFE; } }
     }
   }
 }
 
+/* ==============================
+   ANIMATIONS
+   ============================== */
 @keyframes sidebar_float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
 
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

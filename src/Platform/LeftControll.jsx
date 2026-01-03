@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import './styles/issueDetails.scss';
 import { ButtonUD, ButtonV1 } from '../customFiles/customComponent/CustomButtons';
-import defaultUser from "../assets/platformIcons/defaultUser.svg";
+// import defaultUser from "../assets/platformIcons/defaultUser.svg";
 import { addStoryPointToTicket, addTimeLogForWork, assignTaskApi, changeTicketStatus, getTicketById } from '../Redux/Actions/TicketActions/ticketAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { DropDownForTicketStatus } from '../customFiles/customComponent/DropDown';
@@ -147,6 +147,10 @@ const IssueDetails = ({ task }) => {
             }
         } catch (err) {
             setGithubErrorPopup(true);
+            dispatch({
+                type:"error",
+                message:err
+            })
         }
     };
 

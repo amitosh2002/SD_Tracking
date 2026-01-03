@@ -268,7 +268,7 @@ return (
 
     {/* ================= PROJECT FILTER ================= */}
     <div className="project-filter-bar">
-      <span className="filter-title">Projects</span>
+      <span className="filter-title">Filter sprints by project. Stats and sprint cards update automatically.</span>
 
       <div className="project-chip-row">
         <button
