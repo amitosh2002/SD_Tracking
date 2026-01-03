@@ -43,8 +43,6 @@ const SprintManagement = () => {
     dispatch(fetchProjectSprintOverview(projectId))
   },[dispatch,userDetails,projectId])
 
-  console.log(projectId,"project id for id")
-  // Mock sprints data with project association
   const [sprintsData, setSprintsData] = useState([]);
 
   // const filteredSprints = sprintsData.filter((sprint) => {
@@ -229,170 +227,210 @@ const { ActiveSprint, PlannedSprint, CompletedSprint } = useMemo(() => {
 
   return result;
 }, [localSprints]);
-
-
 //============================== For sorting and searching memorized the sprints ================================
-  return (
-    <div className="sprint-management">
-      <div className="sprint-header">
-        <div className="header-content">
-          <h1 className="page-title">Sprint Management</h1>
-          <p className="page-subtitle">Manage sprints across all your projects</p>
-        </div>
-        <button className="btn-create" onClick={() => setShowCreateModal(true)}>
-          <span className="btn-icon">+</span>
-          Create Sprint
+//============================== For Project initials color schema ================================
+
+
+function getProjectColor(projectName) {
+  const colors = [
+    '#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5',
+    '#2196F3', '#03A9F4', '#00BCD4', '#009688', '#4CAF50',
+    '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
+    '#FF5722', '#795548', '#607D8B'
+  ];
+  
+  const index = projectName
+    ? projectName.charCodeAt(0) % colors.length
+    : 0;
+    
+  return colors[index];
+}
+
+
+//============================== For Project initials color schema  ================================
+return (
+  <div className="sprint-management">
+
+    {/* ================= HEADER ================= */}
+    <div className="page-header">
+      <div className="page-header-left">
+        <h1>Sprint Management</h1>
+        <p>Plan, track, and execute sprints across projects</p>
+      </div>
+
+      <button
+        className="primary-action-btn"
+        onClick={() => setShowCreateModal(true)}
+      >
+        + Create Sprint
+      </button>
+    </div>
+
+    {/* ================= PROJECT FILTER ================= */}
+    <div className="project-filter-bar">
+      <span className="filter-title">Projects</span>
+
+      <div className="project-chip-row">
+        <button
+          className={`project-chip ${selectedProject === 'all' ? 'active' : ''}`}
+          onClick={() => {
+            setSelectedProject('all');
+            setProjectId(null);
+          }}
+        >
+          All Projects
+        </button>
+
+        {Array.isArray(projects) &&
+          projects.map(project => (
+            <button
+              key={project._id}
+              className={`project-chip ${
+                selectedProject === project._id ? 'active' : ''
+              }`}
+              onClick={() => {
+                setSelectedProject(project._id);
+                setProjectId(project.projectId);
+              }}
+              style={{
+                '--chip-color': project.color
+              }}
+            >
+              <span
+                className="project-key"
+                style={{ backgroundColor: getProjectColor(project.name ?? project.projectName) }}
+              >
+                {/* {project.name[0] ?? project.projectName[0]} */}
+                {(project.name?.[0]) ?? (project.projectName?.[0]) ?? ''}
+
+              </span>
+              {project.projectName ?? project.name}
+            </button>
+          ))}
+      </div>
+    </div>
+
+    {/* ================= STATS ================= */}
+    <div className="stats-row">
+      <div className="stat-tile">
+        <span className="stat-number">{localSprints.length}</span>
+        <span className="stat-label">Total number of sprints created for selected project(s)</span>
+      </div>
+
+      <div className="stat-tile active">
+        <span className="stat-number">{ActiveSprint.length}</span>
+        {/* <span className="stat-label">Total Active</span> */}
+        <span className="stat-label">Sprints currently in progress</span>
+      </div>
+
+      <div className="stat-tile planned">
+        <span className="stat-number">{PlannedSprint.length}</span>
+        {/* <span className="stat-label">Total Planned</span> */}
+        <span className="stat-label">Sprints scheduled but not started yet</span>
+      </div>
+
+      <div className="stat-tile completed">
+        <span className="stat-number">{CompletedSprint.length}</span>
+        {/* <span className="stat-label"> Total Completed</span> */}
+        <span className="stat-label"> Finished sprints with final metrics</span>
+      </div>
+
+      <div className="stat-tile velocity">
+        <span className="stat-number">{stats.avgVelocity} % </span>
+        <span className="stat-label">Average story points completed per sprint</span>
+      </div>
+    </div>
+
+    {/* ================= TOOLBAR ================= */}
+    <div className="toolbar">
+      <div className="tab-group">
+        <button
+          className={`tab-btn ${activeTab === 'ALL' ? 'active' : ''}`}
+          onClick={() => setActiveTab('ALL')}
+        >
+          All
+        </button>
+
+        <button
+          className={`tab-btn ${activeTab === 'active' ? 'active' : ''}`}
+          onClick={() => setActiveTab('active')}
+        >
+          Active
+        </button>
+
+        <button
+          className={`tab-btn ${activeTab === 'planned' ? 'active' : ''}`}
+          onClick={() => setActiveTab('planned')}
+        >
+          Planned
+        </button>
+
+        <button
+          className={`tab-btn ${activeTab === 'completed' ? 'active' : ''}`}
+          onClick={() => setActiveTab('completed')}
+        >
+          Completed
         </button>
       </div>
 
-      {/* Project Filter */}
-      <div className="project-filter">
-        <label className="filter-label">Filter by Project:</label>
-        <div className="project-pills">
-          <button
-            className={`project-pill ${selectedProject === 'all' ? 'active' : ''}`}
-            onClick={() => {setSelectedProject('all'),setProjectId(null)}}
-          >
-            <span className="pill-icon">📊</span>
-            All Projects
-          </button>
-          {Array.isArray(projects) &&projects?.map((project) => (
-            
-            <button
-              key={project._id}
-              className={`project-pill ${selectedProject === project._id ? 'active' : ''}`}
-              onClick={() => {setSelectedProject(project._id),setProjectId(project?.projectId)
-              }}
-              style={{
-                '--project-color': project.color,
-                borderColor: selectedProject === project._id ? project.color : '#e0e7ff'
-              }}
-            >
-              <span className="pill-key" style={{ backgroundColor: project.color }}>
-                {project.key}
-              </span>
-              {project.name ??project.projectName}
-              {/* {projectWithAccess} */}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="stats-grid">
-        <div className="stat-card stat-active">
-          <div className="stat-icon">🏃</div>
-          <div className="stat-content">
-            <div className="stat-value">{localSprints.length}</div>
-            <div className="stat-label">All Sprints</div>
-          </div>
-        </div>
-        <div className="stat-card stat-active">
-          <div className="stat-icon">🏃</div>
-          <div className="stat-content">
-            <div className="stat-value">{ActiveSprint.length}</div>
-            <div className="stat-label">Active Sprints</div>
-          </div>
-        </div>
-        <div className="stat-card stat-planned">
-          <div className="stat-icon">📅</div>
-          <div className="stat-content">
-            <div className="stat-value">{PlannedSprint.length}</div>
-            <div className="stat-label">Planned Sprints</div>
-          </div>
-        </div>
-        <div className="stat-card stat-completed">
-          <div className="stat-icon">✅</div>
-          <div className="stat-content">
-            <div className="stat-value">{CompletedSprint.length}</div>
-            <div className="stat-label">Completed Sprints</div>
-          </div>
-        </div>
-        <div className="stat-card stat-velocity">
-          <div className="stat-icon">⚡</div>
-          <div className="stat-content">
-            <div className="stat-value">{stats.avgVelocity}</div>
-            <div className="stat-label">Avg Velocity</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="controls-bar">
-        <div className="tabs">
-          <button
-            className={`tab ${activeTab === 'ALL' ? 'active' : ''}`}
-            onClick={() => setActiveTab('ALL')}
-          >
-            ALL ({localSprints.length})
-          </button>
-          <button
-            className={`tab ${activeTab === 'active' ? 'active' : ''}`}
-            onClick={() => setActiveTab('active')}
-          >
-            Active ({ActiveSprint.length})
-          </button>
-          <button
-            className={`tab ${activeTab === 'planned' ? 'active' : ''}`}
-            onClick={() => setActiveTab('planned')}
-          >
-            Planned ({PlannedSprint.length})
-          </button>
-          <button
-            className={`tab ${activeTab === 'completed' ? 'active' : ''}`}
-            onClick={() => setActiveTab('completed')}
-          >
-            Completed ({CompletedSprint.length})
-          </button>
-        </div>
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search sprints or projects..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <span className="search-icon">🔍</span>
-        </div>
-      </div>
-
-{/* // Then render filteredSprints */}
-{localSprints.length === 0 ? (
-  <div className="empty-state">
-    <div className="empty-icon">📭</div>
-    <h3>No sprints found</h3>
-    <p>Try adjusting your filters or create a new sprint</p>
-  </div>
-) : (
-  <div className="sprint-grid">
-    {
-    loading ? <CircularLoader/>:
-    
-    localSprints.map((sprint) => {
-      return (
-        <SprintCard
-          key={sprint.sprintId}
-          sprint={sprint}
-          setFormData={setFormData}
-          openEditModal={openEditModal}
-          handleDeleteSprint={handleDeleteSprint}
-          handleStartSprint={handleStartSprint}
-          handleCompleteSprint={handleCompleteSprint}
+      <div className="search-input">
+        <input
+          type="text"
+          placeholder="Search sprint name..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
         />
-      );
-    })
-    
-    }
-  </div>
-)}
-
-      {showCreateModal && (
-        <CreateSprint formData={formData} projects={projects} setShowCreateModal={setShowCreateModal} setFormData={setFormData} handleCreateSprint={handleCreateSprint} />
-      )}
-
-      {showEditModal && (
-        <EditSprint setFormData={setFormData} setShowEditModal={setShowEditModal} formData={formData} projectsData={projects} handleUpdateSprint={handleUpdateSprint} />
-      )}
+        <span className="search-icon">🔍</span>
+      </div>
     </div>
-  );
+
+    {/* ================= CONTENT ================= */}
+    {loading ? (
+      <CircularLoader />
+    ) : localSprints.length === 0 ? (
+      <div className="empty-state">
+        <div className="empty-illustration">📭</div>
+        <h3>No sprints found</h3>
+        <p>Create a sprint or adjust your filters</p>
+      </div>
+    ) : (
+      <div className="sprint-card-grid">
+        {localSprints.map(sprint => (
+          <SprintCard
+            key={sprint.sprintId}
+            sprint={sprint}
+            openEditModal={openEditModal}
+            handleDeleteSprint={handleDeleteSprint}
+            handleStartSprint={handleStartSprint}
+            handleCompleteSprint={handleCompleteSprint}
+          />
+        ))}
+      </div>
+    )}
+
+    {/* ================= MODALS ================= */}
+    {showCreateModal && (
+      <CreateSprint
+        formData={formData}
+        projects={projects}
+        setShowCreateModal={setShowCreateModal}
+        setFormData={setFormData}
+        handleCreateSprint={handleCreateSprint}
+      />
+    )}
+
+    {showEditModal && (
+      <EditSprint
+        setFormData={setFormData}
+        setShowEditModal={setShowEditModal}
+        formData={formData}
+        projectsData={projects}
+        handleUpdateSprint={handleUpdateSprint}
+      />
+    )}
+  </div>
+);
+
 };
 
 export default SprintManagement;
