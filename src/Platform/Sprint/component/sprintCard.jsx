@@ -1,5 +1,7 @@
 
+import { useDispatch, useSelector } from 'react-redux';
 import './SprintCard.scss';
+import { SHOW_SNACKBAR } from '../../../Redux/Constants/PlatformConstatnt/platformConstant';
 
 const SprintCard = ({
   sprint,
@@ -10,9 +12,15 @@ const SprintCard = ({
   handleStartSprint,
 }) => {
   const { analytics } = sprint;
-  console.log(sprint)
-console.log(project)
-  const getHealthColor = (health) => {
+  const {projects}= useSelector((state)=>state.projects)
+    const getProjectDetails = (projectId) => {
+    return projects.find(
+      (project) => project.projectId === projectId
+    )
+  };
+
+  const dispatch = useDispatch();
+  const getHealthColor = () => {
     // Calculate health based on metrics
     if (!analytics) return 'health-pending';
     
@@ -90,11 +98,11 @@ console.log(project)
   };
 
   return (
-    <div className={`sprint-card ${getHealthColor()}`}>
+    <div className={`sprint-card ${getHealthColor}`}>
       <div className="card-header">
         <div className="card-title-section">
           <div className="sprint-info-header">
-            <h3 className="card-title">{project?.projectName}</h3>
+            <h3 className="card-title">{project?.projectName ?? getProjectDetails(sprint?.projectId)?.projectName}</h3>
             <span className="sprint-number">Sprint #{sprint?.sprintName}</span>
           </div>
           <span className={`status-badge ${getStatusBadge(sprint?.isActive)}`}>
@@ -102,7 +110,7 @@ console.log(project)
           </span>
         </div>
         <div className="card-actions">
-          <button className="action-btn" onClick={() => openEditModal(sprint, project?.projectId)} title="Edit">
+          <button className="action-btn" onClick={() => openEditModal(sprint, sprint?.projectId,sprint?.sprintId)} title="Edit">
             ✏️
           </button>
           <button className="action-btn" onClick={() => handleDeleteSprint(sprint?.sprintId)} title="Delete">
@@ -215,8 +223,17 @@ console.log(project)
             Complete Sprint
           </button>
         )}
-        {(!sprint?.isActive && new Date() > new Date(sprint?.endDate)) && (
-          <button className="btn-view">View Report</button>
+        {(!sprint?.isActive && new Date() > new Date(sprint?.endDate) ) && (
+          <button className="btn-view" onClick={()=>{
+                dispatch({
+                   type:SHOW_SNACKBAR,
+                   payload:{
+                     type:'success',
+                     message:"Feature comming soon !"
+                   }
+                 })
+                  
+          }}>View Report</button>
         )}
       </div>
     </div>

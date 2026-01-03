@@ -1,4 +1,5 @@
-import { assignSprintApi, createSprint, fetchSprintBoard, fetchSprintFlow, getAllSprint, getCurrentSprint, UpdateSprintBoard, UpdateSprintFlow } from "../../../Api/Plat/sprintApi";
+// import { getProjectSprintOverview } from "../../../../../Backend_SD/controllers/SprintController/sprintControllerV1";
+import { assignSprintApi, closeSprintApi, createSprint, fetchSprintBoard, fetchSprintFlow, getAllSprint, getCurrentSprint, startSprintApi, updateSprintApi, UpdateSprintBoard, UpdateSprintFlow } from "../../../Api/Plat/sprintApi";
 import apiClient from "../../../utils/axiosConfig";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 import { GET_PROJECT_SPRINT_OVERVIEW_FAIL, GET_PROJECT_SPRINT_OVERVIEW_REQUEST, GET_PROJECT_SPRINT_OVERVIEW_SUCCESS, SET_PROJECT_SCRUM_MAPPING_LOADING, SET_PROJECT_SCRUM_MAPPING_SUCCESS, SUCCESS_FETCH_CURRENT_TICKET_SPRINT } from "../../Constants/PlatformConstatnt/sprintConstantV1";
@@ -53,6 +54,139 @@ export const createSprintForPartner =
       dispatch({ type: "LOADING_END" });
     }
   };
+
+
+
+// Complete sprint or deactivate sprint
+
+
+
+export const completeSprint =(sprintId)=>async (dispatch)=>{
+  try {
+    if (!sprintId) {
+      dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'error',
+          message:"Sprint Id is requiree"
+        }
+      })
+    }
+      const res= await apiClient.put(
+        `${closeSprintApi}/${sprintId}`,
+          {
+            isActive:false
+          }
+        )
+
+       if (res.data.success) {
+      dispatch(fetchProjectSprintOverview())
+
+          dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'success',
+          message:"Sprint closed Successfully !"
+        }
+      })
+       } 
+  } catch (error) {
+    dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'error',
+          message:error
+        }
+      })
+  }
+}
+
+
+
+
+export const startSprintAction =(sprintId)=>async (dispatch)=>{
+  try {
+    if (!sprintId) {
+      dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'error',
+          message:"Sprint Id is requiree"
+        }
+      })
+    }
+      const res= await apiClient.post(
+        `${startSprintApi}`,
+          {
+            sprintId
+          }
+        )
+
+       if (res.data.success) {
+      dispatch(fetchProjectSprintOverview())
+
+          dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'success',
+          message:"Sprint closed Successfully !"
+        }
+      })
+       } 
+  } catch (error) {
+    dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'error',
+          message:error
+        }
+      })
+  }
+}
+
+
+
+
+export const updateSprintAction =(sprintId,updates)=>async (dispatch)=>{
+  try {
+    if (!sprintId) {
+      dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'error',
+          message:"Sprint Id is requiree"
+        }
+      })
+    }
+      const res= await apiClient.put(
+        `${updateSprintApi}/${sprintId}`,
+          {
+            updates
+          }
+        )
+
+       if (res.data.success) {
+          dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'success',
+          message:"Sprint updated Successfully !"
+        }
+      })
+      dispatch(fetchProjectSprintOverview())
+       } 
+  } catch (error) {
+    dispatch({
+        type:SHOW_SNACKBAR,
+        payload:{
+          type:'error',
+          message:error
+        }
+      })
+  }
+}
+
+
 
 
 export const fetctCurrentProjectSprint=(projectId)=>async(dispatch)=>{
@@ -110,7 +244,7 @@ export const fetchProjectSprintOverview = (projectId) => async (dispatch) => {
     dispatch({ type: GET_PROJECT_SPRINT_OVERVIEW_REQUEST });
 
     const res = await apiClient.post(
-      `${getAllSprint}`,
+      `${getAllSprint}`,{},
       {
         params: projectId ? { projectId } : {},
       }

@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './SprintManagement.scss';
-import { getAllProjects, getProjectWithHigherAccess } from '../../Redux/Actions/PlatformActions.js/projectsActions';
-import { createSprintForPartner, fetchProjectSprintOverview } from '../../Redux/Actions/SprintActions/sprintActionsV1';
+import { getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
+import { completeSprint, createSprintForPartner, fetchProjectSprintOverview, startSprintAction, updateSprintAction } from '../../Redux/Actions/SprintActions/sprintActionsV1';
 import CreateSprint from './component/createSprint';
 import SprintCard from './component/sprintCard';
 import EditSprint from './component/EditSprint';
+import { useMemo } from 'react';
+import CircularLoader from '../../customFiles/customComponent/Loader/circularLoader';
 
 const SprintManagement = () => {
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.user);
+  // useEffect(()=>{
+  //   dispatch(getAllProjects(userDetails?.id))
 
-
-  useEffect(()=>{
-    dispatch(getAllProjects(userDetails?.id))
-
-    dispatch(fetchProjectSprintOverview())
-  },[dispatch,userDetails])
+  //   dispatch(fetchProjectSprintOverview(projectId))
+  // },[dispatch,userDetails,projectId])
 //   const { projects } = useSelector((state) => state.project);
 //   const { sprints, loading } = useSelector((state) => state.sprint);
-  const {projectWithAccess,sucessFetchProjects,projects}= useSelector((state)=>state.projects)
-  const {sprintOverview}= useSelector((state)=>state.sprint)
+  const {projectWithAccess,projects}= useSelector((state)=>state.projects)
+  const {sprintOverview,loading}= useSelector((state)=>state.sprint)
 
-console.log(projectWithAccess)
-  const [activeTab, setActiveTab] = useState('active');
+  const [activeTab, setActiveTab] = useState('ALL');
   const [selectedProject, setSelectedProject] = useState('all');
+  const [projectId, setProjectId] = useState('');
+  const [selectedSprintId, setSelectedSprintId] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedSprint, setSelectedSprint] = useState(null);
@@ -36,118 +37,50 @@ console.log(projectWithAccess)
   endDate: '' 
   })
 
+  useEffect(()=>{
+    dispatch(getAllProjects(userDetails?.id))
 
+    dispatch(fetchProjectSprintOverview(projectId))
+  },[dispatch,userDetails,projectId])
+
+  console.log(projectId,"project id for id")
   // Mock sprints data with project association
-  const [sprintsData, setSprintsData] = useState([
-    {
-      id: 'sprint-1',
-      name: 'Sprint 23 - Nov 2025',
-      projectId: 'proj-1',
-      projectName: 'E-Commerce Platform',
-      projectKey: 'ECP',
-      projectColor: '#6366f1',
-      status: 'active',
-      startDate: '2025-11-01',
-      endDate: '2025-11-15',
-      goal: 'Complete user authentication and dashboard improvements',
-      tickets: 15,
-      completed: 8,
-      inProgress: 5,
-      todo: 2,
-      storyPoints: 45,
-      completedPoints: 28,
-      velocity: 3.2,
-      health: 'good'
-    },
-    {
-      id: 'sprint-2',
-      name: 'Sprint 24 - Dec 2025',
-      projectId: 'proj-1',
-      projectName: 'E-Commerce Platform',
-      projectKey: 'ECP',
-      projectColor: '#6366f1',
-      status: 'planned',
-      startDate: '2025-12-01',
-      endDate: '2025-12-15',
-      goal: 'API integration and mobile responsiveness',
-      tickets: 12,
-      completed: 0,
-      inProgress: 0,
-      todo: 12,
-      storyPoints: 38,
-      completedPoints: 0,
-      velocity: 0,
-      health: 'pending'
-    },
-    {
-      id: 'sprint-3',
-      name: 'Sprint 15 - Nov 2025',
-      projectId: 'proj-2',
-      projectName: 'Mobile App',
-      projectKey: 'MOB',
-      projectColor: '#10b981',
-      status: 'active',
-      startDate: '2025-11-01',
-      endDate: '2025-11-15',
-      goal: 'Implement push notifications and offline mode',
-      tickets: 10,
-      completed: 7,
-      inProgress: 2,
-      todo: 1,
-      storyPoints: 32,
-      completedPoints: 24,
-      velocity: 2.8,
-      health: 'excellent'
-    },
-    {
-      id: 'sprint-4',
-      name: 'Sprint 8 - Oct 2025',
-      projectId: 'proj-3',
-      projectName: 'Analytics Dashboard',
-      projectKey: 'ANA',
-      projectColor: '#f59e0b',
-      status: 'completed',
-      startDate: '2025-10-15',
-      endDate: '2025-10-31',
-      goal: 'Data visualization and export features',
-      tickets: 18,
-      completed: 16,
-      inProgress: 0,
-      todo: 2,
-      storyPoints: 52,
-      completedPoints: 48,
-      velocity: 4.1,
-      health: 'excellent'
-    },
-  ]);
+  const [sprintsData, setSprintsData] = useState([]);
 
-  const filteredSprints = sprintsData.filter((sprint) => {
-    const matchesTab = sprint.status === activeTab;
-    const matchesProject = selectedProject === 'all' || sprint.projectId === selectedProject;
-    const matchesSearch = sprint.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         sprint.projectName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTab && matchesProject && matchesSearch;
-  });
+  // const filteredSprints = sprintsData.filter((sprint) => {
+  //   const matchesTab = sprint.status === activeTab;
+  //   const matchesProject = selectedProject === 'all' || sprint.projectId === selectedProject;
+  //   const matchesSearch = sprint.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //                        sprint.projectName.toLowerCase().includes(searchQuery.toLowerCase());
+  //   return matchesTab && matchesProject && matchesSearch;
+  // });
   // Calculate stats based on selected project
   const getStatsForProject = () => {
-    const filteredByProject = selectedProject === 'all' 
-      ? sprintsData 
-      : sprintsData.filter(s => s.projectId === selectedProject);
+  const allSprints = sprintOverview.flatMap(project => 
+    project.sprints.map(sprint => ({
+      ...sprint,
+      projectId: project.projectId
+    }))
+  );
+  
+  const filteredByProject = selectedProject === 'all' 
+    ? allSprints 
+    : allSprints.filter(s => s.projectId === selectedProject);
 
-    return {
-      active: filteredByProject.filter(s => s.status === 'ACTIVE').length,
-      planned: filteredByProject.filter(s => s.status === 'PLANNED').length,
-      completed: filteredByProject.filter(s => s.status === 'COMPLETED').length,
-      avgVelocity: (filteredByProject.reduce((sum, s) => sum + s.velocity, 0) / filteredByProject.length || 0).toFixed(1)
-    };
+  return {
+    active: filteredByProject.filter(s => s.status === 'ACTIVE').length,
+    planned: filteredByProject.filter(s => s.status === 'PLANNED').length,
+    completed: filteredByProject.filter(s => s.status === 'COMPLETED').length,
+    avgVelocity: (filteredByProject.reduce((sum, s) => sum + (s.velocity || 0), 0) / filteredByProject.length || 0).toFixed(1)
   };
+};
 
-  // fetch project details 
-  const getProjectDetails = (projectId) => {
-    return projects.find(
-      (project) => project.projectId === projectId
-    )
-  };
+  // // fetch project details 
+  // const getProjectDetails = (projectId) => {
+  //   return projects.find(
+  //     (project) => project.projectId === projectId
+  //   )
+  // };
 
 
   const stats = getStatsForProject();
@@ -162,44 +95,20 @@ console.log(projectWithAccess)
   };
 
   const handleUpdateSprint = () => {
-    const selectedProj = projectWithAccess.find(p => p.id === formData.projectId) || projects.find(p => p.projectId === formData.projectId || p._id === formData.projectId);
-    setSprintsData(
-      sprintsData.map((sprint) =>
-        (sprint.id === selectedSprint?.id || sprint.id === selectedSprint?.sprintId || sprint.sprintId === selectedSprint?.sprintId)
-          ? { 
-              ...sprint, 
-              ...formData,
-              sprintName: formData.name || formData.sprintName || sprint.sprintName,
-              projectName: selectedProj?.name || selectedProj?.projectName,
-              projectKey: selectedProj?.key || selectedProj?.partnerCode,
-              projectColor: selectedProj?.color,
-            }
-          : sprint
-      )
-    );
+    console.log(sprintsData,formData)
+    dispatch(updateSprintAction(selectedSprintId,formData))
     setShowEditModal(false);
     setSelectedSprint(null);
     resetForm();
   };
 
   const handleStartSprint = (sprintId) => {
-    setSprintsData(
-      sprintsData.map((sprint) =>
-        sprint.id === sprintId
-          ? { ...sprint, status: 'active' }
-          : sprint
-      )
-    );
+    dispatch(startSprintAction(sprintId))
   };
 
   const handleCompleteSprint = (sprintId) => {
-    setSprintsData(
-      sprintsData.map((sprint) =>
-        sprint.id === sprintId
-          ? { ...sprint, status: 'completed' }
-          : sprint
-      )
-    );
+    dispatch(completeSprint(sprintId))
+    dispatch(fetchProjectSprintOverview(projectId))
   };
 
   const handleDeleteSprint = (sprintId) => {
@@ -208,20 +117,26 @@ console.log(projectWithAccess)
     }
   };
 
-  const openEditModal = (sprint, projectIdFromCard) => {
-    setSelectedSprint(sprint);
-    console.log('openEditModal sprint:', sprint, 'projectIdFromCard:', projectIdFromCard)
-    const resolvedProjectId = projectIdFromCard || sprint?.projectId || sprint?.projectId;
-    setFormData({
-      projectId: resolvedProjectId || '',
-      name: sprint?.sprintName || sprint?.name || '',
-      startDate: sprint?.startDate || '',
-      endDate: sprint?.endDate || '',
-      goal: sprint?.goal || ''
-    });
-    setShowEditModal(true);
-  
+ const openEditModal = (sprint, projectIdFromCard,sprintId) => {
+  setSelectedSprintId(sprintId)
+  const resolvedProjectId =
+    projectIdFromCard || sprint?.projectId || "";
+
+  const normalizedFormData = {
+    projectId: resolvedProjectId,
+    name: sprint?.sprintName || sprint?.name || "",
+    startDate: sprint?.startDate
+      ? sprint.startDate.split("T")[0]
+      : "",
+    endDate: sprint?.endDate
+      ? sprint.endDate.split("T")[0]
+      : "",
+    goal: sprint?.goal || ""
   };
+  setSelectedSprint(sprint);
+  setFormData(normalizedFormData);
+  setShowEditModal(true);
+};
 
   const resetForm = () => {
     setFormData({
@@ -233,34 +148,90 @@ console.log(projectWithAccess)
       duration: 2,
     });
   };
+const localSprints = useMemo(() => {
+  if (!Array.isArray(sprintOverview)) return [];
 
-  const calculateDuration = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = Math.abs(endDate - startDate);
-    const diffWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
-    return diffWeeks;
+  // 1️⃣ Collect unique sprints
+  const sprintMap = new Map();
+
+  sprintOverview.forEach(project => {
+    project?.sprints?.forEach(sprint => {
+      let projectId= project['projectId'];
+      if (!sprint?.sprintId) return;
+      sprintMap.set(sprint.sprintId, {...sprint,projectId});
+    });
+  });
+
+  let sprints = [...sprintMap.values()];
+
+  // 2️⃣ Filter by active tab (status)
+  if (activeTab && activeTab !== "ALL") {
+    sprints = sprints.filter(
+      sprint => sprint.status?.toLowerCase() === activeTab.toLowerCase()
+    );
+  }
+
+  // 3️⃣ Search filter
+  const query = searchQuery.trim().toLowerCase();
+
+  if (query) {
+    sprints = sprints.filter(sprint =>
+      sprint.sprintName?.toLowerCase().includes(query)
+    );
+  }
+
+  // 4️⃣ Sorting (ACTIVE → PLANNED → COMPLETED)
+  const statusOrder = {
+    ALL:1,
+    ACTIVE: 2,
+    PLANNED: 3,
+    COMPLETED: 4
   };
 
-  // const getHealthColor = (health) => {
-  //   switch (health) {
-  //     case 'excellent': return 'health-excellent';
-  //     case 'good': return 'health-good';
-  //     case 'warning': return 'health-warning';
-  //     case 'critical': return 'health-critical';
-  //     default: return 'health-pending';
-  //   }
-  // };
+  sprints.sort(
+    (a, b) =>
+      (statusOrder[a.status] || 99) -
+      (statusOrder[b.status] || 99)
+  );
 
-  // const getStatusBadge = (status) => {
-  //   switch (status) {
-  //     case 'active': return 'badge-active';
-  //     case 'planned': return 'badge-planned';
-  //     case 'completed': return 'badge-completed';
-  //     default: return 'badge-default';
-  //   }
-  // };
+  return sprints;
+}, [sprintOverview, searchQuery, activeTab]);
 
+
+
+  // =============================Memorized Sprint Data============================
+
+
+
+
+
+
+
+
+  //============================== For sorting and searching memorized the sprints ================================
+
+const { ActiveSprint, PlannedSprint, CompletedSprint } = useMemo(() => {
+  const result = {
+    ActiveSprint: [],
+    PlannedSprint: [],
+    CompletedSprint: []
+  };
+
+  localSprints.forEach(sprint => {
+    if (sprint.status === 'ACTIVE') {
+      result.ActiveSprint.push(sprint);
+    } else if (sprint.status === 'PLANNED') {
+      result.PlannedSprint.push(sprint);
+    } else if (sprint.status === 'COMPLETED') {
+      result.CompletedSprint.push(sprint);
+    }
+  });
+
+  return result;
+}, [localSprints]);
+
+
+//============================== For sorting and searching memorized the sprints ================================
   return (
     <div className="sprint-management">
       <div className="sprint-header">
@@ -280,7 +251,7 @@ console.log(projectWithAccess)
         <div className="project-pills">
           <button
             className={`project-pill ${selectedProject === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedProject('all')}
+            onClick={() => {setSelectedProject('all'),setProjectId(null)}}
           >
             <span className="pill-icon">📊</span>
             All Projects
@@ -290,7 +261,8 @@ console.log(projectWithAccess)
             <button
               key={project._id}
               className={`project-pill ${selectedProject === project._id ? 'active' : ''}`}
-              onClick={() => setSelectedProject(project._id)}
+              onClick={() => {setSelectedProject(project._id),setProjectId(project?.projectId)
+              }}
               style={{
                 '--project-color': project.color,
                 borderColor: selectedProject === project._id ? project.color : '#e0e7ff'
@@ -300,8 +272,6 @@ console.log(projectWithAccess)
                 {project.key}
               </span>
               {project.name ??project.projectName}
-                      {project.partnerCode}
-
               {/* {projectWithAccess} */}
             </button>
           ))}
@@ -312,21 +282,28 @@ console.log(projectWithAccess)
         <div className="stat-card stat-active">
           <div className="stat-icon">🏃</div>
           <div className="stat-content">
-            <div className="stat-value">{stats.active}</div>
+            <div className="stat-value">{localSprints.length}</div>
+            <div className="stat-label">All Sprints</div>
+          </div>
+        </div>
+        <div className="stat-card stat-active">
+          <div className="stat-icon">🏃</div>
+          <div className="stat-content">
+            <div className="stat-value">{ActiveSprint.length}</div>
             <div className="stat-label">Active Sprints</div>
           </div>
         </div>
         <div className="stat-card stat-planned">
           <div className="stat-icon">📅</div>
           <div className="stat-content">
-            <div className="stat-value">{stats.planned}</div>
+            <div className="stat-value">{PlannedSprint.length}</div>
             <div className="stat-label">Planned Sprints</div>
           </div>
         </div>
         <div className="stat-card stat-completed">
           <div className="stat-icon">✅</div>
           <div className="stat-content">
-            <div className="stat-value">{stats.completed}</div>
+            <div className="stat-value">{CompletedSprint.length}</div>
             <div className="stat-label">Completed Sprints</div>
           </div>
         </div>
@@ -342,22 +319,28 @@ console.log(projectWithAccess)
       <div className="controls-bar">
         <div className="tabs">
           <button
+            className={`tab ${activeTab === 'ALL' ? 'active' : ''}`}
+            onClick={() => setActiveTab('ALL')}
+          >
+            ALL ({localSprints.length})
+          </button>
+          <button
             className={`tab ${activeTab === 'active' ? 'active' : ''}`}
             onClick={() => setActiveTab('active')}
           >
-            Active ({sprintsData.filter(s => s.status === 'active' && (selectedProject === 'all' || s.projectId === selectedProject)).length})
+            Active ({ActiveSprint.length})
           </button>
           <button
             className={`tab ${activeTab === 'planned' ? 'active' : ''}`}
             onClick={() => setActiveTab('planned')}
           >
-            Planned ({sprintsData.filter(s => s.status === 'planned' && (selectedProject === 'all' || s.projectId === selectedProject)).length})
+            Planned ({PlannedSprint.length})
           </button>
           <button
             className={`tab ${activeTab === 'completed' ? 'active' : ''}`}
             onClick={() => setActiveTab('completed')}
           >
-            Completed ({sprintsData.filter(s => s.status === 'completed' && (selectedProject === 'all' || s.projectId === selectedProject)).length})
+            Completed ({CompletedSprint.length})
           </button>
         </div>
         <div className="search-bar">
@@ -371,32 +354,35 @@ console.log(projectWithAccess)
         </div>
       </div>
 
-      {filteredSprints.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">📭</div>
-          <h3>No sprints found</h3>
-          <p>Try adjusting your filters or create a new sprint</p>
-        </div>
-      ) : (
-        <div className="sprint-grid">
-      {sprintOverview.map((project) =>
-          project.sprints.map((sprint) => (
-            <SprintCard
-              key={sprint.sprintId}
-              project={getProjectDetails(project?.projectId)}
-              sprint={sprint}
-              setFormData={setFormData}
-              projectId={project.projectId}
-              openEditModal={openEditModal}
-              handleDeleteSprint={handleDeleteSprint}
-              handleStartSprint={handleStartSprint}
-              handleCompleteSprint={handleCompleteSprint}
-            />
-          ))
-        )}
-
-        </div>
-      )}
+{/* // Then render filteredSprints */}
+{localSprints.length === 0 ? (
+  <div className="empty-state">
+    <div className="empty-icon">📭</div>
+    <h3>No sprints found</h3>
+    <p>Try adjusting your filters or create a new sprint</p>
+  </div>
+) : (
+  <div className="sprint-grid">
+    {
+    loading ? <CircularLoader/>:
+    
+    localSprints.map((sprint) => {
+      return (
+        <SprintCard
+          key={sprint.sprintId}
+          sprint={sprint}
+          setFormData={setFormData}
+          openEditModal={openEditModal}
+          handleDeleteSprint={handleDeleteSprint}
+          handleStartSprint={handleStartSprint}
+          handleCompleteSprint={handleCompleteSprint}
+        />
+      );
+    })
+    
+    }
+  </div>
+)}
 
       {showCreateModal && (
         <CreateSprint formData={formData} projects={projects} setShowCreateModal={setShowCreateModal} setFormData={setFormData} handleCreateSprint={handleCreateSprint} />
