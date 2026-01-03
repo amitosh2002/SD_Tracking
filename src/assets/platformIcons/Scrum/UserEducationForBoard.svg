@@ -1,0 +1,50 @@
+<svg width="500" height="520" viewBox="0 0 500 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="500" height="520" rx="24" fill="#F8FAFC"/>
+  
+  <g transform="translate(30, 25)">
+    <rect width="110" height="36" rx="10" fill="white" stroke="#E2E8F0"/>
+    <text x="55" y="23" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#1E293B">Configure</text>
+    
+    <text x="180" y="23" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="500" fill="#94A3B8">Status Mapping</text>
+    <path d="M440 10L455 25M455 10L440 25" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <g transform="translate(30, 90)">
+    <text x="0" y="10" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#1E293B">Design your board layout</text>
+    
+    <g transform="translate(50, 40)">
+      <rect x="80" y="0" width="70" height="30" rx="6" fill="#FFEDD5" stroke="#F97316"/>
+      <path d="M115 30V50M115 50H60V70M115 50H170V70" stroke="#CBD5E1" stroke-width="2"/>
+      <rect x="25" y="70" width="70" height="30" rx="6" fill="#DBEAFE" stroke="#3B82F6"/>
+      <rect x="135" y="70" width="70" height="30" rx="6" fill="#D1FAE5" stroke="#10B981"/>
+    </g>
+  </g>
+  
+  <g transform="translate(30, 240)">
+    <rect width="440" height="220" rx="16" fill="white" stroke="#E2E8F0" stroke-dasharray="4 4"/>
+    
+    <g transform="translate(20, 30)">
+      <rect width="120" height="160" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+      <rect width="120" height="4" rx="2" fill="#3B82F6"/>
+      <text x="10" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1E293B">OPEN</text>
+      <rect x="10" y="40" width="100" height="30" rx="6" fill="#FFEDD5" opacity="0.6"/>
+    </g>
+    
+    <g transform="translate(160, 30)">
+      <rect width="120" height="160" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+      <rect width="120" height="4" rx="2" fill="#F97316"/>
+      <text x="10" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1E293B">IN PROGRESS</text>
+      <rect x="10" y="40" width="100" height="30" rx="6" fill="#DBEAFE" opacity="0.6"/>
+      <rect x="10" y="80" width="100" height="30" rx="6" fill="#D1FAE5" opacity="0.6"/>
+    </g>
+    
+    <g transform="translate(300, 30)">
+      <rect width="120" height="160" rx="8" fill="#F8FAFC" stroke="#E2E8F0"/>
+      <rect width="120" height="4" rx="2" fill="#10B981"/>
+      <text x="10" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1E293B">RESOLVED</text>
+    </g>
+  </g>
+  
+  <rect x="360" y="475" width="110" height="32" rx="8" fill="#1E293B"/>
+  <text x="415" y="495" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="white">Apply &amp; Save</text>
+</svg>

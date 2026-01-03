@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { GET_OTP } from '../../Redux/Constants/AuthConstants';
 import { getOtpAction, resendOtpRequest, verifyOtpAction } from '../../Redux/Actions/Auth/AuthActions';
 import { useNavigate } from 'react-router-dom';
 import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
 import GoogleAuthButton from './googleSSO';
+import HoraLoader from '../../customFiles/customComponent/Loader/loaderV1';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1); // 1 for email, 2 for OTP
@@ -434,6 +435,11 @@ const LoginPage = () => {
     }
   `;
 
+
+  const { ssoLoading,ssoLogin } = useSelector((state) => state.auth);
+  if (!ssoLoading && ssoLogin) {
+    return <div><HoraLoader /></div>;
+  }
   return (
     <>
       <style>{cssAnimations}</style>

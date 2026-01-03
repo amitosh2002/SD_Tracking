@@ -193,10 +193,13 @@ const ScrumMasterDashboard = () => {
       <header className="dashboard-header">
         <div className="header-text">
           <h1>Scrum Master Dashboard</h1>
-          <p>Welcome back, <b>{userDetails?.name || 'User'}</b>. Manage your agile ecosystem.</p>
+          <p>Welcome back, <b>{userDetails?.profile?.firstName || 'User'}</b>. Manage your agile ecosystem.</p>
         </div>
         <div className="header-actions">
-           <button className="btn-primary" onClick={() => navigate("/projects/create")}>
+           <button className="btn-primary" onClick={() => navigate("/sprint/dashboard")}>
+            <Plus size={18} /> Sprint Control Panel
+          </button>
+           <button className="btn-primary" onClick={() => navigate("/create/project-space")}>
             <Plus size={18} /> New Project
           </button>
         </div>
