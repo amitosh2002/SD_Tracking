@@ -31,6 +31,7 @@ import WorkspaceConfig from "../Sprint/TicketConfigurator";
 import SprintFLowBoard from "../Sprint/Board/sprintFlowBoard";
 import TeamsPage from "../HeroSection/TeamsPage";
 import SprintFlowUserEducation from "../Sprint/component/OnboardingScreens/WorkFlowOnboarding";
+import ProjectCreationFlow from "../GenerailForms/projectCreationFlow";
 
 // import { useSelector } from "react-redux";
 
@@ -67,9 +68,11 @@ const AllRoutes = () => {
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
                 <Route path="/sprint/dashboard" element={<SprintManagement />} />
                 <Route path="/sprint" element={<SprintHome />} />
+                <Route path="/create/project-space" element={<ProjectCreationFlow />} />
+
                 <Route path="/sprint/board" element={<SprintBoard />} />
                 <Route path="/confrigurator/flow" element={<WorkflowManager />} />
-                <Route path="/confrigurator" element={<ScrumMasterDashboard />} />
+                <Route path="/work-space/confrigurator" element={<ScrumMasterDashboard />} />
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
                 <Route path="/workspace/:projectId" element={<ConfigurationPage />} />
 

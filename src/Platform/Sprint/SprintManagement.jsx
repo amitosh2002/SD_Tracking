@@ -19,7 +19,7 @@ const SprintManagement = () => {
   // },[dispatch,userDetails,projectId])
 //   const { projects } = useSelector((state) => state.project);
 //   const { sprints, loading } = useSelector((state) => state.sprint);
-  const {projectWithAccess,projects}= useSelector((state)=>state.projects)
+  const {projects}= useSelector((state)=>state.projects)
   const {sprintOverview,loading}= useSelector((state)=>state.sprint)
 
   const [activeTab, setActiveTab] = useState('ALL');
@@ -28,7 +28,7 @@ const SprintManagement = () => {
   const [selectedSprintId, setSelectedSprintId] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedSprint, setSelectedSprint] = useState(null);
+  // const [selectedSprint, setSelectedSprint] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [formData,setFormData]=useState({
        projectId: '',       // Required - from dropdown
@@ -98,7 +98,7 @@ const SprintManagement = () => {
     console.log(sprintsData,formData)
     dispatch(updateSprintAction(selectedSprintId,formData))
     setShowEditModal(false);
-    setSelectedSprint(null);
+    // setSelectedSprint(null);
     resetForm();
   };
 
@@ -133,7 +133,7 @@ const SprintManagement = () => {
       : "",
     goal: sprint?.goal || ""
   };
-  setSelectedSprint(sprint);
+  // setSelectedSprint(sprint);
   setFormData(normalizedFormData);
   setShowEditModal(true);
 };

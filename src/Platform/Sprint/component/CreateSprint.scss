@@ -44,7 +44,7 @@ $text-muted: #94a3b8;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (max-width: 768px) {
     max-width: 100%;

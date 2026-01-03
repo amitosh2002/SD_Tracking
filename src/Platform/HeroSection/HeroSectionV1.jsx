@@ -248,6 +248,7 @@ const HoraDashboard = () => {
               </h1>
             </div>
             <div className="header__actions">
+              <button className="btn btn--outline" onClick={()=>{navigate("/work-space/confrigurator")}}>Workspace Confrigure</button>
               <button className="btn btn--outline">EXPORT</button>
               <button 
                 className="btn btn--primary" 
