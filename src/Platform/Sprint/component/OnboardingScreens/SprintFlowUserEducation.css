@@ -1,0 +1,67 @@
+.edu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.edu-highlight {
+  position: absolute;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow:
+    0 0 0 4px #2563eb,
+    0 0 0 9999px rgba(15, 23, 42, 0.6);
+  pointer-events: none;
+}
+
+.edu-tooltip {
+  position: absolute;
+  background: #ffffff;
+  padding: 16px;
+  width: 320px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.edu-tooltip h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.edu-tooltip p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.edu-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.edu-actions button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  cursor: pointer;
+}
+
+.edu-actions button.primary {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.edu-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.edu-arrow {
+  position: absolute;
+  left: 60px;
+  top: 60px;
+}

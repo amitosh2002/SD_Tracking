@@ -1,384 +1,660 @@
-// SprintCard.scss - Hora Theme
+// // SprintCard.scss - Hora Theme
 
-$primary: #6366f1;
-$primary-light: #818cf8;
-$success: #10b981;
-$warning: #f59e0b;
-$danger: #ef4444;
-$info: #3b82f6;
-$card-bg: #ffffff;
-$border: #e0e7ff;
-$text-primary: #1e293b;
-$text-secondary: #64748b;
-$text-muted: #94a3b8;
+// $primary: #6366f1;
+// $primary-light: #818cf8;
+// $success: #10b981;
+// $warning: #f59e0b;
+// $danger: #ef4444;
+// $info: #3b82f6;
+// $card-bg: #ffffff;
+// $border: #e0e7ff;
+// $text-primary: #1e293b;
+// $text-secondary: #64748b;
+// $text-muted: #94a3b8;
 
-.sprint-card {
-  background: $card-bg;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  border: 2px solid $border;
-  transition: all 0.3s ease;
+// .sprint-card {
+//   background: $card-bg;
+//   border-radius: 1rem;
+//   padding: 1.5rem;
+//   border: 2px solid $border;
+//   transition: all 0.3s ease;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 1rem;
+
+//   &:hover {
+//     transform: translateY(-4px);
+//     box-shadow: 0 12px 32px rgba(99, 102, 241, 0.15);
+//   }
+
+//   &.health-excellent {
+//     border-left: 4px solid $success;
+//   }
+
+//   &.health-good {
+//     border-left: 4px solid $primary;
+//   }
+
+//   &.health-warning {
+//     border-left: 4px solid $warning;
+//   }
+
+//   &.health-critical {
+//     border-left: 4px solid $danger;
+//   }
+
+//   &.health-pending {
+//     border-left: 4px solid $text-muted;
+//   }
+
+//   .card-header {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: flex-start;
+//     gap: 1rem;
+
+//     .card-title-section {
+//       flex: 1;
+//       display: flex;
+//       flex-direction: column;
+//       gap: 0.5rem;
+
+//       .sprint-info-header {
+//         display: flex;
+//         align-items: baseline;
+//         gap: 0.75rem;
+//         flex-wrap: wrap;
+
+//         .card-title {
+//           font-size: 1.25rem;
+//           font-weight: 700;
+//           color: $text-primary;
+//           margin: 0;
+//         }
+
+//         .sprint-number {
+//           font-size: 0.813rem;
+//           font-weight: 600;
+//           color: $text-secondary;
+//           padding: 0.25rem 0.625rem;
+//           background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+//           border-radius: 0.375rem;
+//         }
+//       }
+//     }
+
+//     .card-actions {
+//       display: flex;
+//       gap: 0.5rem;
+
+//       .action-btn {
+//         width: 32px;
+//         height: 32px;
+//         border: 2px solid $border;
+//         background: $card-bg;
+//         border-radius: 0.5rem;
+//         cursor: pointer;
+//         transition: all 0.2s ease;
+//         display: flex;
+//         align-items: center;
+//         justify-content: center;
+//         font-size: 0.875rem;
+
+//         &:hover {
+//           border-color: $primary;
+//           transform: scale(1.1);
+//           background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+//         }
+//       }
+//     }
+//   }
+
+//   .status-badge {
+//     display: inline-flex;
+//     align-items: center;
+//     padding: 0.375rem 0.875rem;
+//     border-radius: 1rem;
+//     font-size: 0.75rem;
+//     font-weight: 700;
+//     text-transform: uppercase;
+//     letter-spacing: 0.05em;
+//     align-self: flex-start;
+
+//     &.badge-active {
+//       background: linear-gradient(135deg, $success 0%, #34d399 100%);
+//       color: white;
+//       box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+//     }
+
+//     &.badge-planned {
+//       background: linear-gradient(135deg, $primary 0%, $primary-light 100%);
+//       color: white;
+//       box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+//     }
+
+//     &.badge-completed {
+//       background: linear-gradient(135deg, $text-muted 0%, #cbd5e1 100%);
+//       color: white;
+//       box-shadow: 0 2px 8px rgba(148, 163, 184, 0.25);
+//     }
+//   }
+
+//   .sprint-dates {
+//     display: flex;
+//     align-items: center;
+//     gap: 0.75rem;
+//     font-size: 0.875rem;
+//     color: $text-secondary;
+//     font-weight: 500;
+//     padding: 0.75rem;
+//     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+//     border-radius: 0.5rem;
+
+//     .date-separator {
+//       color: $text-muted;
+//     }
+//   }
+
+//   .days-remaining {
+//     display: flex;
+//     align-items: center;
+//     gap: 0.5rem;
+//     padding: 0.625rem 1rem;
+//     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+//     border-radius: 0.5rem;
+//     font-size: 0.875rem;
+//     font-weight: 600;
+//     color: #1e40af;
+
+//     &.overdue {
+//       background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+//       color: #991b1b;
+//     }
+
+//     .days-icon {
+//       font-size: 1rem;
+//     }
+//   }
+
+//   .progress-section {
+//     .progress-header {
+//       display: flex;
+//       justify-content: space-between;
+//       align-items: center;
+//       margin-bottom: 0.5rem;
+
+//       .progress-label {
+//         font-size: 0.813rem;
+//         font-weight: 600;
+//         color: $text-secondary;
+//       }
+
+//       .progress-value {
+//         font-size: 0.813rem;
+//         font-weight: 700;
+//         color: $text-primary;
+//       }
+//     }
+
+//     .progress-bar {
+//       height: 10px;
+//       background: #e0e7ff;
+//       border-radius: 1rem;
+//       overflow: hidden;
+//       margin-bottom: 0.5rem;
+
+//       .progress-fill {
+//         height: 100%;
+//         transition: width 0.3s ease;
+//         border-radius: 1rem;
+//       }
+//     }
+
+//     .progress-percentage {
+//       text-align: right;
+//       font-size: 0.75rem;
+//       font-weight: 700;
+//       color: $primary;
+//     }
+//   }
+
+//   .sprint-metrics {
+//     display: grid;
+//     grid-template-columns: repeat(3, 1fr);
+//     gap: 1rem;
+//     padding: 1rem;
+//     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+//     border-radius: 0.75rem;
+
+//     @media (max-width: 480px) {
+//       grid-template-columns: 1fr;
+//     }
+
+//     .metric {
+//       display: flex;
+//       flex-direction: column;
+//       gap: 0.25rem;
+
+//       .metric-label {
+//         font-size: 0.75rem;
+//         color: $text-secondary;
+//         font-weight: 500;
+//       }
+
+//       .metric-value {
+//         font-size: 1.125rem;
+//         font-weight: 700;
+//         color: $text-primary;
+//       }
+//     }
+//   }
+
+//   .ticket-breakdown {
+//     display: grid;
+//     grid-template-columns: repeat(2, 1fr);
+//     gap: 0.75rem;
+
+//     @media (max-width: 480px) {
+//       grid-template-columns: 1fr;
+//     }
+
+//     .breakdown-item {
+//       display: flex;
+//       align-items: center;
+//       gap: 0.5rem;
+//       font-size: 0.813rem;
+//       font-weight: 500;
+//       color: $text-secondary;
+
+//       .breakdown-dot {
+//         width: 10px;
+//         height: 10px;
+//         border-radius: 50%;
+//         flex-shrink: 0;
+//       }
+
+//       &.done .breakdown-dot {
+//         background: $success;
+//       }
+
+//       &.progress .breakdown-dot {
+//         background: $info;
+//       }
+
+//       &.testing .breakdown-dot {
+//         background: $warning;
+//       }
+
+//       &.todo .breakdown-dot {
+//         background: $text-muted;
+//       }
+//     }
+//   }
+
+//   .additional-stats {
+//     display: flex;
+//     gap: 0.75rem;
+//     flex-wrap: wrap;
+
+//     .stat-chip {
+//       display: flex;
+//       align-items: center;
+//       gap: 0.5rem;
+//       padding: 0.5rem 0.875rem;
+//       background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+//       border-radius: 0.5rem;
+//       font-size: 0.75rem;
+
+//       .stat-label {
+//         color: $text-secondary;
+//         font-weight: 500;
+//       }
+
+//       .stat-value {
+//         color: $primary;
+//         font-weight: 700;
+//       }
+//     }
+//   }
+
+//   .card-footer {
+//     margin-top: auto;
+//     padding-top: 0.5rem;
+
+//     button {
+//       width: 100%;
+//       padding: 0.75rem;
+//       border: none;
+//       border-radius: 0.5rem;
+//       font-weight: 600;
+//       font-size: 0.875rem;
+//       cursor: pointer;
+//       transition: all 0.2s ease;
+
+//       &.btn-primary {
+//         background: linear-gradient(135deg, $success 0%, #34d399 100%);
+//         color: white;
+//         box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+
+//         &:hover {
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+//         }
+//       }
+
+//       &.btn-secondary {
+//         background: linear-gradient(135deg, $primary 0%, $primary-light 100%);
+//         color: white;
+//         box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+
+//         &:hover {
+//           transform: translateY(-2px);
+//           box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+//         }
+//       }
+
+//       &.btn-view {
+//         background: linear-gradient(135deg, $text-muted 0%, #cbd5e1 100%);
+//         color: white;
+
+//         &:hover {
+//           transform: translateY(-2px);
+//           background: linear-gradient(135deg, #94a3b8 0%, #cbd5e1 100%);
+//         }
+//       }
+//     }
+//   }
+// }
+
+// // Responsive
+// @media (max-width: 768px) {
+//   .sprint-card {
+//     padding: 1.25rem;
+
+//     .card-header {
+//       .card-title-section {
+//         .sprint-info-header {
+//           .card-title {
+//             font-size: 1.125rem;
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+
+
+
+.sprint-dashboard-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  transition: all 0.25s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
   }
+}
 
-  &.health-excellent {
-    border-left: 4px solid $success;
-  }
+/* ================= HEADER ================= */
 
-  &.health-good {
-    border-left: 4px solid $primary;
-  }
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
 
-  &.health-warning {
-    border-left: 4px solid $warning;
-  }
+.project-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
 
-  &.health-critical {
-    border-left: 4px solid $danger;
-  }
+.sprint-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 2px;
+}
 
-  &.health-pending {
-    border-left: 4px solid $text-muted;
-  }
+/* ================= STATUS PILL ================= */
 
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
+.status-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+}
 
-    .card-title-section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+.badge-active {
+  background: #dcfce7;
+  color: #15803d;
+}
 
-      .sprint-info-header {
-        display: flex;
-        align-items: baseline;
-        gap: 0.75rem;
-        flex-wrap: wrap;
+.badge-planned {
+  background: #fef3c7;
+  color: #92400e;
+}
 
-        .card-title {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: $text-primary;
-          margin: 0;
-        }
+.badge-completed {
+  background: #e5e7eb;
+  color: #374151;
+}
 
-        .sprint-number {
-          font-size: 0.813rem;
-          font-weight: 600;
-          color: $text-secondary;
-          padding: 0.25rem 0.625rem;
-          background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-          border-radius: 0.375rem;
-        }
-      }
-    }
+/* ================= DATE RANGE ================= */
 
-    .card-actions {
-      display: flex;
-      gap: 0.5rem;
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #475569;
+}
 
-      .action-btn {
-        width: 32px;
-        height: 32px;
-        border: 2px solid $border;
-        background: $card-bg;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.875rem;
+/* ================= PROGRESS ================= */
 
-        &:hover {
-          border-color: $primary;
-          transform: scale(1.1);
-          background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-        }
-      }
-    }
-  }
+.progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.375rem 0.875rem;
-    border-radius: 1rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    align-self: flex-start;
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+}
 
-    &.badge-active {
-      background: linear-gradient(135deg, $success 0%, #34d399 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
-    }
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
 
-    &.badge-planned {
-      background: linear-gradient(135deg, $primary 0%, $primary-light 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
-    }
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
 
-    &.badge-completed {
-      background: linear-gradient(135deg, $text-muted 0%, #cbd5e1 100%);
-      color: white;
-      box-shadow: 0 2px 8px rgba(148, 163, 184, 0.25);
-    }
-  }
+.days-remaining {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
 
-  .sprint-dates {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.875rem;
-    color: $text-secondary;
-    font-weight: 500;
-    padding: 0.75rem;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 0.5rem;
+/* ================= METRICS ================= */
 
-    .date-separator {
-      color: $text-muted;
-    }
-  }
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 6px;
 
-  .days-remaining {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #1e40af;
+  div {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
 
-    &.overdue {
-      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-      color: #991b1b;
-    }
-
-    .days-icon {
-      font-size: 1rem;
-    }
-  }
-
-  .progress-section {
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-
-      .progress-label {
-        font-size: 0.813rem;
-        font-weight: 600;
-        color: $text-secondary;
-      }
-
-      .progress-value {
-        font-size: 0.813rem;
-        font-weight: 700;
-        color: $text-primary;
-      }
-    }
-
-    .progress-bar {
-      height: 10px;
-      background: #e0e7ff;
-      border-radius: 1rem;
-      overflow: hidden;
-      margin-bottom: 0.5rem;
-
-      .progress-fill {
-        height: 100%;
-        transition: width 0.3s ease;
-        border-radius: 1rem;
-      }
-    }
-
-    .progress-percentage {
-      text-align: right;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: $primary;
-    }
-  }
-
-  .sprint-metrics {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 0.75rem;
-
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
-
-    .metric {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-
-      .metric-label {
-        font-size: 0.75rem;
-        color: $text-secondary;
-        font-weight: 500;
-      }
-
-      .metric-value {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: $text-primary;
-      }
-    }
-  }
-
-  .ticket-breakdown {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
-
-    .breakdown-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.813rem;
+    p {
+      font-size: 12px;
       font-weight: 500;
-      color: $text-secondary;
-
-      .breakdown-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-
-      &.done .breakdown-dot {
-        background: $success;
-      }
-
-      &.progress .breakdown-dot {
-        background: $info;
-      }
-
-      &.testing .breakdown-dot {
-        background: $warning;
-      }
-
-      &.todo .breakdown-dot {
-        background: $text-muted;
-      }
+      color: #64748b;
+      margin-bottom: 4px;
     }
-  }
 
-  .additional-stats {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-
-    .stat-chip {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.875rem;
-      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-      border-radius: 0.5rem;
-      font-size: 0.75rem;
-
-      .stat-label {
-        color: $text-secondary;
-        font-weight: 500;
-      }
-
-      .stat-value {
-        color: $primary;
-        font-weight: 700;
-      }
-    }
-  }
-
-  .card-footer {
-    margin-top: auto;
-    padding-top: 0.5rem;
-
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 0.5rem;
+    h4 {
+      font-size: 16px;
       font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &.btn-primary {
-        background: linear-gradient(135deg, $success 0%, #34d399 100%);
-        color: white;
-        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
-        }
-      }
-
-      &.btn-secondary {
-        background: linear-gradient(135deg, $primary 0%, $primary-light 100%);
-        color: white;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-        }
-      }
-
-      &.btn-view {
-        background: linear-gradient(135deg, $text-muted 0%, #cbd5e1 100%);
-        color: white;
-
-        &:hover {
-          transform: translateY(-2px);
-          background: linear-gradient(135deg, #94a3b8 0%, #cbd5e1 100%);
-        }
-      }
+      color: #0f172a;
+      margin: 0;
     }
   }
 }
 
-// Responsive
-@media (max-width: 768px) {
-  .sprint-card {
-    padding: 1.25rem;
+/* ================= TICKET BREAKDOWN ================= */
 
-    .card-header {
-      .card-title-section {
-        .sprint-info-header {
-          .card-title {
-            font-size: 1.125rem;
-          }
-        }
-      }
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+
+  span {
+    padding: 4px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .done {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .progress {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .testing {
+    background: #ede9fe;
+    color: #5b21b6;
+  }
+
+  .todo {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+/* ================= ACTION ROW ================= */
+
+.card-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  gap: 10px;
+}
+
+.left-actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    background: #f1f5f9;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #e2e8f0;
     }
+  }
+}
+
+.right-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.95;
+  }
+}
+
+.btn-secondary {
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-view {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ticket-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .card-actions-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .right-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }

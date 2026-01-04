@@ -41,6 +41,44 @@ const RenderLogs = (activity,type)=>{
                       <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
                       <span className="user">{activity?.performedBy?.name}</span>
                       <span className="action">{activity?.actionType}</span>
+                    </div>
+                      <span
+                          className="action"
+                          style={{
+                            background: `${activity.color}15`,
+                            color: activity.color
+                          }}
+                        >
+                          {activity?.performedBy?.name} added the time log of {activity?.changes?.newValue} minutes
+                        </span>
+                    <div className="activity-time">
+                        
+                      <Clock size={12} />
+                      <span>{formatCreatedAtDate(activity?.createdAt)}</span>
+                    </div>
+                  </div></>
+                    
+                )
+            }
+        case "TICKET_TRANSITION" :
+            {
+                return (
+                      <>
+                      
+                        <div
+                    className="activity-icon"
+                    style={{
+                      backgroundColor:"white",
+                      color:'rebeccapurple'
+                    }}
+                  >
+                    <Clock size={23}/>
+                  </div>
+                           <div className="activity-content">
+                    <div className="activity-header">
+                      <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
+                      <span className="user">{activity?.performedBy?.name}</span>
+                      <span className="action">{activity?.actionType}</span>
 
                       {/* {activity.from && (
                         <>
@@ -80,7 +118,235 @@ const RenderLogs = (activity,type)=>{
                             color: activity.color
                           }}
                         >
-                          {activity?.performedBy?.name} added the time log of {activity?.changes?.newValue} minutes
+                          {activity?.performedBy?.name} changed the ticket status from {activity?.changes?.prevValue} {"->" } {activity?.changes?.newValue}
+                        </span>
+                    <div className="activity-time">
+                        
+                      <Clock size={12} />
+                      <span>{formatCreatedAtDate(activity?.createdAt)}</span>
+                    </div>
+                  </div></>
+                    
+                )
+            }
+        case "TICKET_ASSIGN" :
+            {
+                return (
+                      <>
+                      
+                        <div
+                    className="activity-icon"
+                    style={{
+                      backgroundColor:"white",
+                      color:'rebeccapurple'
+                    }}
+                  >
+                    <Clock size={23}/>
+                  </div>
+                           <div className="activity-content">
+                    <div className="activity-header">
+                      <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
+                      <span className="user">{activity?.performedBy?.name}</span>
+                      <span className="action">{activity?.actionType}</span>
+                    </div>
+                      <span
+                          className="action"
+                          style={{
+                            background: `${activity.color}15`,
+                            color: activity.color
+                          }}
+                        >
+                          {activity?.performedBy?.name} has assigned himself to the ticket : {activity?.changes?.newValue}
+                        </span>
+                    <div className="activity-time">
+                        
+                      <Clock size={12} />
+                      <span>{formatCreatedAtDate(activity?.createdAt)}</span>
+                    </div>
+                  </div></>
+                    
+                )
+            }
+        case "TICKET_UPDATE" :
+            {
+                return (
+                      <>
+                      
+                        <div
+                    className="activity-icon"
+                    style={{
+                      backgroundColor:"white",
+                      color:'rebeccapurple'
+                    }}
+                  >
+                    <Clock size={23}/>
+                  </div>
+                           <div className="activity-content">
+                    <div className="activity-header">
+                      <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
+                      <span className="user">{activity?.performedBy?.name}</span>
+                      <span className="action">{activity?.actionType}</span>
+                    </div>
+                      <span
+                          className="action"
+                          style={{
+                            background: `${activity.color}15`,
+                            color: activity.color
+                          }}
+                        >
+                          {activity?.performedBy?.name} updated the ticket : {activity?.changes?.newValue}
+                        </span>
+                    <div className="activity-time">
+                        
+                      <Clock size={12} />
+                      <span>{formatCreatedAtDate(activity?.createdAt)}</span>
+                    </div>
+                  </div></>
+                    
+                )
+            }
+        case "TICKET_CREATE" :
+            {
+                return (
+                      <>
+                      
+                        <div
+                    className="activity-icon"
+                    style={{
+                      backgroundColor:"white",
+                      color:'rebeccapurple'
+                    }}
+                  >
+                    <Clock size={23}/>
+                  </div>
+                           <div className="activity-content">
+                    <div className="activity-header">
+                      <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
+                      <span className="user">{activity?.performedBy?.name}</span>
+                      <span className="action">{activity?.actionType}</span>
+                    </div>
+                      <span
+                          className="action"
+                          style={{
+                            background: `${activity.color}15`,
+                            color: activity.color
+                          }}
+                        >
+                          {activity?.performedBy?.name} created the task : {activity?.changes?.newValue}
+                        </span>
+                    <div className="activity-time">
+                        
+                      <Clock size={12} />
+                      <span>{formatCreatedAtDate(activity?.createdAt)}</span>
+                    </div>
+                  </div></>
+                    
+                )
+            }
+        case "TICKET_STORYPOINT" :
+            {
+                return (
+                      <>
+                      
+                        <div
+                    className="activity-icon"
+                    style={{
+                      backgroundColor:"white",
+                      color:'rebeccapurple'
+                    }}
+                  >
+                    <Clock size={23}/>
+                  </div>
+                           <div className="activity-content">
+                    <div className="activity-header">
+                      <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
+                      <span className="user">{activity?.performedBy?.name}</span>
+                      <span className="action">{activity?.actionType}</span>
+                    </div>
+                      <span
+                          className="action"
+                          style={{
+                            background: `${activity.color}15`,
+                            color: activity.color
+                          }}
+                        >
+                          {activity?.performedBy?.name} added story point {activity?.changes?.newValue} to the ticket :
+                        </span>
+                    <div className="activity-time">
+                        
+                      <Clock size={12} />
+                      <span>{formatCreatedAtDate(activity?.createdAt)}</span>
+                    </div>
+                  </div></>
+                    
+                )
+            }
+        case "TICKET_UNASSIGN" :
+            {
+                return (
+                      <>
+                      
+                        <div
+                    className="activity-icon"
+                    style={{
+                      backgroundColor:"white",
+                      color:'rebeccapurple'
+                    }}
+                  >
+                    <Clock size={23}/>
+                  </div>
+                           <div className="activity-content">
+                    <div className="activity-header">
+                      <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
+                      <span className="user">{activity?.performedBy?.name}</span>
+                      <span className="action">{activity?.actionType}</span>
+                    </div>
+                      <span
+                          className="action"
+                          style={{
+                            background: `${activity.color}15`,
+                            color: activity.color
+                          }}
+                        >
+                          {activity?.performedBy?.name} change the assignee of ticket from {activity?.changes?.prevValue} to {activity?.changes?.newValue} :
+                        </span>
+                    <div className="activity-time">
+                        
+                      <Clock size={12} />
+                      <span>{formatCreatedAtDate(activity?.createdAt)}</span>
+                    </div>
+                  </div></>
+                    
+                )
+            }
+        case "SPRINT_UPDATE" :
+            {
+                return (
+                      <>
+                      
+                        <div
+                    className="activity-icon"
+                    style={{
+                      backgroundColor:"white",
+                      color:'rebeccapurple'
+                    }}
+                  >
+                    <Clock size={23}/>
+                  </div>
+                           <div className="activity-content">
+                    <div className="activity-header">
+                      <div className="avatar-small">{activity?.performedBy?.name[0]}</div>
+                      <span className="user">{activity?.performedBy?.name}</span>
+                      <span className="action">{activity?.actionType}</span>
+                    </div>
+                      <span
+                          className="action"
+                          style={{
+                            background: `${activity.color}15`,
+                            color: activity.color
+                          }}
+                        >
+                          {activity?.performedBy?.name} changed the sprint to {activity?.changes?.newValue} :
                         </span>
                     <div className="activity-time">
                         

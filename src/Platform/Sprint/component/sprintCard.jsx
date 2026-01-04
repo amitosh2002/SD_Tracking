@@ -1,5 +1,7 @@
 
+import { useDispatch, useSelector } from 'react-redux';
 import './SprintCard.scss';
+import { SHOW_SNACKBAR } from '../../../Redux/Constants/PlatformConstatnt/platformConstant';
 
 const SprintCard = ({
   sprint,
@@ -10,9 +12,15 @@ const SprintCard = ({
   handleStartSprint,
 }) => {
   const { analytics } = sprint;
-  console.log(sprint)
-console.log(project)
-  const getHealthColor = (health) => {
+  const {projects}= useSelector((state)=>state.projects)
+    const getProjectDetails = (projectId) => {
+    return projects.find(
+      (project) => project.projectId === projectId
+    )
+  };
+
+  const dispatch = useDispatch();
+  const getHealthColor = () => {
     // Calculate health based on metrics
     if (!analytics) return 'health-pending';
     
@@ -90,136 +98,269 @@ console.log(project)
   };
 
   return (
-    <div className={`sprint-card ${getHealthColor()}`}>
-      <div className="card-header">
-        <div className="card-title-section">
-          <div className="sprint-info-header">
-            <h3 className="card-title">{project?.projectName}</h3>
-            <span className="sprint-number">Sprint #{sprint?.sprintName}</span>
-          </div>
-          <span className={`status-badge ${getStatusBadge(sprint?.isActive)}`}>
-            {getStatusText(sprint.isActive)}
-          </span>
+    // <div className={`sprint-card ${getHealthColor}`}>
+    //   <div className="card-header">
+    //     <div className="card-title-section">
+    //       <div className="sprint-info-header">
+    //         <h3 className="card-title">{project?.projectName ?? getProjectDetails(sprint?.projectId)?.projectName}</h3>
+    //         <span className="sprint-number">Sprint #{sprint?.sprintName}</span>
+    //       </div>
+    //       <span className={`status-badge ${getStatusBadge(sprint?.isActive)}`}>
+    //         {getStatusText(sprint.isActive)}
+    //       </span>
+    //     </div>
+    //     <div className="card-actions">
+    //       <button className="action-btn" onClick={() => openEditModal(sprint, sprint?.projectId,sprint?.sprintId)} title="Edit">
+    //         ✏️
+    //       </button>
+    //       <button className="action-btn" onClick={() => handleDeleteSprint(sprint?.sprintId)} title="Delete">
+    //         🗑️
+    //       </button>
+    //     </div>
+    //   </div>
+
+    //   <div className="sprint-dates">
+    //     <span>📅 {formatDate(sprint?.startDate)}</span>
+    //     <span className="date-separator">→</span>
+    //     <span>{formatDate(sprint.endDate)}</span>
+    //   </div>
+
+    //   {analytics && (
+    //     <>
+    //       {/* Days Remaining Badge */}
+    //       <div className={`days-remaining ${analytics.daysRemaining < 0 ? 'overdue' : ''}`}>
+    //         <span className="days-icon">⏱️</span>
+    //         <span className="days-text">{getDaysRemainingText(analytics?.daysRemaining)}</span>
+    //       </div>
+
+    //       {/* Progress Section */}
+    //       <div className="progress-section">
+    //         <div className="progress-header">
+    //           <span className="progress-label">Task Progress</span>
+    //           <span className="progress-value">
+    //             {analytics?.completedTaskInSprint}/{analytics?.totalTaskInSprint} tasks
+    //           </span>
+    //         </div>
+    //         <div className="progress-bar">
+    //           <div
+    //             className="progress-fill"
+    //             style={{
+    //               width: `${analytics?.taskCompletionPercent}%`,
+    //               backgroundColor: getProgressColor()
+    //             }}
+    //           ></div>
+    //         </div>
+    //         <div className="progress-percentage">{analytics?.taskCompletionPercent}%</div>
+    //       </div>
+
+    //       {/* Sprint Metrics */}
+    //       <div className="sprint-metrics">
+    //         <div className="metric">
+    //           <span className="metric-label">Story Points</span>
+    //           <span className="metric-value">
+    //             {analytics?.completedStoryPoint}/{analytics?.totalStoryPoint}
+    //           </span>
+    //         </div>
+    //         <div className="metric">
+    //           <span className="metric-label " style={{background:getHealthColor(analytics?.velocityPercent)}}>Velocity</span>
+    //           <span className="metric-value">{analytics?.velocityPercent}%</span>
+    //         </div>
+    //         <div className="metric">
+    //           <span className="metric-label">Avg Points/Task</span>
+    //           <span className="metric-value">{analytics?.avgStoryPointPerTask}</span>
+    //         </div>
+    //       </div>
+
+    //       {/* Ticket Breakdown */}
+    //       <div className="ticket-breakdown">
+    //         <div className="breakdown-item done">
+    //           <span className="breakdown-dot"></span>
+    //           <span>{analytics?.totalClosedTaskInSprint} Done</span>
+    //         </div>
+    //         <div className="breakdown-item progress">
+    //           <span className="breakdown-dot"></span>
+    //           <span>{analytics?.totalInProgressTaskInSprint} In Progress</span>
+    //         </div>
+    //         <div className="breakdown-item testing">
+    //           <span className="breakdown-dot"></span>
+    //           <span>{analytics?.totalTicketInTestingInSprint} Testing</span>
+    //         </div>
+    //         <div className="breakdown-item todo">
+    //           <span className="breakdown-dot"></span>
+    //           <span>{analytics?.totalOpenTaskInSprint} To Do</span>
+    //         </div>
+    //       </div>
+
+    //       {/* Additional Stats */}
+    //       <div className="additional-stats">
+    //         <div className="stat-chip">
+    //           <span className="stat-label">Resolved:</span>
+    //           <span className="stat-value">{analytics?.resolvedTaskInSprint}</span>
+    //         </div>
+    //         <div className="stat-chip">
+    //           <span className="stat-label">Remaining Points:</span>
+    //           <span className="stat-value">{analytics?.remainingStoryPoint}</span>
+    //         </div>
+    //       </div>
+    //     </>
+    //   )}
+
+    //   {/* Action Buttons */}
+    //   <div className="card-footer">
+    //     {!sprint?.isActive && new Date() < new Date(sprint?.startDate) && (
+    //       <button
+    //         className="btn-primary"
+    //         onClick={() => handleStartSprint(sprint?.sprintId)}
+    //       >
+    //         Start Sprint
+    //       </button>
+    //     )}
+    //     {sprint?.isActive && new Date() <= new Date(sprint?.endDate) && (
+    //       <button
+    //         className="btn-secondary"
+    //         onClick={() => handleCompleteSprint(sprint?.sprintId)}
+    //       >
+    //         Complete Sprint
+    //       </button>
+    //     )}
+    //     {(!sprint?.isActive && new Date() > new Date(sprint?.endDate) ) && (
+    //       <button className="btn-view" onClick={()=>{
+    //             dispatch({
+    //                type:SHOW_SNACKBAR,
+    //                payload:{
+    //                  type:'success',
+    //                  message:"Feature comming soon !"
+    //                }
+    //              })
+                  
+    //       }}>View Report</button>
+    //     )}
+    //   </div>
+    // </div>
+    <div className="sprint-dashboard-card">
+  {/* HEADER */}
+  <div className="card-top">
+    <div>
+      <h3 className="project-name">
+        {project?.projectName ?? getProjectDetails(sprint?.projectId)?.projectName}
+      </h3>
+      <p className="sprint-name">{sprint?.sprintName}</p>
+    </div>
+
+    <span className={`status-pill ${getStatusBadge(sprint?.isActive)}`}>
+      {getStatusText(sprint?.isActive)}
+    </span>
+  </div>
+
+  {/* DATE RANGE */}
+  <div className="date-range">
+    <span>{formatDate(sprint?.startDate)}</span>
+    <span>→</span>
+    <span>{formatDate(sprint?.endDate)}</span>
+  </div>
+
+  {/* PROGRESS */}
+  {analytics && (
+    <>
+      <div className="progress-wrapper">
+        <div className="progress-info">
+          <span>Progress</span>
+          <span>{analytics.taskCompletionPercent}%</span>
         </div>
-        <div className="card-actions">
-          <button className="action-btn" onClick={() => openEditModal(sprint, project?.projectId)} title="Edit">
-            ✏️
-          </button>
-          <button className="action-btn" onClick={() => handleDeleteSprint(sprint?.sprintId)} title="Delete">
-            🗑️
-          </button>
+
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{
+              width: `${analytics.taskCompletionPercent}%`,
+              backgroundColor: getProgressColor()
+            }}
+          />
+        </div>
+
+        <p className="days-remaining">
+          {getDaysRemainingText(analytics.daysRemaining)}
+        </p>
+      </div>
+
+      {/* METRICS GRID */}
+      <div className="metrics-grid">
+        <div>
+          <p>Story Points</p>
+          <h4>
+            {analytics.completedStoryPoint}/{analytics.totalStoryPoint}
+          </h4>
+        </div>
+
+        <div>
+          <p>Velocity</p>
+          <h4>{analytics.velocityPercent}%</h4>
+        </div>
+
+        <div>
+          <p>Tasks</p>
+          <h4>
+            {analytics.completedTaskInSprint}/{analytics.totalTaskInSprint}
+          </h4>
         </div>
       </div>
 
-      <div className="sprint-dates">
-        <span>📅 {formatDate(sprint?.startDate)}</span>
-        <span className="date-separator">→</span>
-        <span>{formatDate(sprint.endDate)}</span>
+      {/* TICKET BREAKDOWN */}
+      <div className="ticket-row">
+        <span className="done">{analytics.totalClosedTaskInSprint} Done</span>
+        <span className="progress">
+          {analytics.totalInProgressTaskInSprint} Progress
+        </span>
+        <span className="testing">
+          {analytics.totalTicketInTestingInSprint} Testing
+        </span>
+        <span className="todo">
+          {analytics.totalOpenTaskInSprint} To Do
+        </span>
       </div>
+    </>
+  )}
 
-      {analytics && (
-        <>
-          {/* Days Remaining Badge */}
-          <div className={`days-remaining ${analytics.daysRemaining < 0 ? 'overdue' : ''}`}>
-            <span className="days-icon">⏱️</span>
-            <span className="days-text">{getDaysRemainingText(analytics?.daysRemaining)}</span>
-          </div>
+  {/* ACTIONS */}
+  <div className="card-actions-row">
+    <div className="left-actions">
+      <button onClick={() => openEditModal(sprint, sprint?.projectId, sprint?.sprintId)}>✏️</button>
+      <button onClick={() => handleDeleteSprint(sprint?.sprintId)}>🗑️</button>
+    </div>
 
-          {/* Progress Section */}
-          <div className="progress-section">
-            <div className="progress-header">
-              <span className="progress-label">Task Progress</span>
-              <span className="progress-value">
-                {analytics?.completedTaskInSprint}/{analytics?.totalTaskInSprint} tasks
-              </span>
-            </div>
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{
-                  width: `${analytics?.taskCompletionPercent}%`,
-                  backgroundColor: getProgressColor()
-                }}
-              ></div>
-            </div>
-            <div className="progress-percentage">{analytics?.taskCompletionPercent}%</div>
-          </div>
-
-          {/* Sprint Metrics */}
-          <div className="sprint-metrics">
-            <div className="metric">
-              <span className="metric-label">Story Points</span>
-              <span className="metric-value">
-                {analytics?.completedStoryPoint}/{analytics?.totalStoryPoint}
-              </span>
-            </div>
-            <div className="metric">
-              <span className="metric-label " style={{background:getHealthColor(analytics?.velocityPercent)}}>Velocity</span>
-              <span className="metric-value">{analytics?.velocityPercent}%</span>
-            </div>
-            <div className="metric">
-              <span className="metric-label">Avg Points/Task</span>
-              <span className="metric-value">{analytics?.avgStoryPointPerTask}</span>
-            </div>
-          </div>
-
-          {/* Ticket Breakdown */}
-          <div className="ticket-breakdown">
-            <div className="breakdown-item done">
-              <span className="breakdown-dot"></span>
-              <span>{analytics?.totalClosedTaskInSprint} Done</span>
-            </div>
-            <div className="breakdown-item progress">
-              <span className="breakdown-dot"></span>
-              <span>{analytics?.totalInProgressTaskInSprint} In Progress</span>
-            </div>
-            <div className="breakdown-item testing">
-              <span className="breakdown-dot"></span>
-              <span>{analytics?.totalTicketInTestingInSprint} Testing</span>
-            </div>
-            <div className="breakdown-item todo">
-              <span className="breakdown-dot"></span>
-              <span>{analytics?.totalOpenTaskInSprint} To Do</span>
-            </div>
-          </div>
-
-          {/* Additional Stats */}
-          <div className="additional-stats">
-            <div className="stat-chip">
-              <span className="stat-label">Resolved:</span>
-              <span className="stat-value">{analytics?.resolvedTaskInSprint}</span>
-            </div>
-            <div className="stat-chip">
-              <span className="stat-label">Remaining Points:</span>
-              <span className="stat-value">{analytics?.remainingStoryPoint}</span>
-            </div>
-          </div>
-        </>
+    <div className="right-actions">
+      {!sprint?.isActive && new Date() < new Date(sprint?.startDate) && (
+        <button className="btn-primary" onClick={() => handleStartSprint(sprint?.sprintId)}>
+          Start Sprint
+        </button>
       )}
 
-      {/* Action Buttons */}
-      <div className="card-footer">
-        {!sprint?.isActive && new Date() < new Date(sprint?.startDate) && (
-          <button
-            className="btn-primary"
-            onClick={() => handleStartSprint(sprint?.sprintId)}
-          >
-            Start Sprint
-          </button>
-        )}
-        {sprint?.isActive && new Date() <= new Date(sprint?.endDate) && (
-          <button
-            className="btn-secondary"
-            onClick={() => handleCompleteSprint(sprint?.sprintId)}
-          >
-            Complete Sprint
-          </button>
-        )}
-        {(!sprint?.isActive && new Date() > new Date(sprint?.endDate)) && (
-          <button className="btn-view">View Report</button>
-        )}
-      </div>
+      {sprint?.isActive && new Date() <= new Date(sprint?.endDate) && (
+        <button className="btn-secondary" onClick={() => handleCompleteSprint(sprint?.sprintId)}>
+          Complete Sprint
+        </button>
+      )}
+
+      {!sprint?.isActive && new Date() > new Date(sprint?.endDate) && (
+        <button
+          className="btn-view"
+          onClick={() =>
+            dispatch({
+              type: SHOW_SNACKBAR,
+              payload: {
+                type: 'success',
+                message: 'Feature coming soon!',
+              },
+            })
+          }
+        >
+          View Report
+        </button>
+      )}
     </div>
+  </div>
+</div>
+
   );
 };
 
