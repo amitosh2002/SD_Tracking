@@ -6,6 +6,7 @@ import TaskDetails from './TaskDetails';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllWorkTicket } from '../../Redux/Actions/TicketActions/ticketAction';
 import { Loader2 } from 'lucide-react';
+import FilterBar from './Components/filterBar';
 
 const TaskManager = () => {
   const dispatch = useDispatch();
@@ -98,7 +99,57 @@ const TaskManager = () => {
 
   const selectedTask = tickets?.items?.find((task) => task?._id === selectedTaskId);
 
+
+  const statusOptions = [
+  { label: "Open", value: "open" },
+  { label: "In Progress", value: "in_progress" },
+  { label: "Done", value: "done" },
+];
+
+const sprintOptions = [
+  { label: "Sprint 1", value: "sprint1" },
+  { label: "Sprint 2", value: "sprint2" },
+];
+
+const assigneeOptions = [
+  { label: "Amitosh", value: "1", color: "#6366F1" },
+  { label: "Rahul", value: "2", color: "#10B981" },
+];
+
+const sortOptions = [
+  { label: "Updated", value: "updatedAt" },
+  { label: "Created", value: "createdAt" },
+];
+const onFilterChange = (key, value) => {
+  setFilters(prev => ({
+    ...prev,
+    [key]: value,
+  }));
+};
+const [filters, setFilters] = useState({
+  status: null,
+  sprint: null,
+  assignee: null,
+  sort: "updatedAt",
+});
+console.log(filters)
+
+const [search, setSearch] = useState("");
+
+
   return (
+    <>
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        filters={filters}
+        onFilterChange={onFilterChange}
+        statusOptions={statusOptions}
+        sprintOptions={sprintOptions}
+        assigneeOptions={assigneeOptions}
+        sortOptions={sortOptions}
+      />
+
     <div className="task-manager-container">
       <div className="task-list-panel">
         <div className="task-list-header">
@@ -106,6 +157,7 @@ const TaskManager = () => {
         </div>
         
         <div className="task-items-scroll">
+
             {Array.isArray(tickets?.items) &&
               tickets.items.map((task) => (
                 <div key={task._id} className="task-item-wrapper">
@@ -148,6 +200,8 @@ const TaskManager = () => {
         <TaskDetails task={selectedTask} />
       </div>
     </div>
+    </>
+
   );
 };
 

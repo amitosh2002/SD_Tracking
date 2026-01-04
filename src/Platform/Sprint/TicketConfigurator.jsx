@@ -9,6 +9,7 @@ import LabelManager from './component/LabelManager';
 import ColumnStatusManager from './component/BoardConfigration';
 import SprintFLowBoard from './Board/sprintFlowBoard';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 // This map stores the raw SVG strings that will be sent to your backend
 const SVG_LIB = {
@@ -19,8 +20,16 @@ const SVG_LIB = {
 };
 
 const WorkspaceConfig = () => {
-  const [selectedProject, setSelectedProject] = useState("Alpha CRM System");
+  // const [selectedProject, setSelectedProject] = useState("Alpha CRM System");
   const projectId = useParams().projectId;
+  const {projects}= useSelector((state)=>state.projects)
+   const getProjectDetails = (projectId) => {
+    return projects.find(
+      (project) => project.projectId === projectId
+    )
+  };
+
+
   // Naming Conventions State (with icon svg code)
   const [conventions, setConventions] = useState([
     { id: 1, label: 'Feature', prefix: 'FEAT', separator: '-', iconKey: 'Rocket', svgCode: SVG_LIB.Rocket },
@@ -51,15 +60,15 @@ const WorkspaceConfig = () => {
     }));
   };
 
-  const handleSave = () => {
-    const payload = {
-      project: selectedProject,
-      ticketConfig: conventions,
-      priorityConfig: priorities
-    };
-    console.log("Saving Workspace to Backend:", payload);
-    alert("Configuration sent to backend! Check console for SVG strings.");
-  };
+  // const handleSave = () => {
+  //   const payload = {
+  //     project: projectId,
+  //     ticketConfig: conventions,
+  //     priorityConfig: priorities
+  //   };
+  //   console.log("Saving Workspace to Backend:", payload);
+  //   alert("Configuration sent to backend! Check console for SVG strings.");
+  // };
 
   return (
     <div className="workspace-page">
@@ -72,11 +81,11 @@ const WorkspaceConfig = () => {
           <div className="dropdown-area">
             <span className="label">Project Workspace</span>
             <div className="current-select">
-              {selectedProject} <ChevronDown size={14} />
+              {getProjectDetails(projectId).projectName} <ChevronDown size={14} />
             </div>
           </div>
         </div>
-        <button className="btn-save-main" onClick={handleSave}>Create Workspace</button>
+        {/* <button className="btn-save-main" onClick={handleSave}>Create Workspace</button> */}
       </header>
 
       <div className="config-layout">
