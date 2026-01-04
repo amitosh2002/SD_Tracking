@@ -1,0 +1,111 @@
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.onboarding-modal {
+  display: flex;
+  background: #f8fafc;
+  width: 900px;
+  height: 600px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+  &__content {
+    flex: 1;
+    padding: 40px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+
+    .step-counter {
+      color: #94a3b8;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .header-section {
+      margin-top: 20px;
+      h1 { font-size: 24px; color: #1e293b; margin-bottom: 8px; }
+      .subtitle { color: #64748b; font-size: 16px; }
+    }
+
+    .feature-list {
+      margin: 40px 0;
+      .feature-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        
+        .checkbox {
+          width: 22px;
+          height: 22px;
+          border: 2px solid #cbd5e1;
+          border-radius: 6px;
+          display: grid;
+          place-items: center;
+          &.active { background: #3b82f6; border-color: #3b82f6; color: white; }
+        }
+
+        .feature-text {
+          strong { display: block; font-size: 15px; color: #334155; }
+          span { font-size: 13px; color: #94a3b8; }
+        }
+      }
+    }
+
+    .button-group {
+      margin-top: auto;
+      display: flex;
+      gap: 12px;
+      
+      button {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary { background: #3b82f6; color: white; border: none; }
+      .btn-secondary { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
+    }
+  }
+
+  &__preview {
+    flex: 1.2;
+    background: #f1f5f9;
+    padding: 20px;
+    position: relative;
+
+    .preview-header {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      
+      .close-icon { cursor: pointer; color: #64748b; }
+      .tabs {
+        display: flex;
+        gap: 20px;
+        span { font-size: 14px; font-weight: 500; color: #94a3b8; padding-bottom: 5px; }
+        span.active { color: #1e293b; border-bottom: 2px solid #3b82f6; }
+      }
+    }
+
+    .preview-body {
+      background: white;
+      border-radius: 12px;
+      height: 90%;
+      padding: 15px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      img { width: 100%; border-radius: 8px; }
+    }
+  }
+}

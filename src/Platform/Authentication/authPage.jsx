@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { GET_OTP } from '../../Redux/Constants/AuthConstants';
 import { getOtpAction, resendOtpRequest, verifyOtpAction } from '../../Redux/Actions/Auth/AuthActions';
 import { useNavigate } from 'react-router-dom';
 import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
 import GoogleAuthButton from './googleSSO';
+import HoraLoader from '../../customFiles/customComponent/Loader/loaderV1';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1); // 1 for email, 2 for OTP
@@ -52,10 +53,14 @@ const LoginPage = () => {
       const prevInput = document.getElementById(`otp-${index - 1}`);
       if (prevInput) prevInput.focus();
     }
+    if (e.key === 'Enter') {
+      handleOtpSubmit(e); 
+      return;
+    }
   };
 
   const handleOtpSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const otpString = otp.join('');
     
     if (otpString.length !== 6) {
@@ -94,6 +99,25 @@ const LoginPage = () => {
         }
       });
   };
+
+  const handlePaste = (e) => {
+  e.preventDefault();
+  const pasteData = e.clipboardData.getData('text').slice(0, otp.length); // Get first X chars
+  const pasteArray = pasteData.split('');
+
+  const newOtp = [...otp];
+  pasteArray.forEach((char, index) => {
+    if (index < otp.length) {
+      newOtp[index] = char;
+    }
+  });
+
+  setOtp(newOtp);
+
+  // Optional: Focus the last filled input or the next empty one
+  const nextIndex = Math.min(pasteArray.length, otp.length - 1);
+  document.getElementById(`otp-${nextIndex}`)?.focus();
+};
 
   const styles = {
     loginContainer: {
@@ -411,6 +435,11 @@ const LoginPage = () => {
     }
   `;
 
+
+  const { ssoLoading,ssoLogin } = useSelector((state) => state.auth);
+  if (!ssoLoading && ssoLogin) {
+    return <div><HoraLoader /></div>;
+  }
   return (
     <>
       <style>{cssAnimations}</style>
@@ -524,6 +553,7 @@ const LoginPage = () => {
                         onKeyDown={(e) => handleOtpKeyDown(index, e)}
                         maxLength="1"
                         style={styles.otpInput}
+                        onPaste={handlePaste}
                         onFocus={(e) => e.target.style.borderColor = '#a8edea'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
                       />

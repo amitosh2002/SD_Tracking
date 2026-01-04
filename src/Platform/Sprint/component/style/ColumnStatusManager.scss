@@ -576,7 +576,7 @@
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
-  animation: fadeIn 0.2s ease;
+  animation: colors.$animation;
   overflow-y: auto;
 }
 
@@ -589,7 +589,7 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s ease;
+  animation: colors.$animation;
   margin: auto;
 }
 

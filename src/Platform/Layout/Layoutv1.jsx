@@ -197,6 +197,7 @@ const Layoutv1 = () => {
       "/invite",
       "/create/project",
       "/admin",
+      "/create-branch",
       "/auth/google/callback" // important for SSO
     ];
 

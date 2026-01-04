@@ -4,6 +4,7 @@ import './styles/invitation.scss';
 import { getProjectWithHigherAccess, invitationToProjet } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 import { useDispatch, useSelector } from 'react-redux';
 import CircularLoader from '../../customFiles/customComponent/Loader/circularLoader';
+import HoraLoader from '../../customFiles/customComponent/Loader/loaderV1';
 
 const TeamInvitationPage = () => {
   const [emails, setEmails] = useState(['']);
@@ -142,7 +143,8 @@ const handleSendInvitations = async (e) => {
   }
 
   if (!sucessFetchProjects) {
-    return <CircularLoader/>
+    return <HoraLoader/>
+    // return <CircularLoader/>
     
   }
 
