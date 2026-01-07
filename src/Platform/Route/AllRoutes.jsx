@@ -32,6 +32,7 @@ import SprintFLowBoard from "../Sprint/Board/sprintFlowBoard";
 import TeamsPage from "../HeroSection/TeamsPage";
 import SprintFlowUserEducation from "../Sprint/component/OnboardingScreens/WorkFlowOnboarding";
 import ProjectCreationFlow from "../GenerailForms/projectCreationFlow";
+import ForYouPage from "../HeroSection/Components/forYouPage";
 
 // import { useSelector } from "react-redux";
 
@@ -86,7 +87,7 @@ const AllRoutes = () => {
 
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
-                <Route path="/test" element={<SprintFlowUserEducation />} />
+                <Route path="/test" element={<ForYouPage />} />
 
             </Routes>
         // </BrowserRouter>
