@@ -1,0 +1,148 @@
+.hora_filter_bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  overflow: visible;
+  height: 48px;
+}
+
+/* Search */
+.filter_search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  min-width: 280px;
+  border-right: 1px solid #E5E7EB;
+
+  input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+  }
+}
+
+/* Dropdown */
+.filter_dropdown {
+  position: relative;
+  height: 100%;
+  border-right: 1px solid #E5E7EB;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  .dropdown_trigger {
+    height: 100%;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+
+    .label {
+      color: #6B7280;
+    }
+
+    .value {
+      color: #2563EB;
+      font-weight: 600;
+    }
+  }
+
+  .dropdown_menu {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    min-width: 220px;
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    z-index: 99990;
+  }
+
+  .dropdown_search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #E5E7EB;
+
+    input {
+      border: none;
+      outline: none;
+      width: 100%;
+    }
+  }
+
+  .dropdown_list {
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .dropdown_item {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #F8FAFC;
+    }
+
+    &.active {
+      background: #EFF6FF;
+      .item_label {
+          color: #2563EB;
+        font-weight: 600;
+        }
+        }
+    
+        .checkbox {
+          width: 18px;
+          height: 18px;
+          border: 1.5px solid #CBD5E1;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          background: #fff;
+          flex-shrink: 0;
+    
+          &.checked {
+            background: #2563EB;
+            border-color: #2563EB;
+            color: #fff;
+          }
+        }
+    
+        .item_label {
+          font-size: 14px;
+          color: #334155;
+          flex: 1;
+        }
+
+    .avatar {
+      width: 24px;
+        height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+  }
+}

@@ -167,6 +167,7 @@ import { initializeAuthAction } from "../../Redux/Actions/Auth/AuthActions";
 import { useLocation } from "react-router-dom";
 
 import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/InvitaionAcceptancePage";
+import HoraShowcase from "../Onboarding/prelogin";
 
 const Layoutv1 = () => {
   const dispatch = useDispatch();
@@ -225,10 +226,11 @@ const Layoutv1 = () => {
   }, [isAuthenticated, loading, loadAppData]);
 
   // 4️⃣ PUBLIC ROUTES (NO AUTH REQUIRED)
-  const publicRoutes = ["/invitation", "/forgot-password", "/reset-password", "/verify-email"];
+  const publicRoutes = ["/invitation", "/forgot-password", "/reset-password", "/verify-email","/Hora-prelogin"];
 
   if (publicRoutes.includes(location.pathname)) {
     if (location.pathname === "/invitation") return <FullInvitationPage />;
+    if (location.pathname === "/Hora-prelogin") return <HoraShowcase />;
     return <div>Public Route</div>;
   }
 

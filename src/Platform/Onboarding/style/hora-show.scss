@@ -1,0 +1,310 @@
+/* =========================
+   VARIABLES
+========================= */
+$primary: #667eea;
+$secondary: #764ba2;
+$dark: #1f2937;
+$gray: #6b7280;
+$light-bg: #f9fafb;
+$white: #ffffff;
+
+/* =========================
+   MIXINS
+========================= */
+@mixin gradient-bg {
+  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin card-hover {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+/* =========================
+   ROOT
+========================= */
+.hora-showcase {
+  color: $dark;
+  overflow-x: hidden;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+.hora-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: 0.3s;
+
+  &--scrolled {
+    background: $white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &__container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 1rem 2rem;
+    @include flex-center;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: $primary;
+    @include flex-center;
+    gap: 0.5rem;
+  }
+
+  &__menu {
+    display: flex;
+    gap: 2rem;
+  }
+
+  &__link {
+    color: #4b5563;
+    font-weight: 500;
+    text-decoration: none;
+    position: relative;
+
+    &:hover {
+      color: $primary;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: $primary;
+      transition: 0.3s;
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
+  }
+}
+
+/* =========================
+   HERO
+========================= */
+.hora-hero {
+  padding: 8rem 2rem 6rem;
+  @include gradient-bg;
+  position: relative;
+  overflow: hidden;
+
+  &__container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  &__title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: $white;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 1.5rem 0 2rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__image {
+    position: relative;
+    height: 500px;
+  }
+
+  &__card {
+    position: absolute;
+    background: $white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: float 3s ease-in-out infinite;
+
+    &--1 { top: 50px; left: 50px; }
+    &--2 { top: 200px; right: 50px; animation-delay: 1s; }
+    &--3 { bottom: 50px; left: 100px; animation-delay: 2s; }
+  }
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.hora-btn {
+  padding: 0.875rem 1.75rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &--primary {
+    background: $white;
+    color: $primary;
+  }
+
+  &--outline {
+    background: transparent;
+    border: 2px solid $white;
+    color: $white;
+  }
+
+  &--lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+}
+
+/* =========================
+   STATS
+========================= */
+.hora-stats {
+  padding: 4rem 2rem;
+
+  &__container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+
+  &__number {
+    font-size: 3rem;
+    font-weight: 800;
+    @include gradient-bg;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* =========================
+   FEATURES
+========================= */
+.hora-features {
+  padding: 6rem 2rem;
+  background: $light-bg;
+
+  &__grid {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+}
+
+.hora-feature-card {
+  background: $white;
+  padding: 2rem;
+  border-radius: 1rem;
+  @include card-hover;
+
+  &__icon {
+    width: 4rem;
+    height: 4rem;
+    @include gradient-bg;
+    border-radius: 1rem;
+    @include flex-center;
+    color: $white;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &__description {
+    color: $gray;
+  }
+}
+
+/* =========================
+   FOOTER
+========================= */
+.hora-footer {
+  background: $dark;
+  color: $white;
+  padding: 4rem 2rem 2rem;
+
+  &__content {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 3rem;
+  }
+
+  &__link {
+    color: #9ca3af;
+    text-decoration: none;
+
+    &:hover {
+      color: $white;
+    }
+  }
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
