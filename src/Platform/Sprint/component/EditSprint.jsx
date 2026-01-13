@@ -1,7 +1,19 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
 
 
-const EditSprint = ({setFormData,setShowEditModal,formData,projectsData,handleUpdateSprint}) => {
+const EditSprint = ({setFormData,setShowEditModal,formData,handleUpdateSprint}) => {
+  const {projects}= useSelector((state)=>state.projects)
+    const getProjectDetails = (projectId) => {
+    return projects.find(
+      (project) => project.projectId === projectId
+    )
+  };
+    const toISODate = (dateStr) => {
+  if (!dateStr) return "";
+  return new Date(dateStr).toISOString();
+};
+
   return (
       <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -14,17 +26,11 @@ const EditSprint = ({setFormData,setShowEditModal,formData,projectsData,handleUp
             <div className="modal-body">
               <div className="form-group">
                 <label>Project *</label>
-                <select
-                  value={formData.projectId}
-                  onChange={(e) => setFormData({ ...formData, projectId: e.target.value })}
-                  className="project-select"
-                >
-                  {projectsData.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.key} - {project.name}
-                    </option>
-                  ))}
-                </select>
+               <input
+                  type="text"
+                  value={getProjectDetails(formData.projectId).projectName}
+                  disabled={true}
+                />
               </div>
               <div className="form-group">
                 <label>Sprint Name *</label>
@@ -37,19 +43,30 @@ const EditSprint = ({setFormData,setShowEditModal,formData,projectsData,handleUp
               <div className="form-row">
                 <div className="form-group">
                   <label>Start Date *</label>
-                  <input
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                  />
+                 <input
+                      type="date"
+                      value={formData.startDate?.slice(0, 10)} // important for edit mode
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          startDate: toISODate(e.target.value)
+                        })
+                      }
+                    />
                 </div>
                 <div className="form-group">
                   <label>End Date *</label>
-                  <input
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                  />
+                 <input
+                      type="date"
+                      value={formData.endDate?.slice(0, 10)}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          endDate: toISODate(e.target.value)
+                        })
+                      }
+                    />
+
                 </div>
               </div>
               <div className="form-group">

@@ -17,17 +17,26 @@ export default function GoogleAuthButton() {
 
       // Send Google token to backend
       const res = await axios.post(
-        "http://localhost:8000/api/auth/sso/google-login",
-        { token }
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/sso/google-login`,
+        { token },
+        {
+          headers: { "Content-Type": "application/json" }
+        }
       );
-      
-
+      dispatch({
+        type: AUTH_LOADING,
+        payload: true,
+      });
       const { success, token: jwtToken, user } = res.data;
 
       if (!success) {
         console.log("Google login failed");
         return;
       }
+      dispatch({
+        type: AUTH_LOADING,
+        payload: false,
+      });
 
       // Save JWT token
       localStorage.setItem("token", jwtToken);

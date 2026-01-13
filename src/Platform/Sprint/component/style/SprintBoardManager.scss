@@ -644,7 +644,7 @@ $transition: all 0.2s ease;
   max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
-  animation: sprint-slideUp 0.3s ease;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
   &::-webkit-scrollbar {
     width: 8px;

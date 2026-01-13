@@ -19,7 +19,12 @@ $border: rgba(0, 0, 0, 0.05);
     align-items: center;
     justify-content: center;
   }
-
+  .header-actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2rem;
+  }
   // --- Header ---
   .dashboard-header {
     display: flex;

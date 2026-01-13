@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HeroSection from "../HeroSection";
 import CreateBranch from "../CreateBranch";
+import GithubAdminConfig from "../GithubAdminConfig";
 import TextEditor from "../Editor";
 import TaskGenerator from "../TaskManagement/TaskCreator";
 import LoginPage from "../Authentication/authPage";
@@ -29,6 +30,10 @@ import ConfigurationPage from "../Sprint/TicketConfigurator";
 import WorkspaceConfig from "../Sprint/TicketConfigurator";
 import SprintFLowBoard from "../Sprint/Board/sprintFlowBoard";
 import TeamsPage from "../HeroSection/TeamsPage";
+import SprintFlowUserEducation from "../Sprint/component/OnboardingScreens/WorkFlowOnboarding";
+import ProjectCreationFlow from "../GenerailForms/projectCreationFlow";
+import ForYouPage from "../HeroSection/Components/forYouPage";
+import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel";
 
 // import { useSelector } from "react-redux";
 
@@ -43,6 +48,7 @@ const AllRoutes = () => {
         // <BrowserRouter>
             <Routes>
                 <Route path="/create-branch" element={<CreateBranch />} />
+                <Route path="/admin/github-config" element={<GithubAdminConfig />} />
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 <Route path="/create" element={<TaskGenerator />} />
                 <Route path="/all-work" element={<TaskManager />} />
@@ -64,9 +70,11 @@ const AllRoutes = () => {
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
                 <Route path="/sprint/dashboard" element={<SprintManagement />} />
                 <Route path="/sprint" element={<SprintHome />} />
+                <Route path="/create/project-space" element={<ProjectCreationFlow />} />
+
                 <Route path="/sprint/board" element={<SprintBoard />} />
                 <Route path="/confrigurator/flow" element={<WorkflowManager />} />
-                <Route path="/confrigurator" element={<ScrumMasterDashboard />} />
+                <Route path="/work-space/confrigurator" element={<ScrumMasterDashboard />} />
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
                 <Route path="/workspace/:projectId" element={<ConfigurationPage />} />
 
@@ -80,7 +88,7 @@ const AllRoutes = () => {
 
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
-                <Route path="/test" element={<ConfigurationPage />} />
+                <Route path="/test" element={<GitHubAdminPanel />} />
 
             </Routes>
         // </BrowserRouter>

@@ -45,7 +45,8 @@ import {
   ACCOUNT_VERIFIACTION_FAIL,
   ACCOUNT_VERIFIACTION_SUCESS,
   TOKEN_VALIDATION_SUCCESS,
-  TOKEN_VALIDATION_FAILED
+  TOKEN_VALIDATION_FAILED,
+  AUTH_LOADING
 } from "../Constants/AuthConstants";
 
 const initialState = {
@@ -57,6 +58,8 @@ const initialState = {
   requiresRegistration: false,
   registerData: null,
   verifiedEmail: null, // Store verified email for registration
+  ssoLoading:false,
+  ssoLogin:false,
 };
 
 const authReducer = createReducer(initialState, (builder) => {
@@ -72,6 +75,10 @@ const authReducer = createReducer(initialState, (builder) => {
       state.verifiedEmail = action.payload?.email; // Store verified email
       state.error = null;
       // Don't set isAuthenticated here - wait for registration or login
+    })
+    .addCase(AUTH_LOADING, (state, action) => {
+      state.ssoLoading = action.payload;
+      state.ssoLogin = action.payload;
     })
     
     .addCase(REQUIRES_REGISTRATION, (state, action) => {

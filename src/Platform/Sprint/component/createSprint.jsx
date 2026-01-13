@@ -9,8 +9,6 @@ const CreateSprint = ({
   handleCreateSprint
 }) => {
   const [errors, setErrors] = useState({});
-  console.log(projects)
-
   // Validate dates
   const validateDates = () => {
     const newErrors = {};

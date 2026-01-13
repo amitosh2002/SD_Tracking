@@ -9,6 +9,8 @@ import LabelManager from './component/LabelManager';
 import ColumnStatusManager from './component/BoardConfigration';
 import SprintFLowBoard from './Board/sprintFlowBoard';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import TicketTypeManager from './component/TicketTypeLabel';
 
 // This map stores the raw SVG strings that will be sent to your backend
 const SVG_LIB = {
@@ -19,8 +21,16 @@ const SVG_LIB = {
 };
 
 const WorkspaceConfig = () => {
-  const [selectedProject, setSelectedProject] = useState("Alpha CRM System");
+  // const [selectedProject, setSelectedProject] = useState("Alpha CRM System");
   const projectId = useParams().projectId;
+  const {projects}= useSelector((state)=>state.projects)
+   const getProjectDetails = (projectId) => {
+    return projects.find(
+      (project) => project.projectId === projectId
+    )
+  };
+
+
   // Naming Conventions State (with icon svg code)
   const [conventions, setConventions] = useState([
     { id: 1, label: 'Feature', prefix: 'FEAT', separator: '-', iconKey: 'Rocket', svgCode: SVG_LIB.Rocket },
@@ -28,11 +38,11 @@ const WorkspaceConfig = () => {
   ]);
 
   // Priority Levels State
-  const [priorities, setPriorities] = useState([
-    { id: 1, label: 'Urgent', color: '#ef4444' },
-    { id: 2, label: 'High', color: '#f59e0b' },
-    { id: 3, label: 'Normal', color: '#3b82f6' }
-  ]);
+  // const [priorities, setPriorities] = useState([
+  //   { id: 1, label: 'Urgent', color: '#ef4444' },
+  //   { id: 2, label: 'High', color: '#f59e0b' },
+  //   { id: 3, label: 'Normal', color: '#3b82f6' }
+  // ]);
 
   const addConvention = () => {
     setConventions([...conventions, { 
@@ -51,15 +61,15 @@ const WorkspaceConfig = () => {
     }));
   };
 
-  const handleSave = () => {
-    const payload = {
-      project: selectedProject,
-      ticketConfig: conventions,
-      priorityConfig: priorities
-    };
-    console.log("Saving Workspace to Backend:", payload);
-    alert("Configuration sent to backend! Check console for SVG strings.");
-  };
+  // const handleSave = () => {
+  //   const payload = {
+  //     project: projectId,
+  //     ticketConfig: conventions,
+  //     priorityConfig: priorities
+  //   };
+  //   console.log("Saving Workspace to Backend:", payload);
+  //   alert("Configuration sent to backend! Check console for SVG strings.");
+  // };
 
   return (
     <div className="workspace-page">
@@ -72,11 +82,11 @@ const WorkspaceConfig = () => {
           <div className="dropdown-area">
             <span className="label">Project Workspace</span>
             <div className="current-select">
-              {selectedProject} <ChevronDown size={14} />
+              {getProjectDetails(projectId)?.projectName} <ChevronDown size={14} />
             </div>
           </div>
         </div>
-        <button className="btn-save-main" onClick={handleSave}>Create Workspace</button>
+        {/* <button className="btn-save-main" onClick={handleSave}>Create Workspace</button> */}
       </header>
 
       <div className="config-layout">
@@ -138,7 +148,7 @@ const WorkspaceConfig = () => {
           </section>
 
           {/* PRIORITY MANAGEMENT SECTION */}
-          <section className="config-card">
+          {/* <section className="config-card">
             <div className="card-header">
               <ListOrdered size={18} />
               <h2>Priority Levels</h2>
@@ -167,7 +177,8 @@ const WorkspaceConfig = () => {
                 </div>
               ))}
             </div>
-          </section>
+          </section> */}
+          <TicketTypeManager projectId={projectId}/>
 
         </div>
       </div>
