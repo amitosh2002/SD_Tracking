@@ -11,6 +11,7 @@ export default function FilterBar({
   sortOptions,
   filters,
   onFilterChange,
+  projectOptions,
 }) {
   return (
     <div className="hora_filter_bar">
@@ -30,6 +31,7 @@ export default function FilterBar({
   options={statusOptions}
   onChange={(val) => onFilterChange("status", val)}
   searchable
+  allowMultipleSelect
 />
 
 <FilterDropdown
@@ -38,6 +40,7 @@ export default function FilterBar({
   options={sprintOptions}
   onChange={(val) => onFilterChange("sprint", val)}
   searchable
+  allowMultipleSelect
 />
 
 <FilterDropdown
@@ -47,6 +50,15 @@ export default function FilterBar({
   onChange={(val) => onFilterChange("assignee", val)}
   searchable
   avatar
+  allowMultipleSelect
+/>
+
+<FilterDropdown
+  label="Project"
+  value={filters.project}
+  options={projectOptions}
+  onChange={(val) => onFilterChange("project", val)}
+  allowMultipleSelect
 />
 
 <FilterDropdown

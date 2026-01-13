@@ -4,16 +4,16 @@ import './TaskManager.scss';
 import TaskItem from './TaskItem';
 import TaskDetails from './TaskDetails';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllWorkTicket } from '../../Redux/Actions/TicketActions/ticketAction';
+import { getAllWorkTicket, getSortKeyValues } from '../../Redux/Actions/TicketActions/ticketAction';
 import { Loader2 } from 'lucide-react';
 import FilterBar from './Components/filterBar';
 
 const TaskManager = () => {
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.user);
-  const { tickets } = useSelector((state) => state.worksTicket);
+  const { tickets,users,status,projects,sprints } = useSelector((state) => state.worksTicket);
   const { projectId } = useParams();
-
+  console.log(users,projects,sprints,status)
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [currentLimit, setCurrentLimit] = useState(10);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -39,17 +39,36 @@ const TaskManager = () => {
     if (node) observerLoader.current.observe(node);
   }, [loadingMore, hasMore]);
 
-  // Reset on Project/User Switch
+
+  
+const [filters, setFilters] = useState({
+  status: [],
+  sprint: [],
+  assignee: [],
+  project: [],
+  sort: "updatedAt",
+});
+console.log(filters)
+
+  // Reset on Project/User/Filter Switch
   useEffect(() => {
-    console.log("Project or user changed, resetting limit...");
+    console.log("Project, user, or filters changed, resetting limit...");
     setCurrentLimit(10);
     setHasMore(true);
-  }, [projectId, userDetails?.id]);
+  }, [projectId, userDetails?.id, filters]);
+
+  // Initial data fetch for dropdowns
+  useEffect(() => {
+    if (userDetails?.id) {
+       dispatch(getSortKeyValues());
+    }
+  }, [dispatch, userDetails?.id]);
 
   // Fetch Logic
+
+
   useEffect(() => {
     if (!userDetails?.id) return;
-    
     const fetchTickets = async () => {
       const isInitial = currentLimit === 10;
       if (!isInitial) setLoadingMore(true);
@@ -63,6 +82,7 @@ const TaskManager = () => {
       try {
         const res = await dispatch(getAllWorkTicket({ 
             ...fetchParams, 
+            ...filters,
             type: isInitial ? 'refresh' : 'append' 
         }));
         
@@ -88,7 +108,7 @@ const TaskManager = () => {
     };
 
     fetchTickets();
-  }, [dispatch, currentLimit, projectId, userDetails?.id]);
+  }, [dispatch, currentLimit, projectId, userDetails?.id,filters]);
 
   // Auto-select first task only when the initial list loads
   useEffect(() => {
@@ -100,39 +120,17 @@ const TaskManager = () => {
   const selectedTask = tickets?.items?.find((task) => task?._id === selectedTaskId);
 
 
-  const statusOptions = [
-  { label: "Open", value: "open" },
-  { label: "In Progress", value: "in_progress" },
-  { label: "Done", value: "done" },
-];
-
-const sprintOptions = [
-  { label: "Sprint 1", value: "sprint1" },
-  { label: "Sprint 2", value: "sprint2" },
-];
-
-const assigneeOptions = [
-  { label: "Amitosh", value: "1", color: "#6366F1" },
-  { label: "Rahul", value: "2", color: "#10B981" },
-];
-
-const sortOptions = [
-  { label: "Updated", value: "updatedAt" },
-  { label: "Created", value: "createdAt" },
-];
+  const sortOptions = [
+    { label: "Updated", value: "updatedAt" },
+    { label: "Created", value: "createdAt" },
+  ];
 const onFilterChange = (key, value) => {
   setFilters(prev => ({
     ...prev,
     [key]: value,
   }));
 };
-const [filters, setFilters] = useState({
-  status: null,
-  sprint: null,
-  assignee: null,
-  sort: "updatedAt",
-});
-console.log(filters)
+
 
 const [search, setSearch] = useState("");
 
@@ -144,9 +142,10 @@ const [search, setSearch] = useState("");
         onSearchChange={setSearch}
         filters={filters}
         onFilterChange={onFilterChange}
-        statusOptions={statusOptions}
-        sprintOptions={sprintOptions}
-        assigneeOptions={assigneeOptions}
+        statusOptions={status}
+        sprintOptions={sprints}
+        assigneeOptions={users}
+        projectOptions={projects}
         sortOptions={sortOptions}
       />
 

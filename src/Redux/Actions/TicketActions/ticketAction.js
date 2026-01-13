@@ -1,26 +1,41 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs, ticketbyKeyurl} from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET, APPEND_TICKETS } from "../../Constants/ticketReducerConstants"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs, ticketbyKeyurl, ticketSortKeyValues} from "../../../Api/Plat/TicketsApi"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
 export const getAllWorkTicket =
-  ({ projectId, limit = 10, page = 1, type }) =>
+  (args) =>
   async (dispatch) => {
+    const { projectId, limit = 10, page = 1, type, filters, ...rest } = args;
+    
+    // Support both nested filters object and spread filters
+    const actualFilters = filters || rest;
+    const { status, project, sort, assignee, sprint } = actualFilters;
 
     dispatch({ type: "GET_ALL_TICKETS_REQUEST" });
 
     try {
       const params = new URLSearchParams();
 
-      if (projectId) {
-        params.append("projectId", String(projectId));
-       
-      }
-
+      if (projectId) params.append("projectId", String(projectId));
       params.append("limit", limit);
       params.append("page", page);
       if (type) params.append("type", type);
+
+      const appendFilter = (key, val) => {
+        if (Array.isArray(val)) {
+          if (val.length > 0) params.append(key, val.join(","));
+        } else if (val) {
+          params.append(key, val);
+        }
+      };
+
+      appendFilter("status", status);
+      appendFilter("project", project);
+      appendFilter("sort", sort);
+      appendFilter("assignee", assignee);
+      appendFilter("sprint", sprint);
 
       const response = await apiClient.get(
         `${getAllTicketApiv1}?${params}`
@@ -305,3 +320,25 @@ export const getActivityLogs = (ticketId) => async (dispatch) => {
     });
   }
 };
+
+export const getSortKeyValues = () => async (dispatch) => {
+    try {
+      dispatch({ type: GET_SORT_KEY_VALUES_REQUEST });
+      const res = await apiClient.get(`${ticketSortKeyValues}`);
+      dispatch({
+        type: GET_SORT_KEY_VALUES_SUCCESS,
+        payload: res.data,
+      });
+    } catch (error) {
+      console.error("getActivityLogs error:", error);
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message:
+            error?.response?.data?.message || "Failed to fetch activity logs",
+        },
+      });
+    }
+  };
+

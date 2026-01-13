@@ -91,28 +91,58 @@
     padding: 10px 14px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
+    transition: all 0.2s ease;
 
     &:hover {
-      background: #F3F4F6;
+      background: #F8FAFC;
     }
 
     &.active {
       background: #EFF6FF;
-      font-weight: 600;
-    }
+      .item_label {
+          color: #2563EB;
+        font-weight: 600;
+        }
+        }
+    
+        .checkbox {
+          width: 18px;
+          height: 18px;
+          border: 1.5px solid #CBD5E1;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          background: #fff;
+          flex-shrink: 0;
+    
+          &.checked {
+            background: #2563EB;
+            border-color: #2563EB;
+            color: #fff;
+          }
+        }
+    
+        .item_label {
+          font-size: 14px;
+          color: #334155;
+          flex: 1;
+        }
 
     .avatar {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+        height: 24px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
+      flex-shrink: 0;
     }
   }
 }

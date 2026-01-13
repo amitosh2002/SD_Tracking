@@ -10,6 +10,7 @@ import ColumnStatusManager from './component/BoardConfigration';
 import SprintFLowBoard from './Board/sprintFlowBoard';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import TicketTypeManager from './component/TicketTypeLabel';
 
 // This map stores the raw SVG strings that will be sent to your backend
 const SVG_LIB = {
@@ -37,11 +38,11 @@ const WorkspaceConfig = () => {
   ]);
 
   // Priority Levels State
-  const [priorities, setPriorities] = useState([
-    { id: 1, label: 'Urgent', color: '#ef4444' },
-    { id: 2, label: 'High', color: '#f59e0b' },
-    { id: 3, label: 'Normal', color: '#3b82f6' }
-  ]);
+  // const [priorities, setPriorities] = useState([
+  //   { id: 1, label: 'Urgent', color: '#ef4444' },
+  //   { id: 2, label: 'High', color: '#f59e0b' },
+  //   { id: 3, label: 'Normal', color: '#3b82f6' }
+  // ]);
 
   const addConvention = () => {
     setConventions([...conventions, { 
@@ -81,7 +82,7 @@ const WorkspaceConfig = () => {
           <div className="dropdown-area">
             <span className="label">Project Workspace</span>
             <div className="current-select">
-              {getProjectDetails(projectId).projectName} <ChevronDown size={14} />
+              {getProjectDetails(projectId)?.projectName} <ChevronDown size={14} />
             </div>
           </div>
         </div>
@@ -147,7 +148,7 @@ const WorkspaceConfig = () => {
           </section>
 
           {/* PRIORITY MANAGEMENT SECTION */}
-          <section className="config-card">
+          {/* <section className="config-card">
             <div className="card-header">
               <ListOrdered size={18} />
               <h2>Priority Levels</h2>
@@ -176,7 +177,8 @@ const WorkspaceConfig = () => {
                 </div>
               ))}
             </div>
-          </section>
+          </section> */}
+          <TicketTypeManager projectId={projectId}/>
 
         </div>
       </div>
