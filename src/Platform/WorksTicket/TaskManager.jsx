@@ -48,7 +48,7 @@ const [filters, setFilters] = useState({
   labels: [],
   priority: [],
   ticketConvention: [],
-  sort: "updatedAt",
+  sort: "",
 });
 
   // Reset on Project/User/Filter Switch
