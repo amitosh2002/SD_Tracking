@@ -1,462 +1,130 @@
-// import { useEffect, useState, useRef } from "react";
-// import { ChevronDown, Check } from "lucide-react";
-// import "./styles/dropDown.scss";
-
-// export const DropDownV1 = ({
-//   dataTypes = [
-//     "ARCH", "BUG", "FEATURE", "TASK", "STORY", "EPIC", "IMPROVEMENT", 
-//     "SUBTASK", "TEST", "DOCUMENTATION", "LIVEOPS", "PLAT"
-//   ],
-//   defaultType = "",
-//   onChange,
-//   label ,
-//   disabled = false,
-//   className = "",
-//   required 
-// }) => {
-// const [dataType, setdataType] = useState(() => {
-//     if (defaultType) return defaultType;
-//     return dataTypes[0];
-//   });
-  
-//   const [isOpen, setIsOpen] = useState(false);
-//   const dropdownRef = useRef(null);
-
-//   // Remove the problematic useEffect that was overriding state changes
-//   useEffect(() => {
-//     // Only set initial value, don't override user selections
-//     if (defaultType && defaultType !== dataType) {
-//       setdataType(defaultType);
-//     }
-//   }, [defaultType,dataType]); 
-  
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-//         setIsOpen(false);
-//       }
-//     };
-
-//     document.addEventListener('mousedown', handleClickOutside);
-//     return () => document.removeEventListener('mousedown', handleClickOutside);
-//   }, []);
-
-//   const handleOptionClick = (value) => {
-//     console.log("Selecting:", value); // Debug log
-//     setdataType(value);
-//     setIsOpen(false);
-//     console.log("Selected ticket type:", value);
-//     if (onChange) onChange(value);
-//   };
-
-//   const toggleDropdown = () => {
-//     if (!disabled) {
-//       setIsOpen(!isOpen);
-//     }
-//   };
-
-//   return (
-//     <div className={`modern-dropdown ${className}`} ref={dropdownRef}>
-   
-
-//        {  label && <label htmlFor="dropdown-trigger" className="dropdown-label">
-//         {label}
-//         {required && <span className="required-asterisk">*</span>}
-//       </label>}
-      
-//       <div 
-//         className={`dropdown-trigger ${isOpen ? 'focused' : ''} ${disabled ? 'disabled' : ''}`}
-//         onClick={toggleDropdown}
-//         role="combobox"
-//         aria-expanded={isOpen}
-//         aria-haspopup="listbox"
-//         tabIndex={disabled ? -1 : 0}
-//         onKeyDown={(e) => {
-//           if (e.key === 'Enter' || e.key === ' ') {
-//             e.preventDefault();
-//             toggleDropdown();
-//           }
-//         }}
-//       >
-//         <span className={`dropdown-text ${!dataType ? 'placeholder' : ''}`}>
-//           {dataType }
-//         </span>
-//         <ChevronDown 
-//           size={20} 
-//           className={`dropdown-icon ${isOpen ? 'rotated' : ''}`}
-//         />
-//       </div>
-
-//       <div className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
-//         <div className="dropdown-options" role="listbox">
-//           { Array.isArray(dataType) && dataTypes?.map((type,id) => (
-//             <div
-//               key={id}
-//               className={`dropdown-option ${dataType === type ? 'selected' : ''}`}
-//               onClick={() => handleOptionClick(type)}
-//               role="option"
-//               aria-selected={dataType === type}
-//             >
-//               <span>{type}</span>
-//               <Check size={16} className="check-icon" />
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* {dataType  && (
-//         <div className="selected-display">
-//           Selected: <span className="selected-value">{dataType}</span>
-//         </div>
-//       )} */}
-//     </div>
-//   );
-// };
-
-// export const DropDownV2 = ({    
-//   defaultType = "",   
-//   onChange,   
-//   label,   
-//   disabled = false,   
-//   className = "",   
-//   required,   
-//   data 
-// }) => { 
-//   const [dataType, setdataType] = useState(() => {     
-//     if (defaultType) return defaultType;     
-//     return data[0]?? "";   
-//   });   
-
-
-//   const [isOpen, setIsOpen] = useState(false);   
-//   const dropdownRef = useRef(null);    
-
-//   useEffect(() => {     
-//     if (defaultType && defaultType !== dataType) {       
-//       setdataType(defaultType);     
-//     }   
-//   }, [defaultType]);       
-
-//   useEffect(() => {     
-//     const handleClickOutside = (event) => {       
-//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {         
-//         setIsOpen(false);       
-//       }     
-//     };      
-
-//     document.addEventListener('mousedown', handleClickOutside);     
-//     return () => document.removeEventListener('mousedown', handleClickOutside);   
-//   }, []);    
-
-//   const handleOptionClick = (value) => {     
-//     console.log("Selecting:", value);     
-//     setdataType(value);     
-//     setIsOpen(false);     
-//     console.log("Selected ticket type:", value);     
-//     if (onChange) onChange(value);   
-//   };    
-
-//   const toggleDropdown = () => {     
-//     if (!disabled) {       
-//       setIsOpen(!isOpen);     
-//     }   
-//   };    
-
-//   return (     
-//     <div className={`modern-dropdown ${className}`} ref={dropdownRef}>             
-//       {label && (
-//         <label htmlFor="dropdown-trigger" className="dropdown-label">         
-//           {label}         
-//           {required && <span className="required-asterisk">*</span>}       
-//         </label>
-//       )}              
-
-//       <div          
-//         className={`dropdown-trigger ${isOpen ? 'focused' : ''} ${disabled ? 'disabled' : ''}`}         
-//         onClick={toggleDropdown}         
-//         role="combobox"         
-//         aria-expanded={isOpen}         
-//         aria-haspopup="listbox"         
-//         tabIndex={disabled ? -1 : 0}         
-//         onKeyDown={(e) => {           
-//           if (e.key === 'Enter' || e.key === ' ') {             
-//             e.preventDefault();             
-//             toggleDropdown();           
-//           }         
-//         }}       
-//       >         
-//         <span className={`dropdown-text ${!dataType ? 'placeholder' : ''}`}>            
-//           {dataType?.icon && <img src={dataType.icon} alt="" style={{width:"25px"}} />}           
-//           {dataType?.type || dataType}         
-//         </span>         
-//         <ChevronDown            
-//           size={20}            
-//           className={`dropdown-icon ${isOpen ? 'rotated' : ''}`}         
-//         />       
-//       </div>        
-
-//       <div className={`dropdown-menu ${isOpen ? 'open' : ''}`}>         
-//         <div className="dropdown-options" role="listbox">           
-//           {Array.isArray(data) && data?.map((type, id) => (             
-//             <div               
-//               key={id}               
-//               className={`dropdown-option ${dataType === type ? 'selected' : ''}`}               
-//               onClick={() => handleOptionClick(type)}               
-//               role="option"               
-//               aria-selected={dataType === type}             
-//             >               
-//               {type.icon && <img src={type.icon} alt="" style={{width:"25px"}} />}               
-//               <span>{type.type}</span>               
-//               <Check size={16} className="check-icon" />             
-//             </div>           
-//           ))}         
-//         </div>       
-//       </div>     
-//     </div>   
-//   ); 
-// };
-
-// export const DropDownForTicketStatus = ({
-//   ticketTypes,
-//   defaultType = "",
-//   value = "", // Add value prop for controlled component
-//   onChange, // Keep this for backward compatibility
-//   onStatusChange, // New prop for status updates
-//   label,
-//   disabled = false,
-//   className = "",
-//   required,
-//   ticketId // Add unique identifier for each dropdown
-// }) => {
-//   // Define workflow rules - what statuses can follow each current status
-//   const statusWorkflow = {
-//     "OPEN": ["IN_PROGRESS", "IN_REVIEW", "ON_HOLD"],
-//     "IN_PROGRESS": ["IN_REVIEW", "ON_HOLD", "OPEN"],
-//     "IN_REVIEW": ["DEV_TESTING", "REJECTED", "ON_HOLD"],
-//     "DEV_TESTING": ["RESOLVED", "IN_REVIEW", "REJECTED"],
-//     "RESOLVED": ["M1 TESTING COMPLETED", "REOPENED"],
-//     "M1 TESTING COMPLETED": ["M2 TESTING COMPLETED", "REOPENED"],
-//     "M2 TESTING COMPLETED": ["CLOSED", "REOPENED"],
-//     "REJECTED": ["OPEN", "IN_PROGRESS"],
-//     "ON_HOLD": ["OPEN", "IN_PROGRESS"],
-//     "REOPENED": ["IN_PROGRESS", "IN_REVIEW"],
-//     "CLOSED": ["REOPENED"],
-//   };
-
-//   // Get allowed next statuses based on current status
-//   const getAllowedStatuses = (currentStatus) => {
-//     if (!currentStatus || !statusWorkflow[currentStatus]) {
-//       return ticketTypes;
-//     }
-    
-//     const allowedNext = statusWorkflow[currentStatus];
-//     return [currentStatus, ...allowedNext].filter((status, index, self) => 
-//       self?.indexOf(status) === index && ticketTypes?.includes(status)
-//     );
-//   };
-
-//   // Use a unique key for each dropdown instance to prevent state sharing
-//   const uniqueKey = `dropdown-${ticketId || Math.random()}`;
-  
-//   // Use value prop if provided, otherwise fall back to defaultType or first option
-//   const currentValue = value || defaultType || (ticketTypes && ticketTypes.length > 0 ? ticketTypes[0] : "");
-  
-//   const [isOpen, setIsOpen] = useState(false);
-//   const dropdownRef = useRef(null);
-
-//   const filteredOptions = getAllowedStatuses(currentValue);
-  
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-//         setIsOpen(false);
-//       }
-//     };
-
-//     document.addEventListener('mousedown', handleClickOutside);
-//     return () => document.removeEventListener('mousedown', handleClickOutside);
-//   }, []);
-
-//   const handleOptionClick = (value) => {
-//     console.log("Status changing from:", currentValue, "to:", value);
-//     const previousStatus = currentValue;
-    
-//     setIsOpen(false);
-    
-//     // Call the new onStatusChange prop with more context
-//     if (onStatusChange) {
-//       onStatusChange({
-//         newStatus: value,
-//         previousStatus: previousStatus,
-//         timestamp: new Date().toISOString()
-//       });
-//     }
-    
-//     // Keep backward compatibility with old onChange prop
-//     if (onChange) onChange(value);
-    
-//     console.log("Status updated to:", value);
-//   };
-
-//   const toggleDropdown = () => {
-//     if (!disabled) {
-//       setIsOpen(!isOpen);
-//     }
-//   };
-
-//   return (
-//     <div className={`modern-dropdown ${className}`} ref={dropdownRef} key={uniqueKey}>
-//       {label && (
-//         <label htmlFor="dropdown-trigger" className="dropdown-label">
-//           {label}
-//           {required && <span className="required-asterisk">*</span>}
-//         </label>
-//       )}
-      
-//       <div 
-//         className={`dropdown-trigger ${isOpen ? 'focused' : ''} ${disabled ? 'disabled' : ''}`}
-//         onClick={toggleDropdown}
-//         role="combobox"
-//         aria-expanded={isOpen}
-//         aria-haspopup="listbox"
-//         tabIndex={disabled ? -1 : 0}
-//         onKeyDown={(e) => {
-//           if (e.key === 'Enter' || e.key === ' ') {
-//             e.preventDefault();
-//             toggleDropdown();
-//           }
-//         }}
-//       >
-//         <span className={`dropdown-text ${!currentValue ? 'placeholder' : ''}`}>
-//           {currentValue || "Select option"}
-//         </span>
-//         <ChevronDown 
-//           size={20} 
-//           className={`dropdown-icon ${isOpen ? 'rotated' : ''}`}
-//         />
-//       </div>
-
-//       <div className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
-//         <div className="dropdown-options" role="listbox">
-//           {Array.isArray(filteredOptions) && filteredOptions.map((type, id) => (
-//             <div
-//               key={`${uniqueKey}-${id}`}
-//               className={`dropdown-option ${currentValue === type ? 'selected' : ''}`}
-//               onClick={() => handleOptionClick(type)}
-//               role="option"
-//               aria-selected={currentValue === type}
-//             >
-//               <span>{type}</span>
-//               <Check size={16} className="check-icon" />
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
 import { useEffect, useState, useRef } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check ,Loader2, DotIcon} from "lucide-react";
 import "./styles/dropDown.scss";
+import { useMemo } from "react";
+import {  Search } from "lucide-react";
 
 export const DropDownV1 = ({
-  dataTypes,
+  dataTypes = [],
   defaultType = "",
   onChange,
   label,
   disabled = false,
   className = "",
-  required 
+  required,
+  searchable = true,
+  accentColor = "#a855f7", // NEW
+  placeholder = "Select option"
 }) => {
-  const [dataType, setdataType] = useState(() => {
-    if (defaultType) return defaultType;
-    return dataTypes[0];
-  });
-  
+  const [dataType, setDataType] = useState(defaultType || null);
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    if (defaultType && defaultType !== dataType) {
-      setdataType(defaultType);
-    }
-  }, [defaultType, dataType]); 
-  
+    if (defaultType) setDataType(defaultType);
+  }, [defaultType]);
+
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsOpen(false);
+        setSearch("");
       }
     };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleOptionClick = (value) => {
-    setdataType(value);
-    setIsOpen(false);
-    if (onChange) onChange(value);
-  };
+  const filteredOptions = useMemo(() => {
+    if (!search) return dataTypes;
+    return dataTypes.filter((item) =>
+      (item.label || item)?.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, dataTypes]);
 
-  const toggleDropdown = () => {
-    if (!disabled) {
-      setIsOpen(!isOpen);
-    }
+  const handleOptionClick = (value) => {
+    setDataType(value);
+    setIsOpen(false);
+    setSearch("");
+    onChange?.(value);
   };
 
   return (
-    <div className={`modern-dropdown ${className}`} ref={dropdownRef}>
+    <div
+      className={`modern-dropdown ${className}`}
+      ref={dropdownRef}
+      style={{ "--accent-color": accentColor }}
+      
+    >
       {label && (
-        <label htmlFor="dropdown-trigger" className="dropdown-label">
+        <label className="dropdown-label">
           {label}
           {required && <span className="required-asterisk">*</span>}
         </label>
       )}
-      
-      <div 
-        className={`dropdown-trigger ${isOpen ? 'focused' : ''} ${disabled ? 'disabled' : ''}`}
-        onClick={toggleDropdown}
-        role="combobox"
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        tabIndex={disabled ? -1 : 0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleDropdown();
-          }
+
+      <div
+        className={`dropdown-trigger ${isOpen ? "focused" : ""} ${disabled ? "disabled" : ""}`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        // style={{backgroundColor: accentColor}}
+        style={accentColor &&{
+          backgroundColor: `${accentColor}1A`,   // light glass bg
+          borderColor: accentColor,
+          boxShadow: isOpen
+            ? `0 0 0 3px ${accentColor}33`
+            : `0 1px 3px ${accentColor}22`
         }}
       >
-        <span className={`dropdown-text ${!dataType ? 'placeholder' : ''}`}>
-          {dataType}
+        <span className={`dropdown-text ${!dataType ? "placeholder" : ""}`} >
+         <DotIcon color={accentColor} size={0}/> {dataType?.label || dataType || placeholder}
         </span>
-        <ChevronDown 
-          size={20} 
-          className={`dropdown-icon ${isOpen ? 'rotated' : ''}`}
-        />
+        <ChevronDown size={18} className={`dropdown-icon ${isOpen ? "rotated" : ""}`} />
       </div>
 
-      <div className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
-        <div className="dropdown-options" role="listbox">
-          {Array.isArray(dataTypes) && dataTypes?.map((type, id) => (
-            <div
-              key={id}
-              className={`dropdown-option ${dataType === type ? 'selected' : ''}`}
-              onClick={() => handleOptionClick(type)}
-              role="option"
-              aria-selected={dataType === type}
-            >
-              <span>{type}</span>
-              <Check size={16} className="check-icon" />
-            </div>
-          ))}
+      <div className={`dropdown-menu ${isOpen ? "open" : ""}`}>
+        {searchable && (
+          <div className="dropdown-search">
+            <Search size={16} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search..."
+            />
+          </div>
+        )}
+
+        <div className="dropdown-options">
+          {filteredOptions.length === 0 && (
+            <div className="dropdown-empty">No results found</div>
+          )}
+
+          {filteredOptions.map((item, idx) => {
+            const value = item?.value ?? item;
+            const label = item?.label ?? item;
+            const color = item?.color ?? accentColor;
+
+            return (
+              <div
+                key={idx}
+                className={`dropdown-option ${
+                  dataType?.value === value || dataType === value ? "selected" : ""
+                }`}
+
+                style={{ "--option-color": color }}
+                onClick={() => handleOptionClick(item)}
+              >
+                 <span>{label}</span>
+                <Check size={14} className="check-icon" />
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 };
+
 export const DropDownV2 = ({
   defaultType = "",
   onChange,
@@ -748,3 +416,144 @@ export const DropDownForTicketStatus = ({
     </div>
   );
 };
+
+
+
+
+
+const IconColorDropdown = ({
+  value = null,
+  onChange,
+  fetchOptions,
+  placeholder = "Select type",
+  disabled = false,
+}) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const ref = useRef(null);
+
+  /* ---------------------------
+     Fetch options on open
+  --------------------------- */
+  useEffect(() => {
+    if (!open) return;
+
+    let active = true;
+    setLoading(true);
+
+    fetchOptions()
+      .then((res) => active && setOptions(res || []))
+      .finally(() => active && setLoading(false));
+
+    return () => (active = false);
+  }, [open, fetchOptions]);
+
+  /* ---------------------------
+     Outside click
+  --------------------------- */
+  useEffect(() => {
+    const close = (e) => {
+      if (!ref.current?.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+
+  const filtered = options.filter((o) =>
+    o.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    <div className={`hora-ic-dropdown ${disabled ? "disabled" : ""}`} ref={ref}>
+      {/* CONTROL */}
+      <button
+        type="button"
+        className="dropdown-control"
+        onClick={() => !disabled && setOpen((v) => !v)}
+      >
+        {value ? (
+          <span className="value">
+            <span
+              className="icon"
+              style={{ color: value.color }}
+              dangerouslySetInnerHTML={{ __html: value.svg }}
+            />
+            <span className="text">{value.name}</span>
+          </span>
+        ) : (
+          <span className="placeholder">{placeholder}</span>
+        )}
+
+        {loading ? (
+          <Loader2 size={16} className="spin" />
+        ) : (
+          <ChevronDown size={16} />
+        )}
+      </button>
+
+      {/* MENU */}
+      {open && (
+        <div className="dropdown-menu">
+          <input
+            className="dropdown-search"
+            placeholder="Search…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
+          />
+
+          <div className="dropdown-options">
+            {loading && <div className="state">Loading…</div>}
+
+            {!loading && filtered.length === 0 && (
+              <div className="state">No results</div>
+            )}
+
+            {!loading &&
+              filtered.map((opt) => (
+                <button
+                  key={opt.id}
+                  className={`dropdown-option ${
+                    value?.id === opt.id ? "selected" : ""
+                  }`}
+                  onClick={() => {
+                    onChange(opt);
+                    setOpen(false);
+                    setQuery("");
+                  }}
+                >
+                  <span
+                    className="icon"
+                    style={{ color: opt.color }}
+                    dangerouslySetInnerHTML={{ __html: opt.svg }}
+                  />
+                  <span className="text">{opt.name}</span>
+
+                  <span
+                    className="color-dot"
+                    style={{ background: opt.color }}
+                  />
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default IconColorDropdown;
+// const [type, setType] = useState(null);
+
+// <IconColorDropdown
+//   value={type}
+//   onChange={setType}
+//   placeholder="Ticket Type"
+//   fetchOptions={async () => {
+//     const res = await apiClient.get("/ticket-types");
+//     return res.data;
+//   }}
+// />
