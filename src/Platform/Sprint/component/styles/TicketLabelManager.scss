@@ -1,0 +1,240 @@
+/* Use the same base variables from PriorityManager */
+@use "./TicketTypeManager.scss";
+
+$border: #e2e8f0;
+$text-main: #1e293b;
+$primary: #2563eb;
+$border: #e2e8f0;
+$text-main: #1e293b;
+$text-muted: #64748b;
+
+.label-card {
+  @extend .priority-card; // Reuse the container styles
+
+  .label-row {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 100px;
+    align-items: center;
+    padding: 14px 0;
+    border-top: 1px solid #f8fafc;
+
+    .label-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      width: fit-content;
+    }
+  }
+}
+
+.color-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+
+  .color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.1s;
+    
+    &:hover { transform: scale(1.1); }
+    &.active { border-color: #000; box-shadow: 0 0 0 2px white inset; }
+  }
+
+  .custom-color {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid $border;
+    border-radius: 6px;
+    cursor: pointer;
+    &::-webkit-color-swatch-wrapper { padding: 0; }
+    &::-webkit-color-swatch { border-radius: 5px; border: none; }
+  }
+}
+
+.modal-body textarea {
+  width: 100%;
+  height: 70px;
+  padding: 10px;
+  border: 1px solid $border;
+  border-radius: 8px;
+  resize: none;
+  font-size: 0.9rem;
+}
+
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    .action-btn {
+      background: none; border: 1px solid $border; padding: 6px; border-radius: 6px; cursor: pointer; color: $text-muted;
+      &:hover.edit { border-color: $primary; color: $primary; }
+      &:hover.delete { border-color: #ef4444; color: #ef4444; }
+    }
+  }
+
+  /* Variables for consistency */
+$primary: #2563eb;
+$danger: #e11d48;
+$text-main: #1e293b;
+$text-muted: #64748b;
+$border: #e2e8f0;
+$radius: 16px;
+
+/* The main container for all configuration cards */
+.priority-card, .convention-card, .label-card {
+  background: #ffffff;
+  border-radius: $radius;
+  border: 1px solid $border;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  max-width: 850px;
+  margin: 2rem auto;
+  overflow: hidden; // Keeps the footer/header corners rounded
+  font-family: 'Inter', sans-serif;
+
+  .card-header {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $border;
+    background: #fcfdfe;
+
+    .header-text {
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $text-main;
+      }
+      
+      .edu-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        color: $text-muted;
+        font-size: 0.8rem;
+        background: #f1f5f9;
+        padding: 4px 10px;
+        border-radius: 6px;
+        width: fit-content;
+        
+        svg { color: $primary; }
+      }
+    }
+  }
+
+  /* Scrollable Logic */
+  .list-container {
+    padding: 0 24px;
+
+    .list-labels {
+      display: grid;
+      /* Grid columns adjusted in specific components */
+      padding: 16px 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .scroll-viewport {
+      max-height: 400px; /* Force scroll after ~5-6 items */
+      overflow-y: auto;
+      padding-bottom: 12px;
+
+      /* Custom Scrollbar for Modern Look */
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: #e2e8f0;
+        border-radius: 10px;
+        &:hover { background: #cbd5e1; }
+      }
+    }
+  }
+
+  /* Common Footer */
+  .manager-footer {
+    padding: 20px 24px;
+    background: #f8fafc;
+    border-top: 1px solid $border;
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .footer-hint {
+        font-size: 0.8rem;
+        color: $text-muted;
+        max-width: 60%;
+      }
+    }
+  }
+}
+
+/* Common Buttons */
+.primary-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $primary;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  }
+}
+
+.save-main-btn {
+  @extend .primary-add;
+  padding: 12px 24px;
+}
+
+/* Action Buttons (Edit/Delete) */
+.action-btn {
+  background: #ffffff;
+  border: 1px solid $border;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: $text-muted;
+  transition: all 0.2s;
+
+  &:hover.edit {
+    color: $primary;
+    border-color: $primary;
+    background: #eff6ff;
+  }
+
+  &:hover.delete {
+    color: $danger;
+    border-color: $danger;
+    background: #fff1f2;
+  }
+}

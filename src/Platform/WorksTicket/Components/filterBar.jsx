@@ -12,11 +12,15 @@ export default function FilterBar({
   filters,
   onFilterChange,
   projectOptions,
+  labelsOptions,
+  priorityOptions,
+  ticketConventionOptions,
 }) {
+
   return (
     <div className="hora_filter_bar">
       {/* Search */}
-      <div className="filter_search">
+      <div className="filter_search" style={{display:"none"}}>
         <Search size={18} />
         <input
           placeholder="Search tickets..."
@@ -33,12 +37,37 @@ export default function FilterBar({
   searchable
   allowMultipleSelect
 />
+    <FilterDropdown
+  label="Status"
+  value={filters.status}
+  options={statusOptions}
+  onChange={(val) => onFilterChange("status", val)}
+  searchable
+  allowMultipleSelect
+/>
 
 <FilterDropdown
-  label="Sprint"
-  value={filters.sprint}
-  options={sprintOptions}
-  onChange={(val) => onFilterChange("sprint", val)}
+  label="Work Tickets"
+  value={filters.ticketConvention}
+  options={ticketConventionOptions}
+  onChange={(val) => onFilterChange("ticketConvention", val)}
+  searchable
+  allowMultipleSelect
+/>
+
+<FilterDropdown
+  label="Priority"
+  value={filters.priority}
+  options={priorityOptions}
+  onChange={(val) => onFilterChange("priority", val)}
+  searchable
+  allowMultipleSelect
+/>
+<FilterDropdown
+  label={"Labels"}
+  value={filters.labels}
+  options={labelsOptions}
+  onChange={(val) => onFilterChange("labels", val)}
   searchable
   allowMultipleSelect
 />

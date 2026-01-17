@@ -33,4 +33,58 @@
     color: #64748b;
     word-break: break-word;
   }
+
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+  }
+
+  .status-pill {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 700;
+    text-transform: uppercase;
+    
+    // Example dynamic status colors
+    &.in-progress { background: #dbeafe; color: #1e40af; }
+    &.completed { background: #dcfce7; color: #166534; }
+    &.todo { background: #f1f5f9; color: #475569; }
+  }
+
+  .task-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .assignee-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 20%;
+    background: #a855f7; // Purple for assigned
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+
+    &.unassigned {
+      background: #e2e8f0;
+      color: #94a3b8;
+      border: 1px dashed #cbd5e1;
+    }
+  }
+
+  .assignee-name {
+    font-size: 0.7rem;
+    color: #64748b;
+  }
 }
+

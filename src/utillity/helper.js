@@ -366,3 +366,27 @@ const formatStatus = (status) =>
     .split("_")
     .map((w) => w[0].toUpperCase() + w.slice(1))
     .join(" ");
+
+
+
+
+
+export const getLabelsbyId = (labelsArray, labelId) => {
+  if (!Array.isArray(labelsArray) || labelsArray.length === 0) {
+    return null; // or return an empty object/array based on your needs
+  }
+  console.log(labelsArray,labelId)
+  const label =labelsArray.find(label => label.id === labelId) || null;
+  console.log(label)
+  return label;
+};
+
+export const getPriorityById = (prioritiesArray, priorityId) => {
+  if (!Array.isArray(prioritiesArray) || prioritiesArray.length === 0) {
+    return null; // or return an empty object/array based on your needs
+  }
+  console.log(prioritiesArray,priorityId)
+  const priority =prioritiesArray.find(priority => priority.id == priorityId) || null;
+  console.log(priority)
+  return priority;
+};
