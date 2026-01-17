@@ -27,7 +27,7 @@ const TicketLabelManager = ({projectId}) => {
   // =========================================== Api calls here ==================
 
     useEffect(()=>{
-      setLabels(projectlabels.length >0 ? projectlabels :defaultLabels);
+      setLabels(projectlabels?.length >0 ? projectlabels :defaultLabels);
     },[projectlabels,defaultLabels])
 
 

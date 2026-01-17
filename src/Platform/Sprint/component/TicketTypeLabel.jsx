@@ -32,7 +32,7 @@ const mockBackendData = useMemo(() => [
 
 
   useEffect(() => {
-    if (projectConventions.length >0) {
+    if (projectConventions?.length >0) {
     setTicketTypes(projectConventions );
     }else{
     setTicketTypes( mockBackendData);

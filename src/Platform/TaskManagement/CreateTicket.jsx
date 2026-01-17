@@ -138,7 +138,6 @@ const CreateTicket = () => {
   
 
     if (userDetails?.id) {
-      console.log('Fetching projects for user:', userDetails.id);
       dispatch(getAllProjects(userDetails.id));
     }
    return () => {
