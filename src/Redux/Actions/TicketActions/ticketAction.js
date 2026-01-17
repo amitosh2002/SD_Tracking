@@ -6,7 +6,7 @@ import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstan
 // import { PROJECT_CONFIG_FETCH_SUCESS } from "../../Constants/projectConstant";
 
 export const getAllWorkTicket =
-  (args) =>
+  (args = {}) =>
   async (dispatch) => {
     const { projectId, limit = 10, page = 1, type, filters, ...rest } = args;
     
