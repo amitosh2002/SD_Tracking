@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { ChevronDown, Check ,Loader2, DotIcon} from "lucide-react";
 import "./styles/dropDown.scss";
 import { useMemo } from "react";
@@ -125,133 +125,342 @@ export const DropDownV1 = ({
   );
 };
 
+// import {  useMemo, useRef, useState } from "react";
+
 export const DropDownV2 = ({
-  defaultType = "",
+  data = [],
+  defaultType = "",        // backend id/value to pre-select
   onChange,
   label,
   disabled = false,
   className = "",
-  required,
-  data = [],
+  required = false,
+  searchable = true,
+  searchPlaceholder = "Search...",
+  placeholder = "Select option",  // placeholder text shown when nothing selected
 }) => {
-  const [selected, setSelected] = useState(() => {
-    // If defaultType is provided, try to find a match
-    if (defaultType) {
-      if (Array.isArray(data)) {
-        const matched = data.find(item => 
-          (item.type === defaultType?.type) || 
-          (item.value === defaultType?.value) ||
-          (item === defaultType)
-        );
-        if (matched) return matched;
-      }
-      return defaultType;
-    }
-    
-    // If no defaultType, use first item from data array if available
-    if (Array.isArray(data) && data.length > 0) {
-      return data[0];
-    }
-    
-    return null;
-  });
-
-  const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState(null);
 
-  useEffect(() => {
-    // Update selection when defaultType changes
-    if (defaultType) {
-      if (Array.isArray(data)) {
-        const matched = data.find(item =>
-          (item.type === defaultType?.type) ||
-          (item.value === defaultType?.value) ||
-          (item === defaultType)
-        );
-        if (matched) setSelected(matched);
-      } else {
-        setSelected(defaultType);
-      }
-    }
-  }, [defaultType, data]);
+  /* ---------- helpers ---------- */
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleOptionClick = (value) => {
-    console.log("Selected value:", value);
-    setSelected(value);
-    setIsOpen(false);
-    if (onChange) onChange(value);
+  const getLabel = (item) => {
+    if (typeof item === 'string') return item;
+    return item?.type || item?.name || item?.label || "";
   };
 
-  const toggleDropdown = () => {
-    if (!disabled) {
-      setIsOpen(!isOpen);
+  const isSameOption = (a, b) => {
+    if (!a || !b) return false;
+    // Handle string comparison
+    if (typeof a === 'string' && typeof b === 'string') return a === b;
+    if (typeof a === 'string' || typeof b === 'string') {
+      const aVal = typeof a === 'string' ? a : (a?.value || a?._id || a?.projectId || a?.type || a?.suffix || a?.id);
+      const bVal = typeof b === 'string' ? b : (b?.value || b?._id || b?.projectId || b?.type || b?.suffix || b?.id);
+      return aVal === bVal;
+    }
+    
+    // Match by various identifiers
+    return (
+      (a?.value !== undefined && a?.value === b?.value) ||
+      (a?._id !== undefined && a?._id === b?._id) ||
+      (a?.projectId !== undefined && a?.projectId === b?.projectId) ||
+      (a?.type !== undefined && a?.type === b?.type) ||
+      (a?.suffix !== undefined && a?.suffix === b?.suffix) ||
+      (a?.id !== undefined && a?.id === b?.id) ||
+      (a?.name !== undefined && a?.name === b?.name) ||
+      (a?.label !== undefined && a?.label === b?.label)
+    );
+  };
+
+  const findMatch = useCallback((value, dataArray) => {
+    if (!value || !dataArray || dataArray.length === 0) return null;
+    // If value is an object, try to match it directly
+    if (typeof value === 'object') {
+      return dataArray.find((item) => isSameOption(item, value));
+    }
+    // If value is a string/primitive, match against identifiers
+    return dataArray.find(
+      (item) =>
+        item === value ||
+        item?.value === value ||
+        item?._id === value ||
+        item?.projectId === value ||
+        item?.type === value ||
+        item?.suffix === value ||
+        item?.id === value ||
+        item?.name === value ||
+        item?.label === value
+    );
+  }, []);
+
+  /* ---------- sync defaultType / backend ---------- */
+  // Only sync from defaultType prop - don't reset user selections
+  const prevDefaultType = useRef(defaultType);
+  
+  useEffect(() => {
+    // Only update if defaultType actually changed (not just data)
+    if (defaultType !== prevDefaultType.current) {
+      prevDefaultType.current = defaultType;
+      
+      if (defaultType && data && data.length > 0) {
+        const match = findMatch(defaultType, data);
+        if (match) {
+          setSelected(match);
+        }
+      } else if (!defaultType) {
+        setSelected(null);
+      }
+    } else if (defaultType && data && data.length > 0 && !selected) {
+      // If defaultType exists but we haven't matched yet (data just loaded)
+      const match = findMatch(defaultType, data);
+      if (match) {
+        setSelected(match);
+      }
+    }
+  }, [defaultType, data, findMatch, selected]);
+
+  /* ---------- outside click ---------- */
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+        setSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /* ---------- search filter ---------- */
+
+  const filteredData = useMemo(() => {
+    if (!search) return data;
+    return data.filter((item) =>
+      getLabel(item).toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, data]);
+
+  /* ---------- select ---------- */
+
+  const handleSelect = (option) => {
+    console.log('DropDownV2 - handleSelect called with:', option);
+    setSelected(option);
+    setIsOpen(false);
+    setSearch("");
+    if (onChange) {
+      onChange(option);
     }
   };
 
   return (
     <div className={`modern-dropdown ${className}`} ref={dropdownRef}>
       {label && (
-        <label htmlFor="dropdown-trigger" className="dropdown-label">
+        <label className="dropdown-label">
           {label}
           {required && <span className="required-asterisk">*</span>}
         </label>
       )}
 
+      {/* Trigger */}
       <div
-        className={`dropdown-trigger ${isOpen ? 'focused' : ''} ${disabled ? 'disabled' : ''}`}
-        onClick={toggleDropdown}
-        role="combobox"
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
+        className={`dropdown-trigger ${isOpen ? "focused" : ""} ${
+          disabled ? "disabled" : ""
+        }`}
+        onClick={() => !disabled && setIsOpen((p) => !p)}
         tabIndex={disabled ? -1 : 0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleDropdown();
-          }
-        }}
       >
-        <span className={`dropdown-text ${!selected ? 'placeholder' : ''}`}>
-          {selected?.icon && <img src={selected.icon} alt="" style={{width:"25px"}} />}
-          {typeof selected === 'object' ? selected?.type || selected?.name : selected}
+        <span
+          className={`dropdown-text `}
+        >
+          {selected
+            ? getLabel(selected)
+            : placeholder}
         </span>
+
         <ChevronDown
-          size={20}
-          className={`dropdown-icon ${isOpen ? 'rotated' : ''}`}
+          size={18}
+          className={`dropdown-icon ${isOpen ? "rotated" : ""}`}
         />
       </div>
 
-      <div className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
-        <div className="dropdown-options" role="listbox">
-          {Array.isArray(data) && data.map((option, id) => (
-            <div
-              key={id}
-              className={`dropdown-option ${selected === option ? 'selected' : ''}`}
-              onClick={() => handleOptionClick(option)}
-              role="option"
-              aria-selected={selected === option}
-            >
-              {option.icon && <img src={option.icon} alt="" style={{width:"25px"}} />}
-              <span>{typeof option === 'object' ? option.type || option.name : option}</span>
-              <Check size={16} className="check-icon" />
+      {/* Menu */}
+      {isOpen && (
+        <div className="dropdown-menu open">
+          {searchable && (
+            <div className="dropdown-search">
+              <Search size={16} />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={searchPlaceholder}
+                autoFocus
+              />
             </div>
-          ))}
+          )}
+
+          <div className="dropdown-options">
+            {filteredData.length === 0 && (
+              <div className="dropdown-empty">No results found</div>
+            )}
+
+            {filteredData.map((option, idx) => {
+              const isSelectedOption =
+                selected && isSameOption(selected, option);
+
+              return (
+                <div
+                  key={option?._id || option?.projectId || option?.value || idx}
+                  className={`dropdown-option ${
+                    isSelectedOption ? "selected" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect(option);
+                  }}
+                >
+                  <span>{getLabel(option)}</span>
+                  {isSelectedOption && <Check size={14} />}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
+
+
+// export const DropDownV2 = ({
+//   defaultType = "",
+//   onChange,
+//   label,
+//   disabled = false,
+//   className = "",
+//   required,
+//   data = [],
+// }) => {
+//   const [selected, setSelected] = useState(() => {
+//     // If defaultType is provided, try to find a match
+//     if (defaultType) {
+//       if (Array.isArray(data)) {
+//         const matched = data.find(item => 
+//           (item.type === defaultType?.type) || 
+//           (item.value === defaultType?.value) ||
+//           (item === defaultType)
+//         );
+//         if (matched) return matched;
+//       }
+//       return defaultType;
+//     }
+    
+//     // If no defaultType, use first item from data array if available
+//     if (Array.isArray(data) && data.length > 0) {
+//       return data[0];
+//     }
+    
+//     return null;
+//   });
+
+//   const [isOpen, setIsOpen] = useState(false);
+//   const dropdownRef = useRef(null);
+
+//   useEffect(() => {
+//     // Update selection when defaultType changes
+//     if (defaultType) {
+//       if (Array.isArray(data)) {
+//         const matched = data.find(item =>
+//           (item.type === defaultType?.type) ||
+//           (item.value === defaultType?.value) ||
+//           (item === defaultType)
+//         );
+//         if (matched) setSelected(matched);
+//       } else {
+//         setSelected(defaultType);
+//       }
+//     }
+//   }, [defaultType, data]);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         setIsOpen(false);
+//       }
+//     };
+
+//     document.addEventListener('mousedown', handleClickOutside);
+//     return () => document.removeEventListener('mousedown', handleClickOutside);
+//   }, []);
+
+//   const handleOptionClick = (value) => {
+//     console.log("Selected value:", value);
+//     setSelected(value);
+//     setIsOpen(false);
+//     if (onChange) onChange(value);
+//   };
+
+//   const toggleDropdown = () => {
+//     if (!disabled) {
+//       setIsOpen(!isOpen);
+//     }
+//   };
+
+//   return (
+//     <div className={`modern-dropdown ${className}`} ref={dropdownRef}>
+//       {label && (
+//         <label htmlFor="dropdown-trigger" className="dropdown-label">
+//           {label}
+//           {required && <span className="required-asterisk">*</span>}
+//         </label>
+//       )}
+
+//       <div
+//         className={`dropdown-trigger ${isOpen ? 'focused' : ''} ${disabled ? 'disabled' : ''}`}
+//         onClick={toggleDropdown}
+//         role="combobox"
+//         aria-expanded={isOpen}
+//         aria-haspopup="listbox"
+//         tabIndex={disabled ? -1 : 0}
+//         onKeyDown={(e) => {
+//           if (e.key === 'Enter' || e.key === ' ') {
+//             e.preventDefault();
+//             toggleDropdown();
+//           }
+//         }}
+//       >
+//         <span className={`dropdown-text ${!selected ? 'placeholder' : ''}`}>
+//           {selected?.icon && <img src={selected.icon} alt="" style={{width:"25px"}} />}
+//           {typeof selected === 'object' ? selected?.type || selected?.name : selected}
+//         </span>
+//         <ChevronDown
+//           size={20}
+//           className={`dropdown-icon ${isOpen ? 'rotated' : ''}`}
+//         />
+//       </div>
+
+//       <div className={`dropdown-menu ${isOpen ? 'open' : ''}`}>
+//         <div className="dropdown-options" role="listbox">
+//           {Array.isArray(data) && data.map((option, id) => (
+//             <div
+//               key={id}
+//               className={`dropdown-option ${selected === option ? 'selected' : ''}`}
+//               onClick={() => handleOptionClick(option)}
+//               role="option"
+//               aria-selected={selected === option}
+//             >
+//               {option.icon && <img src={option.icon} alt="" style={{width:"25px"}} />}
+//               <span>{typeof option === 'object' ? option.type || option.name : option}</span>
+//               <Check size={16} className="check-icon" />
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
 export const DropDownForTicketStatus = ({
   ticketTypes,
