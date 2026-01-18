@@ -1,8 +1,9 @@
 import axios from "axios";
-import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS } from "../../Constants/projectConstant";
-import { acceptInvitationApi, getAlluserAccessProject, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, userProjectWithRights } from "../../../Api/Plat/projectApi";
+import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS } from "../../Constants/projectConstant";
+import { acceptInvitationApi, getAlluserAccessProject, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, ticketConfigurl, userProjectWithRights } from "../../../Api/Plat/projectApi";
 import { createProjectApi, getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
 import apiClient from "../../../utils/axiosConfig";
+import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
 export const getAllProjects = (userId) =>async( dispatch)=>{
 
@@ -362,3 +363,45 @@ export const getUserProjectAggreation =
       });
     }
   };
+
+
+  export const ticketConfiguratorActionV1 = (projectId, type, data) => async (dispatch) => {
+    try {
+        if (!projectId) {
+            dispatch({
+                type:SHOW_SNACKBAR,
+                payload:{
+                    type:"error",
+                    message:"Ticket id is required"
+                }
+            })
+        }
+        // adding loading state here
+           dispatch({type:PROJECT_CONFIG_FETCH_LOADING,})
+
+        const res = await apiClient.post(`${ticketConfigurl}${projectId}/config`, { type, data });
+
+        if (res.status === 200) {
+            dispatch({
+                type:PROJECT_CONFIG_FETCH_SUCESS,
+                payload:res.data
+            })
+            dispatch({
+                type: SHOW_SNACKBAR,
+                payload: {
+                    type: "success",
+                    message: "Ticket configured successfully"
+                }
+            });
+        }
+
+    } catch (error) {
+           dispatch({
+                type: SHOW_SNACKBAR,
+                payload: {
+                    type: "error",
+                    message: error?.response?.data?.message || "Failed to configure ticket"
+                }
+            });
+    }
+}

@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS } from '../Constants/projectConstant';
+import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS } from '../Constants/projectConstant';
 
 const initialState = {
   projects: [],
@@ -9,7 +9,11 @@ const initialState = {
   sucessFetchProjects:false,
   userProjectAgg: [],
   loadingUserProjectAgg: false,
-  errorUserProjectAgg: false
+  errorUserProjectAgg: false,
+  projectsPriorities:[],
+  projectConventions:[],
+  projectlabels:[],
+
 };
 
 const projectsReducer = createReducer(initialState, (builder) => {
@@ -59,6 +63,16 @@ const projectsReducer = createReducer(initialState, (builder) => {
     .addCase("USER_PROJECT_AGG_ERROR", (state) => {
       state.loadingUserProjectAgg = false;
       state.errorUserProjectAgg = true;
+    })
+    .addCase(PROJECT_CONFIG_FETCH_LOADING, (state) => {
+      state.loadingProjectconfig = true;
+    })
+    .addCase(PROJECT_CONFIG_FETCH_SUCESS, (state,action) => {
+      state.loadingProjectconfig = false;
+      const {  priorities,conventions,labels}= action.payload;
+      state.projectsPriorities=priorities;
+      state.projectConventions=conventions;
+      state.projectlabels=labels;
     });
 });
 
