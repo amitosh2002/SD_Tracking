@@ -4,15 +4,15 @@ import './TaskManager.scss';
 import TaskItem from './TaskItem';
 import TaskDetails from './TaskDetails';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllWorkTicket } from '../../Redux/Actions/TicketActions/ticketAction';
+import { getAllWorkTicket, getSortKeyValues } from '../../Redux/Actions/TicketActions/ticketAction';
 import { Loader2 } from 'lucide-react';
+import FilterBar from './Components/filterBar';
 
 const TaskManager = () => {
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.user);
-  const { tickets } = useSelector((state) => state.worksTicket);
+  const { tickets,users,status,projects,sprints,labels,priority,ticketConvention } = useSelector((state) => state.worksTicket);
   const { projectId } = useParams();
-
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [currentLimit, setCurrentLimit] = useState(10);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -38,23 +38,40 @@ const TaskManager = () => {
     if (node) observerLoader.current.observe(node);
   }, [loadingMore, hasMore]);
 
-  // Reset on Project/User Switch
+
+  
+const [filters, setFilters] = useState({
+  status: [],
+  sprint: [],
+  assignee: [],
+  project: [],
+  labels: [],
+  priority: [],
+  ticketConvention: [],
+  sort: "",
+});
+
+  // Reset on Project/User/Filter Switch
   useEffect(() => {
-    console.log("Project or user changed, resetting limit...");
     setCurrentLimit(10);
     setHasMore(true);
-  }, [projectId, userDetails?.id]);
+  }, [projectId, userDetails?.id, filters]);
+
+  // Initial data fetch for dropdowns
+  useEffect(() => {
+    if (userDetails?.id) {
+       dispatch(getSortKeyValues());
+    }
+  }, [dispatch, userDetails?.id]);
 
   // Fetch Logic
+
+
   useEffect(() => {
     if (!userDetails?.id) return;
-    
     const fetchTickets = async () => {
       const isInitial = currentLimit === 10;
       if (!isInitial) setLoadingMore(true);
-      
-      console.log(`Fetching tickets with limit: ${currentLimit}, isInitial: ${isInitial}`);
-      
       const fetchParams = projectId 
         ? { projectId, userId: userDetails.id, page: 1, limit: currentLimit } 
         : { userId: userDetails.id, page: 1, limit: currentLimit };
@@ -62,6 +79,7 @@ const TaskManager = () => {
       try {
         const res = await dispatch(getAllWorkTicket({ 
             ...fetchParams, 
+            ...filters,
             type: isInitial ? 'refresh' : 'append' 
         }));
         
@@ -87,7 +105,7 @@ const TaskManager = () => {
     };
 
     fetchTickets();
-  }, [dispatch, currentLimit, projectId, userDetails?.id]);
+  }, [dispatch, currentLimit, projectId, userDetails?.id,filters]);
 
   // Auto-select first task only when the initial list loads
   useEffect(() => {
@@ -98,7 +116,39 @@ const TaskManager = () => {
 
   const selectedTask = tickets?.items?.find((task) => task?._id === selectedTaskId);
 
+
+  const sortOptions = [
+    { label: "Created", value: "createdAt" },
+    { label: "Updated", value: "updatedAt" },
+  ];
+const onFilterChange = (key, value) => {
+  setFilters(prev => ({
+    ...prev,
+    [key]: value,
+  }));
+};
+
+
+const [search, setSearch] = useState("");
+
+
   return (
+    <>
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        filters={filters}
+        onFilterChange={onFilterChange}
+        statusOptions={status}
+        sprintOptions={sprints}
+        assigneeOptions={users}
+        projectOptions={projects}
+        sortOptions={sortOptions}
+        labelsOptions={labels}
+        priorityOptions={priority}
+        ticketConventionOptions={ticketConvention}
+      />
+
     <div className="task-manager-container">
       <div className="task-list-panel">
         <div className="task-list-header">
@@ -106,6 +156,7 @@ const TaskManager = () => {
         </div>
         
         <div className="task-items-scroll">
+
             {Array.isArray(tickets?.items) &&
               tickets.items.map((task) => (
                 <div key={task._id} className="task-item-wrapper">
@@ -148,6 +199,8 @@ const TaskManager = () => {
         <TaskDetails task={selectedTask} />
       </div>
     </div>
+    </>
+
   );
 };
 

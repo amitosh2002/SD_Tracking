@@ -1,0 +1,102 @@
+import "./FilterBar.scss";
+import { Search } from "lucide-react";
+import FilterDropdown from "./FilterDropdown";
+
+export default function FilterBar({
+  search,
+  onSearchChange,
+  statusOptions,
+  sprintOptions,
+  assigneeOptions,
+  sortOptions,
+  filters,
+  onFilterChange,
+  projectOptions,
+  labelsOptions,
+  priorityOptions,
+  ticketConventionOptions,
+}) {
+
+  return (
+    <div className="hora_filter_bar">
+      {/* Search */}
+      <div className="filter_search" style={{display:"none"}}>
+        <Search size={18} />
+        <input
+          placeholder="Search tickets..."
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </div>
+
+    <FilterDropdown
+  label="Status"
+  value={filters.status}
+  options={statusOptions}
+  onChange={(val) => onFilterChange("status", val)}
+  searchable
+  allowMultipleSelect
+/>
+    <FilterDropdown
+  label="Status"
+  value={filters.status}
+  options={statusOptions}
+  onChange={(val) => onFilterChange("status", val)}
+  searchable
+  allowMultipleSelect
+/>
+
+<FilterDropdown
+  label="Work Tickets"
+  value={filters.ticketConvention}
+  options={ticketConventionOptions}
+  onChange={(val) => onFilterChange("ticketConvention", val)}
+  searchable
+  allowMultipleSelect
+/>
+
+<FilterDropdown
+  label="Priority"
+  value={filters.priority}
+  options={priorityOptions}
+  onChange={(val) => onFilterChange("priority", val)}
+  searchable
+  allowMultipleSelect
+/>
+<FilterDropdown
+  label={"Labels"}
+  value={filters.labels}
+  options={labelsOptions}
+  onChange={(val) => onFilterChange("labels", val)}
+  searchable
+  allowMultipleSelect
+/>
+
+<FilterDropdown
+  label="Assignee"
+  value={filters.assignee}
+  options={assigneeOptions}
+  onChange={(val) => onFilterChange("assignee", val)}
+  searchable
+  avatar
+  allowMultipleSelect
+/>
+
+<FilterDropdown
+  label="Project"
+  value={filters.project}
+  options={projectOptions}
+  onChange={(val) => onFilterChange("project", val)}
+  allowMultipleSelect
+/>
+
+<FilterDropdown
+  label="Sort"
+  value={filters.sort}
+  options={sortOptions}
+  onChange={(val) => onFilterChange("sort", val)}
+/>
+
+    </div>
+  );
+}

@@ -8,9 +8,6 @@ import LoginPage from "../Authentication/authPage";
 import TaskManager from "../WorksTicket/TaskManager";
 import HoraRegistration from "../Authentication/RegistraionV1";
 import UserProfile from "../profile";
-// import { useEffect } from "react";
-// import { fetchUserDetails } from "../../Redux/Actions/PlatformActions.js/userActions";
-// import { useDispatch } from "react-redux"
 import TicketPage from "../WorksTicket/TicketPage";
 import Dashboard from "../HeroSection/HeroSectionV1";
 import PartnerOnboarding from "../Onboarding/onboarding";
@@ -26,12 +23,10 @@ import SprintBoardManager from "../Sprint/component/SprintBoardManager";
 import ScrumMasterDashboard from "../Sprint/component/sprintBoardConfriguratro";
 import SprintManagement from "../Sprint/SprintManagement";
 import SprintHome from "../Sprint/sprintHome";
-import ConfigurationPage from "../Sprint/TicketConfigurator";
-import WorkspaceConfig from "../Sprint/TicketConfigurator";
-import SprintFLowBoard from "../Sprint/Board/sprintFlowBoard";
-import TeamsPage from "../HeroSection/TeamsPage";
-import SprintFlowUserEducation from "../Sprint/component/OnboardingScreens/WorkFlowOnboarding";
 import ProjectCreationFlow from "../GenerailForms/projectCreationFlow";
+import ForYouPage from "../HeroSection/Components/forYouPage";
+import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel";
+import WorkspaceConfig from "../Sprint/WorkspacConfigurator";
 
 // import { useSelector } from "react-redux";
 
@@ -74,7 +69,7 @@ const AllRoutes = () => {
                 <Route path="/confrigurator/flow" element={<WorkflowManager />} />
                 <Route path="/work-space/confrigurator" element={<ScrumMasterDashboard />} />
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
-                <Route path="/workspace/:projectId" element={<ConfigurationPage />} />
+                <Route path="/workspace/:projectId" element={<WorkspaceConfig />} />
 
 
                 {/* // letter it turn down into popup */}
@@ -86,7 +81,7 @@ const AllRoutes = () => {
 
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
-                <Route path="/test" element={<SprintFlowUserEducation />} />
+                <Route path="/test" element={<GitHubAdminPanel />} />
 
             </Routes>
         // </BrowserRouter>

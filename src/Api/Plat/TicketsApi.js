@@ -10,6 +10,9 @@ export const addStoryPoints =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v
 export const ticketSearchQueryApi =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/fetch/searchTicket`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const createProjectApi =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/projects`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const ticketLogs =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/getAll`;// if using axiosClient do not use import from env it already imported into axiosclient
+export const ticketSortKeyValues =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/getSortKeyValues/get`;// if using axiosClient do not use import from env it already imported into axiosclient
+export const addLabelToTicket = (id) => `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/${id}/labels/add`;// if using axiosClient do not use import from env it already imported into axiosclient
+export const addPriorityToTicket = (id) => `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/${id}/priority`;// if using axiosClient do not use import from env it already imported into axiosclient
 
 
 /*

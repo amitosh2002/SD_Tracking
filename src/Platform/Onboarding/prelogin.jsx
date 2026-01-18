@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Clock, Zap, Shield, TrendingUp, Users, Star, 
   ChevronRight, Check, ArrowRight, Menu, X,
-  Package, Truck, Store, Heart, MessageCircle
+  GitBranch, Code, Database, Workflow, Calendar, Target,
+  BarChart3, FileText, CheckSquare, MessageSquare
 } from 'lucide-react';
 
 export default function HoraShowcase() {
@@ -10,10 +12,10 @@ export default function HoraShowcase() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
   const [stats, setStats] = useState({
-    partners: 0,
-    orders: 0,
-    customers: 0,
-    cities: 0
+    teams: 0,
+    projects: 0,
+    sprints: 0,
+    tasks: 0
   });
 
   useEffect(() => {
@@ -31,33 +33,33 @@ export default function HoraShowcase() {
       const increment = duration / steps;
       
       const targets = {
-        partners: 5000,
-        orders: 150000,
-        customers: 50000,
-        cities: 25
+        teams: 1200,
+        projects: 8500,
+        sprints: 15000,
+        tasks: 250000
       };
 
       let current = {
-        partners: 0,
-        orders: 0,
-        customers: 0,
-        cities: 0
+        teams: 0,
+        projects: 0,
+        sprints: 0,
+        tasks: 0
       };
 
       const timer = setInterval(() => {
-        current.partners = Math.min(current.partners + targets.partners / steps, targets.partners);
-        current.orders = Math.min(current.orders + targets.orders / steps, targets.orders);
-        current.customers = Math.min(current.customers + targets.customers / steps, targets.customers);
-        current.cities = Math.min(current.cities + targets.cities / steps, targets.cities);
+        current.teams = Math.min(current.teams + targets.teams / steps, targets.teams);
+        current.projects = Math.min(current.projects + targets.projects / steps, targets.projects);
+        current.sprints = Math.min(current.sprints + targets.sprints / steps, targets.sprints);
+        current.tasks = Math.min(current.tasks + targets.tasks / steps, targets.tasks);
 
         setStats({
-          partners: Math.floor(current.partners),
-          orders: Math.floor(current.orders),
-          customers: Math.floor(current.customers),
-          cities: Math.floor(current.cities)
+          teams: Math.floor(current.teams),
+          projects: Math.floor(current.projects),
+          sprints: Math.floor(current.sprints),
+          tasks: Math.floor(current.tasks)
         });
 
-        if (current.partners >= targets.partners) {
+        if (current.teams >= targets.teams) {
           clearInterval(timer);
         }
       }, increment);
@@ -85,74 +87,74 @@ export default function HoraShowcase() {
 
   const features = [
     {
-      icon: Clock,
-      title: "Real-Time Tracking",
-      description: "Track your orders and deliveries in real-time with live updates and notifications."
+      icon: Workflow,
+      title: "Agile Sprint Management",
+      description: "Plan, track, and manage sprints with customizable boards and workflows tailored to your team."
     },
     {
-      icon: Zap,
-      title: "Lightning Fast",
-      description: "Experience blazing fast delivery and service with our optimized logistics network."
+      icon: GitBranch,
+      title: "GitHub Integration",
+      description: "Seamlessly connect with GitHub for automated branch creation, PR tracking, and deployment workflows."
     },
     {
-      icon: Shield,
-      title: "Secure & Safe",
-      description: "Your data and transactions are protected with enterprise-grade security."
+      icon: BarChart3,
+      title: "Advanced Analytics",
+      description: "Gain insights into team performance, velocity trends, and project health with powerful dashboards."
     },
     {
-      icon: TrendingUp,
-      title: "Growth Analytics",
-      description: "Make data-driven decisions with powerful analytics and insights dashboard."
+      icon: MessageSquare,
+      title: "Real-Time Collaboration",
+      description: "Keep your team synchronized with instant updates, comments, and notifications across all projects."
     }
   ];
 
   const testimonials = [
     {
-      name: "Rajesh Kumar",
-      business: "Kumar's Restaurant",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh",
+      name: "Sarah Chen",
+      business: "Tech Startup Founder",
+      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
       rating: 5,
-      text: "Hora transformed our business! We've seen a 300% increase in orders since joining the platform."
+      text: "Hora transformed how our engineering team works. Sprint planning that used to take hours now takes minutes!"
     },
     {
-      name: "Priya Sharma",
-      business: "Sharma Fashion Store",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
+      name: "Michael Rodriguez",
+      business: "Senior Engineering Manager",
+      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
       rating: 5,
-      text: "The best decision we made. Customer reach expanded beyond our expectations with minimal effort."
+      text: "The GitHub integration is a game-changer. Our deployment workflow is now fully automated and traceable."
     },
     {
-      name: "Amit Patel",
-      business: "Patel Grocery Mart",
-      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit",
+      name: "Emily Watson",
+      business: "Product Manager",
+      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emily",
       rating: 5,
-      text: "Easy to use platform with excellent support. Our revenue doubled in just 3 months!"
+      text: "Finally, a project management tool that developers actually love to use. The velocity tracking is incredible!"
     }
   ];
 
   const services = [
     {
-      icon: Package,
-      title: "E-Commerce",
-      description: "Sell products online with ease",
+      icon: Calendar,
+      title: "Sprint Planning",
+      description: "Streamline sprint ceremonies",
       color: "#667eea"
     },
     {
-      icon: Truck,
-      title: "Delivery",
-      description: "Fast and reliable logistics",
+      icon: CheckSquare,
+      title: "Task Management",
+      description: "Track work items efficiently",
       color: "#764ba2"
     },
     {
-      icon: Store,
-      title: "Retail",
-      description: "Expand your retail presence",
+      icon: Code,
+      title: "Code Integration",
+      description: "Connect your repositories",
       color: "#f093fb"
     },
     {
-      icon: Heart,
-      title: "Healthcare",
-      description: "Health services at doorstep",
+      icon: Target,
+      title: "Goal Tracking",
+      description: "Measure team objectives",
       color: "#4facfe"
     }
   ];
@@ -192,18 +194,18 @@ export default function HoraShowcase() {
           <div className="hora-hero__content">
             <div className="hora-hero__badge">
               <Zap size={16} />
-              <span>Trusted by 5,000+ Businesses</span>
+              <span>Trusted by 1,200+ Development Teams</span>
             </div>
             <h1 className="hora-hero__title">
-              Grow Your Business with <span className="hora-gradient-text">Hora</span>
+              Agile Project Management <span className="hora-gradient-text">Reimagined</span>
             </h1>
             <p className="hora-hero__subtitle">
-              The all-in-one platform connecting businesses with customers. 
-              Manage orders, deliveries, and grow your revenue seamlessly.
+              The modern platform for agile teams. Plan sprints, manage tasks, track velocity, 
+              and integrate seamlessly with GitHub—all in one powerful workspace.
             </p>
             <div className="hora-hero__actions">
-              <button className="hora-btn hora-btn--primary hora-btn--lg">
-                Start Free Trial
+              <button className="hora-btn hora-btn--primary hora-btn--lg" onClick={ ()=>window.open("https://sd-tracking.onrender.com/")}>
+                 Join the Journey: Try Hora Beta
                 <ArrowRight className="hora-btn__icon-right" />
               </button>
               <button className="hora-btn hora-btn--outline hora-btn--lg">
@@ -213,24 +215,24 @@ export default function HoraShowcase() {
           </div>
           <div className="hora-hero__image">
             <div className="hora-hero__card hora-hero__card--1">
-              <Package size={24} />
+              <Calendar size={24} />
               <div>
-                <div className="hora-hero__card-label">Orders Today</div>
-                <div className="hora-hero__card-value">2,543</div>
+                <div className="hora-hero__card-label">Active Sprints</div>
+                <div className="hora-hero__card-value">127</div>
               </div>
             </div>
             <div className="hora-hero__card hora-hero__card--2">
               <TrendingUp size={24} />
               <div>
-                <div className="hora-hero__card-label">Revenue Growth</div>
-                <div className="hora-hero__card-value">+245%</div>
+                <div className="hora-hero__card-label">Velocity</div>
+                <div className="hora-hero__card-value">32 pts</div>
               </div>
             </div>
             <div className="hora-hero__card hora-hero__card--3">
-              <Users size={24} />
+              <CheckSquare size={24} />
               <div>
-                <div className="hora-hero__card-label">Active Users</div>
-                <div className="hora-hero__card-value">12.5K</div>
+                <div className="hora-hero__card-label">Tasks Completed</div>
+                <div className="hora-hero__card-value">1,543</div>
               </div>
             </div>
           </div>
@@ -241,20 +243,20 @@ export default function HoraShowcase() {
       <section className="hora-stats">
         <div className="hora-stats__container">
           <div className="hora-stats__item">
-            <div className="hora-stats__number">{stats.partners.toLocaleString()}+</div>
-            <div className="hora-stats__label">Active Partners</div>
+            <div className="hora-stats__number">{stats.teams.toLocaleString()}+</div>
+            <div className="hora-stats__label">Active Teams</div>
           </div>
           <div className="hora-stats__item">
-            <div className="hora-stats__number">{stats.orders.toLocaleString()}+</div>
-            <div className="hora-stats__label">Orders Delivered</div>
+            <div className="hora-stats__number">{stats.projects.toLocaleString()}+</div>
+            <div className="hora-stats__label">Projects Managed</div>
           </div>
           <div className="hora-stats__item">
-            <div className="hora-stats__number">{stats.customers.toLocaleString()}+</div>
-            <div className="hora-stats__label">Happy Customers</div>
+            <div className="hora-stats__number">{stats.sprints.toLocaleString()}+</div>
+            <div className="hora-stats__label">Sprints Completed</div>
           </div>
           <div className="hora-stats__item">
-            <div className="hora-stats__number">{stats.cities}+</div>
-            <div className="hora-stats__label">Cities Covered</div>
+            <div className="hora-stats__number">{stats.tasks.toLocaleString()}+</div>
+            <div className="hora-stats__label">Tasks Tracked</div>
           </div>
         </div>
       </section>
@@ -263,9 +265,9 @@ export default function HoraShowcase() {
       <section id="features" className="hora-features">
         <div className="hora-features__container">
           <div className="hora-section-header">
-            <h2 className="hora-section-title">Powerful Features for Your Business</h2>
+            <h2 className="hora-section-title">Built for Modern Development Teams</h2>
             <p className="hora-section-subtitle">
-              Everything you need to succeed in the digital marketplace
+              Everything you need to run efficient agile projects and deliver faster
             </p>
           </div>
 
@@ -293,9 +295,9 @@ export default function HoraShowcase() {
       <section id="services" className="hora-services">
         <div className="hora-services__container">
           <div className="hora-section-header">
-            <h2 className="hora-section-title">Our Services</h2>
+            <h2 className="hora-section-title">Core Capabilities</h2>
             <p className="hora-section-subtitle">
-              Comprehensive solutions for every business need
+              Comprehensive tools for every phase of your development cycle
             </p>
           </div>
 
@@ -326,9 +328,9 @@ export default function HoraShowcase() {
       <section id="testimonials" className="hora-testimonials">
         <div className="hora-testimonials__container">
           <div className="hora-section-header">
-            <h2 className="hora-section-title">What Our Partners Say</h2>
+            <h2 className="hora-section-title">Loved by Development Teams</h2>
             <p className="hora-section-subtitle">
-              Join thousands of successful businesses on Hora
+              See how teams are shipping faster with Hora
             </p>
           </div>
 
@@ -361,12 +363,12 @@ export default function HoraShowcase() {
       {/* CTA Section */}
       <section className="hora-cta">
         <div className="hora-cta__container">
-          <h2 className="hora-cta__title">Ready to Transform Your Business?</h2>
-          <p className="hora-cta__subtitle">
-            Join thousands of successful partners and start growing today
-          </p>
-          <button className="hora-btn hora-btn--primary hora-btn--lg">
-            Get Started Now
+          <h2 className="hora-cta__title">Ready to Ship Faster?</h2>
+          <p className="hora-hero__subtitle">
+              “Experience the evolution of engineering execution.”
+            </p>
+          <button className="hora-btn hora-btn--primary hora-btn--lg" onClick={ ()=>window.open("https://sd-tracking.onrender.com/")}>
+            Explore Hora
             <ArrowRight className="hora-btn__icon-right" />
           </button>
         </div>
@@ -382,33 +384,37 @@ export default function HoraShowcase() {
                 <span>Hora</span>
               </div>
               <p className="hora-footer__description">
-                Empowering businesses to reach their full potential through technology.
+                Modern agile project management for development teams who ship fast.
               </p>
             </div>
             <div className="hora-footer__section">
               <h4 className="hora-footer__heading">Product</h4>
               <a href="#" className="hora-footer__link">Features</a>
               <a href="#" className="hora-footer__link">Pricing</a>
-              <a href="#" className="hora-footer__link">Partners</a>
+              <a href="#" className="hora-footer__link">Integrations</a>
+              <a href="#" className="hora-footer__link">Documentation</a>
             </div>
             <div className="hora-footer__section">
               <h4 className="hora-footer__heading">Company</h4>
               <a href="#" className="hora-footer__link">About</a>
+              <a href="#" className="hora-footer__link">Blog</a>
               <a href="#" className="hora-footer__link">Careers</a>
               <a href="#" className="hora-footer__link">Contact</a>
             </div>
             <div className="hora-footer__section">
-              <h4 className="hora-footer__heading">Legal</h4>
-              <a href="#" className="hora-footer__link">Privacy</a>
-              <a href="#" className="hora-footer__link">Terms</a>
-              <a href="#" className="hora-footer__link">Security</a>
+              <h4 className="hora-footer__heading">Resources</h4>
+              <a href="#" className="hora-footer__link">Help Center</a>
+              <a href="#" className="hora-footer__link">API Reference</a>
+              <a href="#" className="hora-footer__link">Community</a>
+              <a href="#" className="hora-footer__link">Status</a>
             </div>
           </div>
           <div className="hora-footer__bottom">
-            <p>&copy; 2025 Hora. All rights reserved.</p>
+            <p>&copy; {new Date(Date.now()).getFullYear()} Hora. Built for developers, by developers.</p>
           </div>
         </div>
       </footer>
+
 
       <style>{`
         * {
