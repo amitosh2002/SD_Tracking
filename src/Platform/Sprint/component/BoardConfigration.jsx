@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchProjectScrumBoard,
   fetchProjectScrumFlow,
-  saveProjectScrumBoard,
   updateProjectScrumBoard,
-  saveProjectScrumFlow,
-  updateProjectScrumFlow
+  
 } from '../../../Redux/Actions/SprintActions/sprintActionsV1';
 import './style/ColumnStatusManager.scss';
 
@@ -26,7 +24,7 @@ const ColumnStatusManager = () => {
     flowId,
     statusWorkFlow
   } = useSelector((state) => state.sprint);
-  console.log(boardId)
+  console.log(statusWorkFlow)
   
   // Status Flow State
   const [localStatuses, setLocalStatuses] = useState([]);
@@ -63,6 +61,32 @@ const ColumnStatusManager = () => {
     { name: 'Indigo', bg: '#e0e7ff', text: '#3730a3', border: '#4f46e5' }
   ];
 
+
+
+
+const normalizedFlowColumns = useMemo(() => {
+  if (!statusWorkFlow?.statuses || !statusWorkFlow?.workflow) return [];
+
+  return statusWorkFlow.statuses.map((status, index) => ({
+    id: `flow_${status.key}`,
+    name: status.label,
+    statusKeys: [
+      status.key,                    // ✅ self
+      ...(statusWorkFlow.workflow[status.key] || []) // ✅ allowed transitions
+    ],
+    color: status.color?.border || '#6366f1',
+    wipLimit: null,
+    order: index
+  }));
+}, [statusWorkFlow]);
+
+
+useEffect(() => {
+  if (normalizedFlowColumns.length) {
+    setLocalColumns(JSON.parse(JSON.stringify(normalizedFlowColumns)));
+  }
+}, [normalizedFlowColumns]);
+
   // Fetch data on mount
   useEffect(() => {
     if (projectId) {
@@ -72,18 +96,19 @@ const ColumnStatusManager = () => {
   }, [projectId, dispatch]);
 
   // Sync Redux state to local state
-  useEffect(() => {
-    if (statusWorkFlow?.statuses) {
-      setLocalStatuses(JSON.parse(JSON.stringify(statusWorkFlow.statuses)));
-    }
-  }, [statusWorkFlow]);
+ useEffect(() => {
+  if (statusWorkFlow?.statuses) {
+    setLocalStatuses(JSON.parse(JSON.stringify(statusWorkFlow.statuses)));
+  }
+}, [statusWorkFlow]);
 
-  useEffect(() => {
-    if (boardColumn) {
-      const sorted = [...boardColumn].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-      setLocalColumns(JSON.parse(JSON.stringify(sorted)));
-    }
-  }, [boardColumn]);
+
+  // useEffect(() => {
+  //   if (boardColumn) {
+  //     const sorted = [...boardColumn].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  //     setLocalColumns(JSON.parse(JSON.stringify(sorted)));
+  //   }
+  // }, [boardColumn]);
 
   // Check for changes
   useEffect(() => {
@@ -93,47 +118,86 @@ const ColumnStatusManager = () => {
   }, [localStatuses, localColumns, statusWorkFlow, boardColumn]);
 
   // ========== SAVE ALL CHANGES ==========
-  const handleSaveAll = async () => {
-    if (!hasChanges) return;
+  // const handleSaveAll = async () => {
+  //   if (!hasChanges) return;
 
-    try {
-      // Save Status Flow
-      const statusPayload = {
-        statuses: localStatuses,
-        transitions: statusWorkFlow?.transitions || []
-      };
+  //   try {
+  //     // Save Status Flow
+  //     const statusPayload = {
+  //       statuses: localStatuses,
+  //       transitions: statusWorkFlow?.transitions || []
+  //     };
 
-      if (flowId) {
-        await dispatch(updateProjectScrumFlow(projectId, statusPayload));
-      } else {
-        await dispatch(saveProjectScrumFlow(projectId, statusPayload));
-      }
+  //     if (flowId) {
+  //       await dispatch(updateProjectScrumFlow(projectId, statusPayload));
+  //     } else {
+  //       await dispatch(saveProjectScrumFlow(projectId, statusPayload));
+  //     }
 
-      // Save Board Columns
-      const columnPayload = {
-        columns: localColumns.map((col, i) => ({
-          ...col,
-          order: i
-        }))
-      };
+  //     // Save Board Columns
+  //     const columnPayload = {
+  //       columns: localColumns.map((col, i) => ({
+  //         ...col,
+  //         order: i
+  //       }))
+  //     };
 
-      if (boardId) {
-        await dispatch(updateProjectScrumBoard(boardId, columnPayload));
-      } else {
-        await dispatch(saveProjectScrumBoard(projectId, columnPayload));
-      }
+  //     if (boardId) {
+  //       await dispatch(updateProjectScrumBoard(boardId, columnPayload));
+  //     } else {
+  //       await dispatch(saveProjectScrumBoard(projectId, columnPayload));
+  //     }
 
-      alert('Changes saved successfully!');
-      setHasChanges(false);
+  //     alert('Changes saved successfully!');
+  //     setHasChanges(false);
       
-      // Refresh data
-      dispatch(fetchProjectScrumFlow(projectId));
-      dispatch(fetchProjectScrumBoard(projectId));
-    } catch (error) {
-      console.error('Error saving:', error);
-      alert('Error saving changes');
-    }
-  };
+  //     // Refresh data
+  //     dispatch(fetchProjectScrumFlow(projectId));
+  //     dispatch(fetchProjectScrumBoard(projectId));
+  //   } catch (error) {
+  //     console.error('Error saving:', error);
+  //     alert('Error saving changes');
+  //   }
+  // };
+const handleSaveAll = () => {
+  if (!hasChanges) return;
+
+  try {
+
+
+   
+
+    // ======== BOARD COLUMNS PAYLOAD ========
+        const boardPayload = {
+          columns: localColumns.map((col, i) => ({
+            columnId: col.id,  // e.g., 'col_1', 'col_2'
+            name: col.name,
+            description: col.description || '',
+            color: col.color,
+            wipLimit: col.wipLimit || null,
+            statusKeys: Array.from(new Set(col.statusKeys)), // deduplicate
+            order: i
+          }))
+        };
+
+
+    console.log('Board Payload:', boardPayload);
+
+     dispatch(updateProjectScrumBoard(projectId, boardPayload));
+
+    alert('Changes saved successfully!');
+    setHasChanges(false);
+
+    // Refresh data after save
+    dispatch(fetchProjectScrumFlow(projectId));
+    dispatch(fetchProjectScrumBoard(projectId));
+
+  } catch (error) {
+    console.error('Error saving changes:', error);
+    alert('Failed to save changes');
+  }
+};
+
 
   // ========== STATUS FLOW HANDLERS ==========
   const handleCreateStatus = () => {
@@ -276,22 +340,32 @@ const ColumnStatusManager = () => {
   };
 
   // ========== MAPPING HANDLERS ==========
-  const toggleStatusInColumn = (columnId, statusKey) => {
-    setLocalColumns(prev => prev.map(col => {
-      if (col.id !== columnId) return col;
-      
-      const statusKeys = col.statusKeys.includes(statusKey)
-        ? col.statusKeys.filter(key => key !== statusKey)
-        : [...col.statusKeys, statusKey];
-      
-      return { ...col, statusKeys };
-    }));
-  };
+// ========== MAPPING HANDLER ==========
+const toggleStatusInColumn = (columnId, statusKey) => {
+  setLocalColumns(prev =>
+    prev.map(col => {
+      if (col.id !== columnId) return col; // Only modify the clicked column
 
-  const getUnassignedStatuses = useMemo(() => {
-    const assigned = new Set(localColumns.flatMap(col => col.statusKeys || []));
-    return localStatuses.filter(status => !assigned.has(status.key));
-  }, [localStatuses, localColumns]);
+      const exists = col.statusKeys.includes(statusKey);
+
+      return {
+        ...col,
+        statusKeys: exists
+          ? col.statusKeys.filter(key => key !== statusKey) // remove
+          : [...col.statusKeys, statusKey] // add
+      };
+    })
+  );
+};
+
+
+
+const getUnassignedStatuses = useMemo(() => {
+  const assigned = new Set(localColumns.flatMap(col => col.statusKeys || []));
+  return localStatuses.filter(status => !assigned.has(status.key));
+}, [localStatuses, localColumns]);
+
+
 
   if (scrumLoading) {
     return (

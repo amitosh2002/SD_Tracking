@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS, GET_ACTIVITY_LOGS_REQUEST, GET_ACTIVITY_LOGS_SUCCESS, APPEND_TICKETS } from "../Constants/ticketReducerConstants";
+import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS, GET_ACTIVITY_LOGS_REQUEST, GET_ACTIVITY_LOGS_SUCCESS, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS } from "../Constants/ticketReducerConstants";
 
 const initialState = {
   tickets: { items: [], total: 0 },
@@ -9,8 +9,15 @@ const initialState = {
   filteredTicketsLenth:0,
   ticketDetailsChange:false,
   activityLogLoading:false,
-  activityLogs:null
-
+  activityLogs:null,
+  projects:null,
+  status:null,
+  sprints:null,
+  users:null,
+    labels:null,
+    priority:null,
+    ticketConvention:null,
+  sortKeyValuesLoading:false,
 };
 
 export const ticketReducer = createReducer(initialState,(builder=>{
@@ -36,7 +43,11 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.selectedTicket = state.tickets.find(ticket => ticket.id === action.payload);
         })
         .addCase(CREATE_TICKET, (state, action) => {
-            state.tickets.push(action.payload.data);
+            if (!state.tickets.items) {
+                state.tickets.items = [];
+            }
+            state.tickets.items.push(action.payload.data);
+            state.tickets.total += 1;
         })
         .addCase(UPDATE_TICKET, (state, action) => {
             const index = state.tickets.items?.findIndex(ticket => ticket._id === action.payload._id);
@@ -109,4 +120,49 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.activityLogLoading=false;
             state.activityLogs=action.payload
         })
+        .addCase(GET_SORT_KEY_VALUES_REQUEST,(state)=>{
+            state.sortKeyValuesLoading=true;
+        })
+        .addCase(GET_SORT_KEY_VALUES_SUCCESS, (state, action) => {
+            const { users, status, projects, sprints,labels,priority,ticketConvention } = action.payload;
+
+            state.sortKeyValuesLoading = false;
+
+            // USERS → Dropdown format
+            state.users = (users || []).map(user => ({
+                label: `${user?.profile?.firstName ?? ''} ${user?.profile?.lastName ?? ''}`.trim(),
+                value: user.email
+            }));
+
+            // STATUS → Dropdown format
+            state.status = (status || []).map(s => ({
+                label: s,
+                value: s
+            }));
+
+            // PROJECTS → Dropdown format
+            state.projects = (projects || []).map(project => ({
+                label: project.projectName,
+                value: project.projectId
+            }));
+
+            // SPRINTS → Dropdown format
+            state.sprints = (sprints || []).map(sprint => ({
+                label: sprint.name || sprint.sprintName || sprint._id,
+                value: sprint._id
+            }));
+            state.labels = (labels || []).map(label => ({
+                label: label.name || label.labelName || label._id,
+                value:  label.id || label.id || label._id
+            }));
+            state.priority = (priority || []).map(priority => ({
+                label: priority.name || priority.priorityName || priority._id,
+                value: priority.id || priority.id || priority._id
+            }));
+            state.ticketConvention = (ticketConvention || []).map(convention => ({
+                label: convention?.suffix || convention.conventionName || convention._id,
+                value: convention?.id || convention.id || convention._id,
+            }));
+            });
+
 }))

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { 
+  AUTH_LOADING,
   REQUIRES_REGISTRATION, 
   VERIFIED_USER_AND_LOGIN 
 } from "../../Redux/Constants/AuthConstants";
@@ -27,13 +28,20 @@ export default function GoogleAuthButton() {
           headers: { "Content-Type": "application/json" }
         }
       );
-
+      dispatch({
+        type: AUTH_LOADING,
+        payload: true,
+      });
       const { success, token: jwtToken, user } = res.data;
 
       if (!success) {
         console.log("Google login failed");
         return;
       }
+      dispatch({
+        type: AUTH_LOADING,
+        payload: false,
+      });
 
       // Save JWT token
       localStorage.setItem("token", jwtToken);

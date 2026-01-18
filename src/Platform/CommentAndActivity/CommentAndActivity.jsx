@@ -22,9 +22,9 @@ import NoLogsEmptyState from './NoLogState';
 
 const CommentActivitySection = ({ task }) => {
   const dispatch= useDispatch();
-  useEffect(()=>{
-    dispatch(getActivityLogs(task?._id))
-  },[dispatch,task])
+  // useEffect(()=>{
+  //   dispatch(getActivityLogs(task?._id))
+  // },[dispatch,task])
 
 
 
@@ -139,7 +139,9 @@ const CommentActivitySection = ({ task }) => {
 
         <button
           className={`tab ${activeTab === 'activity' ? 'active' : ''}`}
-          onClick={() => setActiveTab('activity')}
+          onClick={() => {setActiveTab('activity')
+            dispatch(getActivityLogs(task?._id))
+          }}
         >
           <Activity size={18} />
           <span>Activity</span>

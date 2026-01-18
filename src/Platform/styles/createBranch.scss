@@ -1,72 +1,256 @@
-
 @import "../../customFiles/customDesign/customTexts.scss";
 
+/* =========================
+   Root Layout
+========================= */
+.github_creation_layout.modern_theme {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  background: #f8fafc;
+  font-family: 'Inter', -apple-system, sans-serif;
+  overflow: hidden;
 
-.github_container{
-    width: 100%;
-    display: flex;
+  @media (max-width: 1024px) {
     flex-direction: column;
+    overflow-y: auto;
+  }
+
+  /* =========================
+     Left Section
+  ========================= */
+  .functional_section {
+    flex: 1.2;
+    display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    padding: 4rem;
+    background: #fff;
+    z-index: 2;
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.02);
 
-    .create-branch-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            // height: 100vh;
-    
-    
-            .icon_container {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                gap: 1.2rem;
-                justify-content: center;
-                margin: 1.6rem;
-    
-                img {
-                    width: 100px;
-                    height: 100px;
-                }
-    
-                // width: 100px !important;
-                // height: 100px;
-            }
-            .collab_icon{
-                width:45px !important;
+    @media (max-width: 1024px) {
+      padding: 2rem;
+      flex: none;
+    }
 
-            }
-            .select_tag{
-                max-width: 450px;
-                width: 100%;
-                padding: 0.5rem;
-                border-radius: 5px;
-                margin:0.5rem;
-                
-                option{
-                    padding: 0.2rem;
-                    margin-top: 1.25rem;
+    .form_wrapper {
+      width: 100%;
+      max-width: 480px;
 
-                }
-            }
-            input{
-                @extend .select_tag;
-            }
+      .form_header {
+        margin-bottom: 3.5rem;
+
+        .status_badge {
+          display: inline-block;
+          padding: 6px 12px;
+          background: rgba(124, 58, 237, 0.1);
+          color: #7c3aed;
+          border-radius: 99px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 1rem;
         }
 
-    .github_icon {
-        width: 50px;
-        height: 50px;
-        margin-bottom: 20px;
+        .form_title {
+          font-size: 2.25rem;
+          font-weight: 800;
+          color: #0f172a;
+          letter-spacing: -0.02em;
+          margin-bottom: 0.5rem;
+        }
+
+        .form_subtitle {
+          color: #64748b;
+          font-size: 1.1rem;
+
+          .highlight {
+            color: #0f172a;
+            font-weight: 700;
+            background: linear-gradient(
+              120deg,
+              rgba(124, 58, 237, 0.1) 0%,
+              rgba(124, 58, 237, 0.1) 100%
+            );
+            background-repeat: no-repeat;
+            background-size: 100% 0.4em;
+            background-position: 0 88%;
+          }
+        }
+      }
+
+      .modern_form {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+
+        .modern_field_group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+          &.active {
+            transform: translateX(10px);
+          }
+
+          &.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+          }
+
+          .field_label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #475569;
+            padding-left: 0.25rem;
+          }
+
+          .input_container {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            .field_icon {
+              position: absolute;
+              left: 1.25rem;
+              color: #94a3b8;
+              transition: color 0.3s;
+            }
+
+            .modern_input_tag {
+              width: 100%;
+              height: 56px;
+              padding: 0 1.5rem 0 3.5rem;
+              background: #f8fafc;
+              border: 2px solid #e2e8f0;
+              border-radius: 16px;
+              font-size: 1rem;
+              color: #0f172a;
+              font-weight: 500;
+              transition: all 0.3s;
+
+              &:focus {
+                outline: none;
+                border-color: #7c3aed;
+                background: #fff;
+                box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.1);
+
+                & ~ .field_icon {
+                  color: #7c3aed;
+                }
+              }
+            }
+          }
+        }
+
+        .button_row {
+          margin-top: 1rem;
+
+          button {
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+            transition: all 0.3s;
+
+            &:hover:not(:disabled) {
+              transform: translateY(-2px);
+              box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.4);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* =========================
+     Right Section
+  ========================= */
+  .intelligence_section {
+    flex: 0.8;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    position: relative;
+
+    @media (max-width: 1024px) {
+      padding: 2rem;
+      flex: none;
     }
 
-    .github_text {
-        @extend .Lg_body_bold;
-        font-size: 1.5rem;
-        color: #333;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 10%;
+      right: 10%;
+      width: 300px;
+      height: 300px;
+      background: #7c3aed;
+      filter: blur(150px);
+      opacity: 0.3;
     }
+
+    .glass_edu_card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 3rem;
+      color: #fff;
+      animation: cardAppear 0.8s ease;
+    }
+  }
 }
 
+/* =========================
+   Floating Mobile Button
+========================= */
+.mobile_edu_toggle {
+  display: none;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  background: #7c3aed;
+  border-radius: 50%;
+  z-index: 100;
+
+  @media (max-width: 1024px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* =========================
+   Animations (MUST be root)
+========================= */
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+}

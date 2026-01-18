@@ -1,15 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HeroSection from "../HeroSection";
 import CreateBranch from "../CreateBranch";
+import GithubAdminConfig from "../GithubAdminConfig";
 import TextEditor from "../Editor";
 import TaskGenerator from "../TaskManagement/TaskCreator";
 import LoginPage from "../Authentication/authPage";
 import TaskManager from "../WorksTicket/TaskManager";
 import HoraRegistration from "../Authentication/RegistraionV1";
 import UserProfile from "../profile";
-// import { useEffect } from "react";
-// import { fetchUserDetails } from "../../Redux/Actions/PlatformActions.js/userActions";
-// import { useDispatch } from "react-redux"
 import TicketPage from "../WorksTicket/TicketPage";
 import Dashboard from "../HeroSection/HeroSectionV1";
 import PartnerOnboarding from "../Onboarding/onboarding";
@@ -25,10 +23,10 @@ import SprintBoardManager from "../Sprint/component/SprintBoardManager";
 import ScrumMasterDashboard from "../Sprint/component/sprintBoardConfriguratro";
 import SprintManagement from "../Sprint/SprintManagement";
 import SprintHome from "../Sprint/sprintHome";
-import ConfigurationPage from "../Sprint/TicketConfigurator";
-import WorkspaceConfig from "../Sprint/TicketConfigurator";
-import SprintFLowBoard from "../Sprint/Board/sprintFlowBoard";
-import TeamsPage from "../HeroSection/TeamsPage";
+import ProjectCreationFlow from "../GenerailForms/projectCreationFlow";
+import ForYouPage from "../HeroSection/Components/forYouPage";
+import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel";
+import WorkspaceConfig from "../Sprint/WorkspacConfigurator";
 
 // import { useSelector } from "react-redux";
 
@@ -43,6 +41,7 @@ const AllRoutes = () => {
         // <BrowserRouter>
             <Routes>
                 <Route path="/create-branch" element={<CreateBranch />} />
+                <Route path="/admin/github-config" element={<GithubAdminConfig />} />
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 <Route path="/create" element={<TaskGenerator />} />
                 <Route path="/all-work" element={<TaskManager />} />
@@ -64,11 +63,13 @@ const AllRoutes = () => {
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
                 <Route path="/sprint/dashboard" element={<SprintManagement />} />
                 <Route path="/sprint" element={<SprintHome />} />
+                <Route path="/create/project-space" element={<ProjectCreationFlow />} />
+
                 <Route path="/sprint/board" element={<SprintBoard />} />
                 <Route path="/confrigurator/flow" element={<WorkflowManager />} />
-                <Route path="/confrigurator" element={<ScrumMasterDashboard />} />
+                <Route path="/work-space/confrigurator" element={<ScrumMasterDashboard />} />
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
-                <Route path="/workspace/:projectId" element={<ConfigurationPage />} />
+                <Route path="/workspace/:projectId" element={<WorkspaceConfig />} />
 
 
                 {/* // letter it turn down into popup */}
@@ -80,7 +81,7 @@ const AllRoutes = () => {
 
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
-                <Route path="/test" element={<ConfigurationPage />} />
+                <Route path="/test" element={<GitHubAdminPanel />} />
 
             </Routes>
         // </BrowserRouter>
