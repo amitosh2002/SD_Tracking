@@ -1,6 +1,7 @@
 .hora_filter_bar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: center;
   background: #fff;
   border: 1px solid #E5E7EB;
   border-radius: 12px;

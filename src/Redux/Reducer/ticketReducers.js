@@ -14,8 +14,10 @@ const initialState = {
   status:null,
   sprints:null,
   users:null,
+    labels:null,
+    priority:null,
+    ticketConvention:null,
   sortKeyValuesLoading:false,
-
 };
 
 export const ticketReducer = createReducer(initialState,(builder=>{
@@ -41,7 +43,11 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.selectedTicket = state.tickets.find(ticket => ticket.id === action.payload);
         })
         .addCase(CREATE_TICKET, (state, action) => {
-            state.tickets.push(action.payload.data);
+            if (!state.tickets.items) {
+                state.tickets.items = [];
+            }
+            state.tickets.items.push(action.payload.data);
+            state.tickets.total += 1;
         })
         .addCase(UPDATE_TICKET, (state, action) => {
             const index = state.tickets.items?.findIndex(ticket => ticket._id === action.payload._id);
@@ -114,11 +120,11 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.activityLogLoading=false;
             state.activityLogs=action.payload
         })
-        .addCase(GET_SORT_KEY_VALUES_REQUEST,(state,action)=>{
+        .addCase(GET_SORT_KEY_VALUES_REQUEST,(state)=>{
             state.sortKeyValuesLoading=true;
         })
         .addCase(GET_SORT_KEY_VALUES_SUCCESS, (state, action) => {
-            const { users, status, projects, sprints } = action.payload;
+            const { users, status, projects, sprints,labels,priority,ticketConvention } = action.payload;
 
             state.sortKeyValuesLoading = false;
 
@@ -144,6 +150,18 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.sprints = (sprints || []).map(sprint => ({
                 label: sprint.name || sprint.sprintName || sprint._id,
                 value: sprint._id
+            }));
+            state.labels = (labels || []).map(label => ({
+                label: label.name || label.labelName || label._id,
+                value:  label.id || label.id || label._id
+            }));
+            state.priority = (priority || []).map(priority => ({
+                label: priority.name || priority.priorityName || priority._id,
+                value: priority.id || priority.id || priority._id
+            }));
+            state.ticketConvention = (ticketConvention || []).map(convention => ({
+                label: convention?.suffix || convention.conventionName || convention._id,
+                value: convention?.id || convention.id || convention._id,
             }));
             });
 

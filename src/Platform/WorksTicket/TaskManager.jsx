@@ -11,9 +11,8 @@ import FilterBar from './Components/filterBar';
 const TaskManager = () => {
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.user);
-  const { tickets,users,status,projects,sprints } = useSelector((state) => state.worksTicket);
+  const { tickets,users,status,projects,sprints,labels,priority,ticketConvention } = useSelector((state) => state.worksTicket);
   const { projectId } = useParams();
-  console.log(users,projects,sprints,status)
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [currentLimit, setCurrentLimit] = useState(10);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -46,13 +45,14 @@ const [filters, setFilters] = useState({
   sprint: [],
   assignee: [],
   project: [],
-  sort: "updatedAt",
+  labels: [],
+  priority: [],
+  ticketConvention: [],
+  sort: "",
 });
-console.log(filters)
 
   // Reset on Project/User/Filter Switch
   useEffect(() => {
-    console.log("Project, user, or filters changed, resetting limit...");
     setCurrentLimit(10);
     setHasMore(true);
   }, [projectId, userDetails?.id, filters]);
@@ -72,9 +72,6 @@ console.log(filters)
     const fetchTickets = async () => {
       const isInitial = currentLimit === 10;
       if (!isInitial) setLoadingMore(true);
-      
-      console.log(`Fetching tickets with limit: ${currentLimit}, isInitial: ${isInitial}`);
-      
       const fetchParams = projectId 
         ? { projectId, userId: userDetails.id, page: 1, limit: currentLimit } 
         : { userId: userDetails.id, page: 1, limit: currentLimit };
@@ -121,8 +118,8 @@ console.log(filters)
 
 
   const sortOptions = [
-    { label: "Updated", value: "updatedAt" },
     { label: "Created", value: "createdAt" },
+    { label: "Updated", value: "updatedAt" },
   ];
 const onFilterChange = (key, value) => {
   setFilters(prev => ({
@@ -147,6 +144,9 @@ const [search, setSearch] = useState("");
         assigneeOptions={users}
         projectOptions={projects}
         sortOptions={sortOptions}
+        labelsOptions={labels}
+        priorityOptions={priority}
+        ticketConventionOptions={ticketConvention}
       />
 
     <div className="task-manager-container">

@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import './styles/issueDetails.scss';
 import { ButtonUD, ButtonV1 } from '../customFiles/customComponent/CustomButtons';
 // import defaultUser from "../assets/platformIcons/defaultUser.svg";
-import { addStoryPointToTicket, addTimeLogForWork, assignTaskApi, changeTicketStatus, getTicketById } from '../Redux/Actions/TicketActions/ticketAction';
+import { addStoryPointToTicket, addTimeLogForWork, assignTaskApi, changeTicketStatus, getTicketById, ticketLabelActions, ticketPriorityActions } from '../Redux/Actions/TicketActions/ticketAction';
 import { useDispatch, useSelector } from 'react-redux';
-import { DropDownForTicketStatus } from '../customFiles/customComponent/DropDown';
+import IconColorDropdown, { DropDownForTicketStatus, DropDownV1 } from '../customFiles/customComponent/DropDown';
 import { PopupV1 } from '../customFiles/customComponent/popups';
-import { convertInputToSeconds, formatMinutesToCustomDays, refactorSprintData } from '../utillity/helper';
+import { convertInputToSeconds, formatMinutesToCustomDays, getLabelsbyId, getPriorityById, refactorSprintData } from '../utillity/helper';
 import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
 import { GET_TICKET_UPDATED_DETAILS } from '../Redux/Constants/ticketReducerConstants';
 import { assignSprintToTicket, fetchProjectScrumFlow, fetctCurrentProjectSprint } from '../Redux/Actions/SprintActions/sprintActionsV1';
@@ -27,8 +27,11 @@ import {
     CheckCircle2,
     Lock,
     Terminal,
-    Zap
+    Zap,
+    TagIcon,
+    Presentation
 } from 'lucide-react';
+import { ticketConfiguratorActionV1 } from '../Redux/Actions/PlatformActions.js/projectsActions';
 
 const IssueDetails = ({ task }) => {
     const dispatch = useDispatch();
@@ -39,6 +42,8 @@ const IssueDetails = ({ task }) => {
     const { ticketSprint, statusWorkFlow } = useSelector((state) => state.sprint);
     const ticketStatus = statusWorkFlow?.statuses || [];
     const { userDetails } = useSelector((state) => state.user);
+    const {projectlabels,projectsPriorities}= useSelector((state)=>state.projects)
+    
 
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [timeLogged, setTimeLogged] = useState('');
@@ -62,6 +67,8 @@ const IssueDetails = ({ task }) => {
     useEffect(() => {
         if (!selectedTicket?.projectId) return;
         dispatch(fetctCurrentProjectSprint(selectedTicket.projectId));
+        dispatch(ticketConfiguratorActionV1(selectedTicket.projectId))
+
     }, [dispatch, selectedTicket?.projectId]);
 
     useEffect(() => {
@@ -165,6 +172,8 @@ const IssueDetails = ({ task }) => {
         });
         setGithubPopup(false);
     };
+
+    // label helper functions 
 
     if (isCollapsed) {
         return (
@@ -331,6 +340,54 @@ const IssueDetails = ({ task }) => {
                                 </div>
                             )}
                         </div>
+                        <div className="planning_item">
+                            <div className="item_header">
+                                 <TagIcon size={19} color={getLabelsbyId(projectlabels, selectedTicket?.labels[0] || "")?.color || "#000000"} />
+                                <span> Label</span>
+                            </div>
+                            
+                                    <DropDownV1
+                                        defaultType= {getLabelsbyId(projectlabels, selectedTicket?.labels[0]||"")?.name || 'select label'}
+                                        accentColor={getLabelsbyId(projectlabels, selectedTicket?.labels[0]||"")?.color || "#ebdada"}
+                                        dataTypes={projectlabels.map((label) => label.name)} // array of label names
+                                        onChange={(selectedName) => {
+                                                        // 1. Find the label object that matches the selected name
+                                                const selectedLabel = projectlabels.find(label => label.name === selectedName);
+                                                // 2. Extract the ID
+                                                const labelId = selectedLabel?.id;
+
+                                                if (labelId) {
+                                                    // 3. Dispatch using the ID instead of just the name
+                                                    dispatch(ticketLabelActions(selectedTicket?._id, labelId));
+                                                }
+                                            }}
+                                    />
+                            <div className="item_header">
+                                 <Presentation size={19} color={getPriorityById(projectsPriorities,selectedTicket?.priority[0])?.color || "#c1aeae"} />
+                                <span> Priority</span>
+                            </div>
+                            
+                                    <DropDownV1
+                                        defaultType= {getPriorityById(projectsPriorities,selectedTicket?.priority[0])?.name || 'select priority'}
+                                        accentColor={getPriorityById(projectsPriorities,selectedTicket?.priority[0])?.color || "#f7eeee"}
+                                        dataTypes={projectsPriorities.map((_ele) => _ele.name)} // array of label names
+                                        onChange={(selectedName) => {
+                                                        // 1. Find the label object that matches the selected name
+                                                const selectedpriority = projectsPriorities.find(_ele => _ele.name === selectedName);
+                                                // 2. Extract the ID
+                                                const priorityId = selectedpriority?.id;
+
+                                                if (priorityId) {
+                                                    // 3. Dispatch using the ID instead of just the name
+                                                    dispatch(ticketPriorityActions(selectedTicket?._id, priorityId));
+                                                }
+                                            }}
+                                    />
+                            
+                            
+                        </div>
+
+                        {/* <IconColorDropdown/> */}
 
                         <div className="planning_item">
                             <div className="item_header">
