@@ -28,7 +28,7 @@ const TicketPriorityManager = ({projectId}) => {
   
   // =========================================== Api calls here ==================
   useEffect(() => {
-    setPriorities(projectsPriorities.length>0 ?projectsPriorities:defaultPriorities);
+    setPriorities(projectsPriorities?.length>0 ?projectsPriorities:defaultPriorities);
   }, [projectId,defaultPriorities,projectsPriorities]);
 
 
