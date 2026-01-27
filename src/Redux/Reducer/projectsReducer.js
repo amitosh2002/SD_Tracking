@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS } from '../Constants/projectConstant';
+import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS, PROJECT_MEMBERS_ERROR, PROJECT_MEMBERS_LOADING, PROJECT_MEMBERS_SUCCESS } from '../Constants/projectConstant';
 
 const initialState = {
   projects: [],
@@ -13,7 +13,9 @@ const initialState = {
   projectsPriorities:[],
   projectConventions:[],
   projectlabels:[],
-
+  projectMembers: [],
+  loadingProjectMembers: false,
+  errorProjectMembers: false,
 };
 
 const projectsReducer = createReducer(initialState, (builder) => {
@@ -73,6 +75,19 @@ const projectsReducer = createReducer(initialState, (builder) => {
       state.projectsPriorities=priorities;
       state.projectConventions=conventions;
       state.projectlabels=labels;
+    })
+    .addCase(PROJECT_MEMBERS_LOADING, (state) => {
+      state.loadingProjectMembers = true;
+      state.errorProjectMembers = false;
+    })
+    .addCase(PROJECT_MEMBERS_SUCCESS, (state, action) => {
+      state.loadingProjectMembers = false;
+      state.projectMembers = action.payload;
+      state.errorProjectMembers = false;
+    })
+    .addCase(PROJECT_MEMBERS_ERROR, (state) => {
+      state.loadingProjectMembers = false;
+      state.errorProjectMembers = true;
     });
 });
 

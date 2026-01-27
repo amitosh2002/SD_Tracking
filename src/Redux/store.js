@@ -6,6 +6,7 @@ import { keyValueReducer } from "./Reducer/keyValueReducer";
 import { PlatformReducer } from "./Reducer/platformReducer";
 import { userReducer } from "./Reducer/userReducer";
 import { sprintReducerV1 } from "./Reducer/sprintReducerV1";
+import { analyticsMappingReducer } from "./Reducer/AnalyticsReducer/analyticsMappingReducer";
 
 
 export const store = configureStore({
@@ -17,7 +18,8 @@ export const store = configureStore({
     keyValuePair:keyValueReducer,
     platform:PlatformReducer,
     user:userReducer,
-    sprint:sprintReducerV1
+    sprint:sprintReducerV1,
+    analyticsMapping: analyticsMappingReducer
 
   },
   devTools: process.env.NODE_ENV !== "PROD",

@@ -1,6 +1,6 @@
 import axios from "axios";
-import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS } from "../../Constants/projectConstant";
-import { acceptInvitationApi, getAlluserAccessProject, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, ticketConfigurl, userProjectWithRights } from "../../../Api/Plat/projectApi";
+import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS, PROJECT_MEMBERS_ERROR, PROJECT_MEMBERS_LOADING, PROJECT_MEMBERS_SUCCESS } from "../../Constants/projectConstant";
+import { acceptInvitationApi, getAlluserAccessProject, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, projectUserManageApi, ticketConfigurl, userProjectWithRights } from "../../../Api/Plat/projectApi";
 import { createProjectApi, getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
 import apiClient from "../../../utils/axiosConfig";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
@@ -403,5 +403,47 @@ export const getUserProjectAggreation =
                     message: error?.response?.data?.message || "Failed to configure ticket"
                 }
             });
+    }
+}
+
+export const handleUsersInProjects = (projectId, action, memberIds = [], role = null) => async (dispatch) => {
+    dispatch({ type: PROJECT_MEMBERS_LOADING });
+    try {
+        const res = await apiClient.post(`${projectUserManageApi}`, { 
+            projectId, 
+            action, 
+            memberIds, 
+            role 
+        });
+
+        if (res.data.success) {
+            // For 'get' action, we store the members
+            if (action.toLowerCase() === "get") {
+                dispatch({
+                    type: PROJECT_MEMBERS_SUCCESS,
+                    payload: res.data.members || []
+                });
+            } else {
+                // For 'update' or 'delete', we re-fetch the list to keep UI in sync
+                dispatch(handleUsersInProjects(projectId, "get"));
+                
+                dispatch({
+                    type: SHOW_SNACKBAR,
+                    payload: {
+                        type: "success",
+                        message: res.data.msg || `${action} operation successful`
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        dispatch({ type: PROJECT_MEMBERS_ERROR });
+        dispatch({
+            type: SHOW_SNACKBAR,
+            payload: {
+                type: "error",
+                message: error?.response?.data?.msg || `Failed to ${action} users in projects`
+            }
+        });
     }
 }

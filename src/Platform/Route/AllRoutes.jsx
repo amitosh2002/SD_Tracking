@@ -27,6 +27,8 @@ import ProjectCreationFlow from "../GenerailForms/projectCreationFlow";
 import ForYouPage from "../HeroSection/Components/forYouPage";
 import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel";
 import WorkspaceConfig from "../Sprint/WorkspacConfigurator";
+import ScrumMasterSetup from "../Confriguration/DoraConfig";
+import ProjectSettings from "../ProjectSetting/ProjectSettings";
 
 // import { useSelector } from "react-redux";
 
@@ -70,6 +72,7 @@ const AllRoutes = () => {
                 <Route path="/work-space/confrigurator" element={<ScrumMasterDashboard />} />
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
                 <Route path="/workspace/:projectId" element={<WorkspaceConfig />} />
+                <Route path="/workspace/:projectId/setting" element={<ProjectSettings />} />
 
 
                 {/* // letter it turn down into popup */}
@@ -81,7 +84,7 @@ const AllRoutes = () => {
 
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
-                <Route path="/test" element={<GitHubAdminPanel />} />
+                <Route path="/test" element={<ScrumMasterSetup />} />
 
             </Routes>
         // </BrowserRouter>

@@ -153,7 +153,7 @@ const ScrumMasterDashboard = () => {
                 </button>
               </div>
 
-              <div className="card-footer">
+              <div className="card-footer" onClick={() => navigate(`/workspace/${project.id}/setting`)}>
                  <Settings size={14} /> <span>Project Settings</span>
               </div>
             </div>

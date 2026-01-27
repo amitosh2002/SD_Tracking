@@ -288,6 +288,7 @@ try {
     if (res.status===200) {
     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
       dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
+      console.log(res.data)
     }
 
 
@@ -299,7 +300,7 @@ try {
         message:
           error?.response?.data?.message ||
           "Unable to fetch sprint overview",
-      },
+      },    
     });
     console.error('fetchProjectScrumFlow error:', error?.response || error);
     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
@@ -308,12 +309,12 @@ try {
 }
 
 
-export const fetchProjectScrumBoard = (projectId)=>async(dispatch)=>{
+export const fetchProjectScrumBoard = (projectId,{signal})=>async(dispatch)=>{
 
 try {
      dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:true });
     console.debug('fetchProjectScrumBoard: calling', { url: fetchSprintBoard, projectId });
-    const res = await apiClient.post(fetchSprintBoard, { projectId });
+    const res = await apiClient.post(fetchSprintBoard, { projectId }, { signal });
         if (res.status===200) {
     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
       dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
