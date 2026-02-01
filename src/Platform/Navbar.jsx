@@ -113,7 +113,15 @@ const Navbar = () => {
               <div className="profile-menu">
                 <a href="#" className="profile-menu__item" onClick={() => navigate('/profile')}>Your Profile</a>
                 <a href="#" className="profile-menu__item">Settings</a>
-                <a href="#" className="profile-menu__item" onClick={handleSignOut}>Sign out</a>
+                {/* <a href="#" className="profile-menu__item" onClick={handleSignOut}>Sign out</a> */}
+                <button className="sidebar__logout" onClick={handleSignOut}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Log out</span>
+            </button>
               </div>
             )}
           </div>
@@ -167,7 +175,15 @@ const Navbar = () => {
             </button>
             <div className="mobile-menu__links">
               <a className="mobile-menu__link" onClick={() => navigate('/profile')}>Your Profile</a>
-              <a href="#" className="mobile-menu__link" onClick={handleSignOut}>Sign out</a>
+              {/* <a href="#" className="mobile-menu__link" onClick={handleSignOut}>Sign out</a> */}
+              <button className="sidebar__logout " onClick={handleSignOut}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Log out</span>
+            </button>
             </div>
           </div>
         </div>

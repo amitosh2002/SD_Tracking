@@ -131,7 +131,7 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             // USERS → Dropdown format
             state.users = (users || []).map(user => ({
                 label: `${user?.profile?.firstName ?? ''} ${user?.profile?.lastName ?? ''}`.trim(),
-                value: user.email
+                value: user._id
             }));
 
             // STATUS → Dropdown format

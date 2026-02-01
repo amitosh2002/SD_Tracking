@@ -12,6 +12,8 @@ import AnimatedEmptyState from '../../customFiles/customComponent/EmptyStateAnim
 import TeamDirectory from './Components/TeamDirectory';
 import TeamsPage from './TeamsPage';
 import UserCalendar from './Components/UserCalendar';
+import ProjectCard from './Components/projectCard';
+import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
@@ -62,14 +64,18 @@ const HoraDashboard = () => {
     }
   }, [projectCreateSucess, userDetails?.id, dispatch]);
 
+    const handleSignOut = () => {
+      dispatch(logoutAction());
+      navigate('/');
+    };
   const menuItems = [
     { id: 'dashboard', icon: BarChart3, label: 'Dashboard' },
     { id: 'tasks', icon: CheckSquare, label: 'Tasks' },
     { id: 'calendar', icon: Calendar, label: 'Calendar' },
     { id: 'timer', icon: Clock, label: 'Time Tracker' },
     { id: 'projects', icon: FolderKanban, label: 'Projects' },
-    { id: 'goals', icon: Target, label: 'Goals' },
-    { id: 'tags', icon: Tag, label: 'Tags' },
+    // { id: 'goals', icon: Target, label: 'Goals' },
+    // { id: 'tags', icon: Tag, label: 'Tags' },
   ];
 
   const componentMap = {
@@ -104,33 +110,13 @@ const HoraDashboard = () => {
                 {projects.map((project) => (
                   <div 
                     key={project._id} 
-                    className="project-card"
                     onClick={() => {
                       navigate(`/projects/${project?.projectId}/tasks`);
                     }}
                   >
-                    <div className="project-card__header">
-                      <div className="project-card__icon">
-                        {project.image && project.image !== "" ? (
-                          <img src={project.image} alt={project.name} />
-                        ) : (
-                          <p>{project?.name?.charAt(0) ?? project?.projectName?.charAt(0)}</p>
-                        )}
-                      </div>
-                      <div className="project-card__info">
-                        <h3 className="project-card__name">{project.name ?? project?.projectName}</h3>
-                        <p className="project-card__client">{project.partnerCode}</p>
-                      </div>
-                    </div>
-                    <div className="project-card__footer">
-                      <div className="project-card__meta">
-                        <span>{project.category}</span>
-                        <span>•</span>
-                        <span>{project.status}</span>
-                        <span>•</span>
-                        <span>Initiative</span>
-                      </div>
-                    </div>
+              
+                    <ProjectCard project={project}/>
+                  
                   </div>
                 ))}
               </div>
@@ -175,14 +161,23 @@ const HoraDashboard = () => {
 
       <aside className={`sidebar ${isSidebarOpen ? 'sidebar--open' : ''}`}>
         <div className="sidebar__brand">
-          <h1 className="sidebar__logo">Hora</h1>
-          <p className="sidebar__subtitle">Time Management</p>
+          <div className="sidebar__brand-logo-container">
+             <div className="sidebar__brand-icon">
+                {/* <div className="sidebar__brand-icon-inner"></div> */}
+             </div>
+             <h1 className="sidebar__logo">Hora</h1>
+          </div>  
+          <button className="sidebar__collapse-btn">
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+             </svg>
+          </button>
         </div>
 
         <nav className="sidebar__nav">
-          <div className="sidebar__section-title">Main Menu</div>
+          <div className="sidebar__section-title">OVERVIEW</div>
           <ul className="sidebar__menu">
-            {menuItems.map((item) => {
+            {menuItems.slice(0, 4).map((item) => { // Dashboard, Tasks, Calendar, Time Tracker
               const Icon = item.icon;
               return (
                 <li 
@@ -195,13 +190,44 @@ const HoraDashboard = () => {
                 >
                   <Icon className="sidebar__icon-svg" size={20} />
                   <span>{item.label}</span>
-                  {activeItem === item.id && <div className="sidebar__indicator" />}
                 </li>
               );
             })}
           </ul>
+          
+           <ul className="sidebar__menu">
+             {menuItems.slice(4).map((item) => { // Projects, Goals, Tags (Simulating Marketplace/Orders group)
+                const Icon = item.icon;
+                return (
+                 <li 
+                    key={item.id}
+                    className={`sidebar__item ${activeItem === item.id ? 'sidebar__item--active' : ''}`}
+                    onClick={() => {
+                      setActiveItem(item.id);
+                      setIsSidebarOpen(false);
+                    }}
+                  >
+                    <Icon className="sidebar__icon-svg" size={20} />
+                    <span>{item.label}</span>
+                  </li>
+                )
+             })}
+           </ul>
 
-          <div className="sidebar__section-title">Other</div>
+          <div className="sidebar__section-title">ACTIVITY</div>
+           <ul className="sidebar__menu">
+             <li className="sidebar__item">
+                <BarChart3 className="sidebar__icon-svg" size={20} />
+                <span>Ledger</span>
+             </li>
+             <li className="sidebar__item">
+                <Target className="sidebar__icon-svg" size={20} />
+                <span>Taxes</span>
+             </li>
+           </ul>
+
+
+          <div className="sidebar__section-title">SYSTEM</div>
           <ul className="sidebar__menu">
             {secondaryItems.map((item) => {
               const Icon = item.icon;
@@ -216,25 +242,56 @@ const HoraDashboard = () => {
                 >
                   <Icon className="sidebar__icon-svg" size={20} />
                   <span>{item.label}</span>
-                  {activeItem === item.id && <div className="sidebar__indicator" />}
                 </li>
               );
             })}
+             <li className="sidebar__item sidebar__item--toggle">
+                <div style={{display: 'flex', gap: '12px', alignItems: 'center', flex: 1}} onClick={() => dispatch({
+                  type:SHOW_SNACKBAR,
+                  payload:{
+                    message:"Dark mode is comming soon",
+                    type:"success"
+                  }
+                })}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sidebar__icon-svg">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span>Dark mode</span>
+                </div>
+                <div className="toggle-switch"></div>
+            </li>
           </ul>
         </nav>
 
-        <div className="sidebar__profile">
-          <div className="sidebar__avatar">
-            {userDetails?.name?.charAt(0).toUpperCase() || 'U'}
-          </div>
-          <div className="sidebar__user-info">
-            <div className="sidebar__user-name">
-              {userDetails?.name || 'User'}
+        <div className="sidebar__footer">
+            <div className="sidebar__profile">
+            <div className="sidebar__avatar">
+
+              {
+                userDetails?.profile.avatar ? <img src={userDetails?.profile.avatar} alt="" />:
+                 userDetails?.profile.firstName?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <div className="sidebar__user-email">
-              {userDetails?.email || 'user@hora.app'}
+            <div className="sidebar__user-info">
+                <div className="sidebar__user-name">
+                {userDetails?.profile?.firstName + ' ' + userDetails?.profile?.lastName || 'User'}
+                </div>
+                <div className="sidebar__user-email">
+                {userDetails?.email || 'User'}
+                </div>
             </div>
-          </div>
+            </div>
+            <div className="logout_button_container">
+
+            <button className="sidebar__logout" onClick={handleSignOut}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Log out</span>
+            </button>
+            </div>
+
         </div>
       </aside>
 
@@ -242,7 +299,6 @@ const HoraDashboard = () => {
         <header className="header">
           <div className="header__top">
             <div className="header__brand">
-              <div className="header__logo">H</div>
               <h1 className="header__title">
                 Hora - {menuItems.find(item => item.id === activeItem)?.label || 'Dashboard'}
               </h1>
@@ -266,13 +322,13 @@ const HoraDashboard = () => {
         {renderContent()}
       </main>
 
-      <div className="timer">
+      {/* <div className="timer">
         <div className="timer__status" />
         <div>
           <div className="timer__display">{timer}</div>
           <div className="timer__info">Managed Project Active - Receiving updates</div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

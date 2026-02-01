@@ -8,14 +8,16 @@ import {
   BarChart3, 
   Terminal,
   ChevronRight,
-  Info
+  Info,
+  MoveLeftIcon
 } from 'lucide-react';
 import Automations from "./Automation";
 import RunningJobs from "./RunningJobs";
 import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel";
 import UserAccess from "./UserAccess";
 import AnalyticsPage from "./AnalyticsPage";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const SECTIONS = [
   {
@@ -59,7 +61,7 @@ export default function ProjectSettings() {
   const [active, setActive] = useState("Automations");
   const activeItem = SECTIONS.find(s => s.id === active);
     const projectId = useParams().projectId;
-
+    const navigate = useNavigate();
 
   return (
     <div className="project-settings-container">
@@ -67,6 +69,7 @@ export default function ProjectSettings() {
         {/* Sidebar Navigation */}
         <aside className="settings-sidebar">
           <div className="sidebar-header">
+            <MoveLeftIcon size={35} className="header-icon" style={{cursor:"pointer"}} onClick={() => navigate(`/work-space/confrigurator`)}/>
             <Settings size={20} className="header-icon" />
             <h2>Project Settings</h2>
           </div>

@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { 
   Search, Briefcase, Plus, ArrowRight, Layers, 
-  Layout, X, ExternalLink, Settings, AlertCircle ,CircuitBoard
+  Layout, X, ExternalLink, Settings, AlertCircle ,CircuitBoard,
+  StethoscopeIcon
 } from "lucide-react";
 import { getProjectWithHigherAccess } from "../../../Redux/Actions/PlatformActions.js/projectsActions";
 import "./style/ScrumMasterDashboard.scss";
@@ -134,23 +135,41 @@ const ScrumMasterDashboard = () => {
 
                 <div className="action-divider"><span>Configuration</span></div>
 
-                <button 
-                  className="action-link secondary-action" 
-                  onClick={() => navigateToConfigurator(project.id, "FLOW")}
-                >
-                  <div className="icon-circle flow"><Layers size={16} /></div>
-                  <span>Workflow Config</span>
-                  <ArrowRight size={14} className="arrow" />
-                </button>
+                <div className="secondary-actions-grid">
+                  <button 
+                    className="action-link secondary-action" 
+                    onClick={() => navigateToConfigurator(project.id, "FLOW")}
+                  >
+                    <div className="icon-circle flow"><Layers size={16} /></div>
+                    <span>Workflow Config</span>
+                    <ArrowRight size={14} className="arrow" />
+                  </button>
 
-                <button 
-                  className="action-link secondary-action" 
-                  onClick={() => navigateToConfigurator(project.id, "BOARD")}
-                >
-                  <div className="icon-circle board"><Layout size={16} /></div>
-                  <span>Sprint Board</span>
-                  <ArrowRight size={14} className="arrow" />
-                </button>
+                  <button 
+                    className="action-link secondary-action" 
+                    onClick={() => navigateToConfigurator(project.id, "BOARD")}
+                  >
+                    <div className="icon-circle board"><Layout size={16} /></div>
+                    <span>Sprint Board config</span>
+                    <ArrowRight size={14} className="arrow" />
+                  </button>
+                  <button 
+                    className="action-link secondary-action" 
+                    onClick={() => navigate(`/workspace/${project.id}/analytics`)}
+                  >
+                    <div className="icon-circle board"><StethoscopeIcon size={16} /></div>
+                    <span>Analytics</span>
+                    <ArrowRight size={14} className="arrow" />
+                  </button>
+                  <button 
+                    className="action-link secondary-action" 
+                    onClick={() => navigateToConfigurator(project.id, "BOARD")}
+                  >
+                    <div className="icon-circle board"><Layout size={16} /></div>
+                    <span>Sprint Board</span>
+                    <ArrowRight size={14} className="arrow" />
+                  </button>
+                </div>
               </div>
 
               <div className="card-footer" onClick={() => navigate(`/workspace/${project.id}/setting`)}>

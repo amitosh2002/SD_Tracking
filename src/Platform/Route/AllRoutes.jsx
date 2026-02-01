@@ -29,6 +29,8 @@ import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel
 import WorkspaceConfig from "../Sprint/WorkspacConfigurator";
 import ScrumMasterSetup from "../Confriguration/DoraConfig";
 import ProjectSettings from "../ProjectSetting/ProjectSettings";
+import HoraServiceManagement from "../../../CurrentHoraInternal/ServiceKVP";
+import AnalyticsDashBoardV2 from "../Analytics/AnalyticsDashBoard";
 
 // import { useSelector } from "react-redux";
 
@@ -73,6 +75,8 @@ const AllRoutes = () => {
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
                 <Route path="/workspace/:projectId" element={<WorkspaceConfig />} />
                 <Route path="/workspace/:projectId/setting" element={<ProjectSettings />} />
+                <Route path="/workspace/:projectId/analytics" element={<AnalyticsDashBoardV2 />} />
+                <Route path="/service" element={<HoraServiceManagement />} />
 
 
                 {/* // letter it turn down into popup */}
@@ -85,6 +89,7 @@ const AllRoutes = () => {
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
                 <Route path="/test" element={<ScrumMasterSetup />} />
+                {/* <Route path="/test2" element={<SprintAnalyticsDashboard />} /> */}
 
             </Routes>
         // </BrowserRouter>

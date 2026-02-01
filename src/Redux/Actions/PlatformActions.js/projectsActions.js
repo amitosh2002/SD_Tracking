@@ -1,9 +1,10 @@
 import axios from "axios";
 import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS, PROJECT_MEMBERS_ERROR, PROJECT_MEMBERS_LOADING, PROJECT_MEMBERS_SUCCESS } from "../../Constants/projectConstant";
-import { acceptInvitationApi, getAlluserAccessProject, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, projectUserManageApi, ticketConfigurl, userProjectWithRights } from "../../../Api/Plat/projectApi";
+import { acceptInvitationApi, associateServiceToProjectApi, getAllHoraServiceApi, getAlluserAccessProject, getProjectServicesByIdApi, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, projectUserManageApi, ticketConfigurl, updateServiceStatusApi, userProjectWithRights } from "../../../Api/Plat/projectApi";
 import { createProjectApi, getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
 import apiClient from "../../../utils/axiosConfig";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
+import { GET_ALL_HORA_SERVICE_FAILURE, GET_ALL_HORA_SERVICE_LOADING, GET_ALL_HORA_SERVICE_SUCCESS } from "../../Constants/ServicesConstants/ServiceConstant";
 
 export const getAllProjects = (userId) =>async( dispatch)=>{
 
@@ -447,3 +448,121 @@ export const handleUsersInProjects = (projectId, action, memberIds = [], role = 
         });
     }
 }
+
+
+export const getAllHoraServiceAction =(projectId)=>async(dispatch)=>{
+  try {
+    dispatch({type:GET_ALL_HORA_SERVICE_LOADING})
+
+    const res = await apiClient.get(`${getAllHoraServiceApi}?projectId=${projectId}`);
+
+    if (res.data.success) {
+      dispatch({
+        type: GET_ALL_HORA_SERVICE_SUCCESS,
+        payload: res.data.services,
+      });
+    }
+    
+  } catch (error) {
+    dispatch({type:GET_ALL_HORA_SERVICE_FAILURE,payload:error})
+  }
+}
+
+export const associateServiceToProjectAction = (projectId, serviceId) => async (dispatch) => {
+    try {
+      dispatch({ type: GET_ALL_HORA_SERVICE_LOADING });
+  
+      const res = await apiClient.post(`${associateServiceToProjectApi}`, {
+        projectId,
+        serviceId
+      });
+  
+      if (res.data.success) {
+        dispatch({
+          type: SHOW_SNACKBAR,
+          payload: {
+            type: "success",
+            message: res.data.msg || "Service associated successfully",
+          },
+        });
+        dispatch({
+          type:"GET_ALL_HORA_SERVICE_SUCCESS",
+          payload:res.data.data
+        })
+        dispatch(getAllHoraServiceAction(projectId));
+        // Optionally re-fetch services or update state
+      }
+    } catch (error) {
+      dispatch({type:"GET_ALL_HORA_SERVICE_LOADING_STOP"})
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: error?.response?.data?.msg || "Failed to associate service",
+        },
+      });
+    }
+  };
+
+
+  export const getProjectServicesByIdAction = (projectId) => async (dispatch) => {
+    try {
+      dispatch({ type: GET_ALL_HORA_SERVICE_LOADING });
+  
+      const res = await apiClient.get(`${getProjectServicesByIdApi}?projectId=${projectId}`);
+      if (res.data.success) {
+        dispatch({
+          type: SHOW_SNACKBAR,
+          payload: {
+            type: "success",
+            message: res.data.msg || "Service associated successfully",
+          },
+        });
+        dispatch({
+          type:"GET_PROJECT_SERVICES_BY_ID_SUCCESS",
+          payload:res.data.data
+        })
+        // Optionally re-fetch services or update state
+      }
+    } catch (error) {
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: error?.response?.data?.msg || "Failed to associate service",
+        },
+      });
+    }
+  };
+
+
+  export const updateServiceStatusAction = (projectId, serviceId, status) => async (dispatch) => {
+    try {
+      dispatch({ type: GET_ALL_HORA_SERVICE_LOADING });
+  
+      const res = await apiClient.post(`${updateServiceStatusApi}`, {projectId,serviceId,status});
+      if (res.data.success) {
+        dispatch({
+          type: SHOW_SNACKBAR,
+          payload: {
+            type: "success",
+            message: res.data.msg || "Service status updated successfully",
+          },
+        });
+
+        // re-fetch services or update state
+        dispatch(getProjectServicesByIdAction(projectId));
+        dispatch(getAllHoraServiceAction(projectId));
+      }
+      
+    } catch (error) {
+      dispatch({type:"GET_ALL_HORA_SERVICE_LOADING_STOP"})
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: error?.response?.data?.msg || "Failed to update service status",
+        },
+      });
+    }
+  };

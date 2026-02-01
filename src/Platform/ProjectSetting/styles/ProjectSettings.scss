@@ -14,9 +14,10 @@
 .project-settings-container {
   min-height: 100vh;
   background: var(--bg-app);
-  padding: 4rem 2rem;
+  // padding: 4rem 2rem;
   font-family: 'Inter', -apple-system, sans-serif;
   color: var(--text-main);
+  height: auto;
 
   .settings-wrapper {
     width: 100%;
@@ -29,6 +30,7 @@
     box-shadow: var(--shadow-md);
     overflow: hidden;
     min-height: calc(100vh - 8rem);
+    height: "100%";
   }
 
   .settings-sidebar {
@@ -182,6 +184,7 @@
     .section-body {
       background: white;
       min-height: 400px;
+      height: 100%;
     }
 
     /* Members Management */
@@ -372,10 +375,12 @@
       transition: all 0.2s ease;
 
       &:hover {
-        border-color: var(--border-focus);
-        box-shadow: var(--shadow-sm);
+        border-color: var(--primary-color);
+          box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+          transform: translateY(-2px);
       }
-
+      
+                                                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
       .job-info {
         display: flex;
         gap: 1.25rem;
@@ -402,6 +407,27 @@
         margin-bottom: 0.25rem;
       }
 
+                                                .paid-tag {
+                                                  background: #fef3c7;
+                                                  color: #92400e;
+                                                  padding: 2px 8px;
+                                                  border-radius: 4px;
+                                                  font-size: 0.65rem;
+                                                  font-weight: 700;
+                                                  text-transform: uppercase;
+                                                  border: 1px solid #fcd34d;
+                                                }
+                        
+                                                .free-tag {
+                                                  background: #dcfce7;
+                                                  color: #166534;
+                                                  padding: 2px 8px;
+                                                  border-radius: 4px;
+                                                  font-size: 0.65rem;
+                                                  font-weight: 700;
+                                                  text-transform: uppercase;
+                                                  border: 1px solid #bbf7d0;
+                                                }
       .job-name {
         font-weight: 600;
         font-size: 0.9375rem;
@@ -419,6 +445,39 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        .service-card-btn {
+            height: 36px;
+            padding: 0 1.25rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        
+            &.free {
+              background: var(--primary-color);
+              color: white;
+        
+              &:hover {
+                background: #1d4ed8;
+                box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.25);
+              }
+            }
+        
+            &.paid {
+              background: #8b5cf6;
+              color: white;
+        
+              &:hover {
+                background: #7c3aed;
+                box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.25);
+              }
+            }
+          }
       }
     }
 
@@ -433,7 +492,30 @@
       &.running { background: #dcfce7; color: #166534; }
       &.paused { background: #f1f5f9; color: #475569; }
     }
+.running_text {
+  /* Glass effect background - green tint with high transparency */
+  background-color: rgba(34, 197, 94, 0.15);
 
+  /* Backdrop blur for glass morphism effect */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  /* Text color - darker green for better readability */
+  color: #15803d;
+
+  /* Layout */
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+
+  /* Refined border - subtle green glow */
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  
+  /* Subtle shadow for depth */
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
     .toggle-button {
       display: flex;
       align-items: center;

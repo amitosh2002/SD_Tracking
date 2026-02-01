@@ -19,3 +19,7 @@ export const UpdateSprintBoard = `${import.meta.env.VITE_BACKEND_URL}/api/sprint
 
 
 
+// ============================DORA ANALYTICS===================================================
+
+
+export const sprintVelocityApi = `${import.meta.env.VITE_BACKEND_URL}/api/sprint/dora/sprint/velocity`;
