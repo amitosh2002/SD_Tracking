@@ -162,16 +162,17 @@ export const getUserWorkDetails =(projectId)=>async(dispatch)=>{
          })   
         }
         else{
+            dispatch({type:USER_WORK_DETAILS_FAIL, payload: res.data.message || "Something Went Wrong"})
             dispatch({type:SHOW_SNACKBAR,
                 payload:{
                     type:"error",
-                    message:"Someting Went Wrong"
+                    message: res.data.message || "Someting Went Wrong"
                 }
             })
             
         }
     } catch (error) {
-        dispatch({type:USER_WORK_DETAILS_FAIL})
+        dispatch({type:USER_WORK_DETAILS_FAIL, payload: error.response?.data?.message || error.message})
     }
 
 }

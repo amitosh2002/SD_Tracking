@@ -1,7 +1,9 @@
 import React, { useMemo, useState, useEffect } from "react";
 import {
   CheckCircle2, Clock, AlertCircle, TrendingUp,
-  Plus, MoreHorizontal, Calendar, Layout
+  Plus, MoreHorizontal, Calendar, Layout,
+  Coffee, Sparkles, AlertTriangle, ChevronDown,
+  ShieldAlert
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserWorkDetails } from "../../../Redux/Actions/PlatformActions.js/userActions";
@@ -86,6 +88,8 @@ const UserDashboard = () => {
   const projects = useSelector((state) => state.projects.projects);
   const data = useSelector((state) => state.user.workDetails);
   const loading = useSelector((state) => state.user.workDetailsLoading);
+  const error = useSelector((state) => state.user.workDetailsFail);
+  const errorMessage = useSelector((state) => state.user.workDetailsErrorMessage);
 
   // Local State
   const [selectedProjectId, setSelectedProjectId] = useState("");
@@ -145,6 +149,7 @@ const UserDashboard = () => {
               </option>
             ))}
           </select>
+          <ChevronDown size={16} className="sb-project-selector__chevron" />
         </div>
       </div>
 
@@ -161,6 +166,47 @@ const UserDashboard = () => {
         <div className="sb-loading">
             <div className="sb-loading__spinner"></div>
             <span>Syncing your work...</span>
+        </div>
+      ) : error ? (
+        <div className="sb-error">
+          <ShieldAlert size={48} className="sb-error__icon" />
+          <h2 className="sb-error__title">Project Configuration Required</h2>
+          <p className="sb-error__text">
+            {errorMessage || "We couldn't fetch your work details. Please check your connection and try again."}
+          </p>
+          <div className="sb-error__actions">
+            <button className="sb-error__btn sb-error__btn--primary" onClick={() => dispatch(getUserWorkDetails(selectedProjectId))}>
+              Retry Now
+            </button>
+            <button 
+                className="sb-error__btn sb-error__btn--outline" 
+                onClick={() => {
+                   // Mock notification logic
+                   dispatch({
+                       type: "SHOW_SNACKBAR", 
+                       payload: { type: "info", message: "Scrum Master has been notified about the configuration issue." }
+                   });
+                }}
+            >
+              Notify Scrum Master
+            </button>
+          </div>
+        </div>
+      ) : totalTasks === 0 ? (
+        <div className="sb-empty">
+          <div className="sb-empty__icon-stack">
+            <Coffee className="sb-empty__icon sb-empty__icon--main" size={48} />
+            <Sparkles className="sb-empty__icon sb-empty__icon--sparkle" size={24} />
+          </div>
+          <h2 className="sb-empty__title">All Quiet on the Front</h2>
+          <p className="sb-empty__text">
+            No tasks assigned to you in this project yet. <br />
+            It's a great time to grab a coffee or start something new!
+          </p>
+          <button className="sb-empty__btn" onClick={() => {/* navigate or open task creation */}}>
+            <Plus size={18} />
+            <span>Create New Task</span>
+          </button>
         </div>
       ) : (
         <div className="sb-board">
@@ -223,12 +269,10 @@ const Column = ({ column }) => (
 // TICKET CARD
 // ============================================================================
 const TicketCard = ({ ticket }) => {
-  const { short, tags }  = parseTicketKey(ticket.ticketKey);
+  const { short}  = parseTicketKey(ticket.ticketKey);
   const timeStr          = fmtTime(ticket.totalTimeLogged);
   const date             = latestDate(ticket);
   const dateStr          = fmtDate(date);
-//   const initials         = avatarInitials(ticket.ticketKey);
-  const bgColor          = avatarColor(ticket.ticketKey);
 
   return (
     <div className="sb-ticket">
@@ -244,11 +288,9 @@ const TicketCard = ({ ticket }) => {
       <h4 className="sb-ticket__title">{ticket.title}</h4>
 
       {/* row 3: tags */}
-      {tags.length > 0 && (
+      {ticket.label && (
         <div className="sb-ticket__tags">
-          {tags.map((tag) => (
-            <span key={tag} className="sb-ticket__tag">{tag}</span>
-          ))}
+            <span key={ticket.label} className="sb-ticket__tag">{ticket.label}</span>
         </div>
       )}
 

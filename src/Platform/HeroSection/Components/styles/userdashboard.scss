@@ -71,39 +71,57 @@ $amber-light: #fffbeb;
 .sb-project-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
+gap: 12px;
   background: $white;
-  border: 1px solid $gray-200;
-  border-radius: 10px;
-  padding: 0 12px;
-  height: 42px;
+border: 1.5px solid $primary;
+    border-radius: 12px;
+    padding: 0 16px;
+    height: 44px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+box-shadow: 0 2px 4px rgba($primary, 0.05);
 
   &:hover {
-    border-color: $primary;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 4px 12px rgba($primary, 0.15);
+        background: $gray-50;
   }
 
   &__icon {
     color: $primary;
     flex-shrink: 0;
+    display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    &__chevron {
+        color: $primary;
+        pointer-events: none;
+        margin-left: -4px;
+        display: flex;
+        align-items: center;
   }
 
   &__select {
     border: none;
     background: transparent;
-    font-size: 14px;
-    font-weight: 600;
-    color: $gray-800;
+    font-size: 15px;
+        font-weight: 700;
+        color: $primary;
     cursor: pointer;
     padding-right: 8px;
     outline: none;
-    min-width: 160px;
+    min-width: 140px;
+        font-family: inherit;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        z-index: 1;
 
     option {
       font-weight: 500;
-      padding: 8px;
+    padding: 12px;
+        color: $gray-800;
+        background: $white;
     }
   }
 }
@@ -421,6 +439,200 @@ $amber-light: #fffbeb;
   to { transform: rotate(360deg); }
 }
 
+// ============================================================================
+// EMPTY STATE
+// ============================================================================
+.sb-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px;
+    background: rgba($white, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px dashed $gray-300;
+    border-radius: 24px;
+    grid-column: span 4;
+    margin: 20px 0;
+    flex: 1;
+
+    &__icon-stack {
+        position: relative;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__icon {
+        &--main {
+            color: $gray-400;
+            animation: sb-float 3s ease-in-out infinite;
+        }
+
+        &--sparkle {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            color: $amber;
+            animation: sb-pulse 2s ease-in-out infinite;
+        }
+    }
+
+    &__title {
+        font-size: 22px;
+        font-weight: 800;
+        color: $gray-800;
+        margin: 0 0 12px;
+    }
+
+    &__text {
+        font-size: 15px;
+        color: $gray-500;
+        line-height: 1.6;
+        max-width: 400px;
+        margin: 0 0 32px;
+    }
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: $primary;
+        color: $white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba($primary, 0.2);
+
+        &:hover {
+            background: darken($primary, 5%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba($primary, 0.3);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
+@keyframes sb-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes sb-pulse {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.2) rotate(15deg);
+        opacity: 1;
+    }
+}
+
+// ============================================================================
+// ERROR STATE
+// ============================================================================
+.sb-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: rgba($white, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba($red, 0.1);
+    border-radius: 24px;
+    grid-column: span 4;
+    margin: 20px 0;
+
+    &__icon {
+        color: $red;
+        margin-bottom: 20px;
+        animation: sb-pulse 2s infinite;
+    }
+
+    &__title {
+        font-size: 24px;
+        font-weight: 800;
+        color: $gray-900;
+        margin: 0 0 12px;
+    }
+
+    &__text {
+        font-size: 15px;
+        color: $gray-600;
+        max-width: 440px;
+        line-height: 1.6;
+        margin-bottom: 32px;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    &__btn {
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &--primary {
+            background: $red;
+            color: $white;
+            border: none;
+            box-shadow: 0 4px 12px rgba($red, 0.2);
+
+            &:hover {
+                background: darken($red, 5%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px rgba($red, 0.3);
+            }
+        }
+
+        &--outline {
+            background: $white;
+            color: $gray-700;
+            border: 1.5px solid $gray-200;
+
+            &:hover {
+                background: $gray-50;
+                border-color: $gray-300;
+                color: $gray-900;
+            }
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
 // ============================================================================
 // RESPONSIVE
 // ============================================================================

@@ -13,7 +13,8 @@ const initialState={
     teamMembers:[],
     workDetailsLoading:false,
     workDetails:null,
-    workDetailsFail:false
+    workDetailsFail:false,
+    workDetailsErrorMessage:""
 }
 
 
@@ -44,14 +45,18 @@ export const userReducer=createReducer(initialState,(builder)=>{
     })
     .addCase(USER_WORK_DETAILS_LOADING,(state)=>{
         state.workDetailsLoading=true;
+        state.workDetailsFail=false;
+        state.workDetailsErrorMessage="";
     })
     .addCase(USER_WORK_DETAILS,(state,action)=>{
         state.workDetails=action.payload.workDetails;
         state.workDetailsLoading=false;
+        state.workDetailsFail=false;
     })
-    .addCase(USER_WORK_DETAILS_FAIL,(state)=>{
+    .addCase(USER_WORK_DETAILS_FAIL,(state,action)=>{
         state.workDetailsFail=true;
         state.workDetailsLoading=false;
         state.workDetails=null;
+        state.workDetailsErrorMessage=action.payload;
     })
 })
