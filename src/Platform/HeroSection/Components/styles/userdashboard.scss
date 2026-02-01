@@ -71,58 +71,52 @@ $amber-light: #fffbeb;
 .sb-project-selector {
   display: flex;
   align-items: center;
-gap: 12px;
+gap: 8px;
   background: $white;
-border: 1.5px solid $primary;
+border: 1px solid $gray-200;
     border-radius: 12px;
-    padding: 0 16px;
-    height: 44px;
+padding: 0 4px 0 16px;
+    height: 48px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-box-shadow: 0 2px 4px rgba($primary, 0.05);
+box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
   &:hover {
-    box-shadow: 0 4px 12px rgba($primary, 0.15);
-        background: $gray-50;
+    border-color: $gray-400;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
 
   &__icon {
-    color: $primary;
+    color: $gray-500;
     flex-shrink: 0;
     display: flex;
-        align-items: center;
+    align-items: center;
         justify-content: center;
     }
-    
-    &__chevron {
-        color: $primary;
-        pointer-events: none;
-        margin-left: -4px;
-        display: flex;
-        align-items: center;
+  &__dropdown {
+      flex: 1;
+      min-width: 200px;
+
+      .dropdown-trigger {
+          border: none !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          padding: 0 8px !important;
+          height: 40px !important;
+      }
+
+        .dropdown-text {
+            font-weight: 700 !important;
+            color: $gray-800 !important;
+            font-size: 15px !important;
+        }
+
+        .dropdown-icon {
+            color: $gray-400 !important;
+    }
   }
 
-  &__select {
-    border: none;
-    background: transparent;
-    font-size: 15px;
-        font-weight: 700;
-        color: $primary;
-    cursor: pointer;
-    padding-right: 8px;
-    outline: none;
-    min-width: 140px;
-        font-family: inherit;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        z-index: 1;
-
-    option {
-      font-weight: 500;
-    padding: 12px;
-        color: $gray-800;
-        background: $white;
-    }
+  &__chevron {
+      display: none;
   }
 }
 

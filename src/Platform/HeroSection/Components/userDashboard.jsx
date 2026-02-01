@@ -8,6 +8,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { getUserWorkDetails } from "../../../Redux/Actions/PlatformActions.js/userActions";
 import "./styles/userdashboard.scss";
+import { DropDownV1 } from "../../../customFiles/customComponent/DropDown";
 
 // ============================================================================
 // HELPERS
@@ -138,18 +139,17 @@ const UserDashboard = () => {
         
         <div className="sb-project-selector">
           <Layout size={18} className="sb-project-selector__icon" />
-          <select 
-            value={selectedProjectId} 
-            onChange={(e) => setSelectedProjectId(e.target.value)}
-            className="sb-project-selector__select"
-          >
-            {projects && projects.map(p => (
-              <option key={p.projectId} value={p.projectId}>
-                {p.projectName}
-              </option>
-            ))}
-          </select>
-          <ChevronDown size={16} className="sb-project-selector__chevron" />
+          <DropDownV1
+            defaultType={projects?.find(p => p.projectId === selectedProjectId) ? { 
+              label: projects.find(p => p.projectId === selectedProjectId).projectName, 
+              value: selectedProjectId 
+            } : null}
+            onChange={(item) => setSelectedProjectId(item.value)}
+            dataTypes={projects?.map(p => ({ label: p.projectName, value: p.projectId })) || []}
+            placeholder="Select a project"
+            className="sb-project-selector__dropdown"
+            accentColor="#94a3b8" // Premium grey theme
+          />
         </div>
       </div>
 
