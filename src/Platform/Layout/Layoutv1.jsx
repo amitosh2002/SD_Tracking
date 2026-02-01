@@ -199,6 +199,7 @@ const Layoutv1 = () => {
       "/create/project",
       "/admin",
       "/create-branch",
+      "/",
       "/auth/google/callback" // important for SSO
     ];
 
@@ -226,7 +227,7 @@ const Layoutv1 = () => {
   }, [isAuthenticated, loading, loadAppData]);
 
   // 4️⃣ PUBLIC ROUTES (NO AUTH REQUIRED)
-  const publicRoutes = ["/invitation", "/forgot-password", "/reset-password", "/verify-email","/Hora-prelogin"];
+  const publicRoutes = ["/invitation", "/forgot-password", "/reset-password", "/verify-email","/Hora-prelogin",];
 
   if (publicRoutes.includes(location.pathname)) {
     if (location.pathname === "/invitation") return <FullInvitationPage />;

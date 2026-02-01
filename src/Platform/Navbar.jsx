@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import "./styles/navbar.scss"
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { OPEN_CREATE_TICKET_POPUP, SET_FILTERED_TICKETS } from '../Redux/Constants/ticketReducerConstants';
 import { searchTicketByQuery } from '../Redux/Actions/TicketActions/ticketAction';
 import logo from '../assets/platformIcons/Hora-logo.svg'
@@ -64,13 +64,15 @@ const Navbar = () => {
     navigate('/');
   };
 
+    const location = useLocation().pathname;
+    console.log(location)
   return (
     <nav className="main-navbar">
       <div className="main-navbar__container">
-          <img src={logo} style={{width:"5rem"}} alt="" />
-        <div className="main-navbar__left">
+          {location!="/" && <img src={logo} style={{width:"5rem"}} alt="" />}
+    { location!="/" &&  <div className="main-navbar__left">
           <a href="#" className="main-navbar__logo" onClick={() => navigate('/')}>Hora</a>
-        </div>
+        </div>}
 
         {/* Center Section: Search Trigger */}
         <div className="main-navbar__center">
