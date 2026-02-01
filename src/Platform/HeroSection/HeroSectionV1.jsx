@@ -359,6 +359,7 @@ import Navbar from '../Navbar';
 import horalogo from "../../assets/platformIcons/Hora-logo.svg";
 import "./styles/herosection.scss";
 import TeamInvitationPage from '../AccessControl/invitationPage';
+import UserDashboard from './Components/userDashboard';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
@@ -446,30 +447,7 @@ const HoraDashboard = () => {
 
   const renderContent = () => {
     if (activeItem === 'dashboard') {
-      return (
-        <section className="projects">
-          <div className="projects__header">
-            <h2 className="projects__title">My Recent Projects</h2>
-          </div>
-
-          {projects && projects.length > 0 ? (
-            <div className="projects__grid">
-              {projects.map((project) => (
-                <div
-                  key={project._id}
-                  onClick={() =>
-                    navigate(`/projects/${project.projectId}/tasks`)
-                  }
-                >
-                  <ProjectCard project={project} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <ProjectCreationFlow />
-          )}
-        </section>
-      );
+      return <UserDashboard />;
     }
 
     return (
