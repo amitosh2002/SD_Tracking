@@ -1,3 +1,4 @@
+@use "sass:color";
 
 // ============================================================================
 // Invitation Page - Professional Enterprise Design
@@ -111,13 +112,13 @@ $space-8: 32px;
   &-success {
     background: rgba($success, 0.1);
     border-color: $success;
-    color: darken($success, 10%);
+    color: color.adjust($success, $lightness: -10%);
   }
 
   &-error {
     background: rgba($danger, 0.1);
     border-color: $danger;
-    color: darken($danger, 10%);
+    color: color.adjust($danger, $lightness: -10%);
   }
 }
 

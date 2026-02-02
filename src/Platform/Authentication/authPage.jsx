@@ -8,7 +8,7 @@ import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformC
 import GoogleAuthButton from './googleSSO';
 import HoraLoader from '../../customFiles/customComponent/Loader/loaderV1';
 import './LoginPage.scss';
-import HoraLogo from '../../assets/platformIcons/hora-logo.svg';
+import HoraLogo from '../../assets/platformIcons/Hora-logo.svg';
 
 const LoginPage = () => {
   const [step, setStep] = useState(1);

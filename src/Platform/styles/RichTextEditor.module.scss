@@ -1,3 +1,4 @@
+@use "sass:color";
 // Variables
 $primary-color: #3b82f6;
 $secondary-color: #10b981;
@@ -109,11 +110,11 @@ $transition: all 0.2s ease-in-out;
 }
 
 .buttonTemplate {
-    background: lighten($primary-color, 45%);
+    background: color.adjust($primary-color, $lightness: 45%);
     color: $primary-color;
 
     &:hover {
-        background: lighten($primary-color, 40%);
+        background: color.adjust($primary-color, $lightness: 40%);
     }
 }
 
@@ -126,21 +127,21 @@ $transition: all 0.2s ease-in-out;
     }
 
     &.buttonPreviewActive {
-        background: lighten($secondary-color, 45%);
+        background: color.adjust($secondary-color, $lightness: 45%);
         color: $secondary-color;
 
         &:hover {
-            background: lighten($secondary-color, 40%);
+            background: color.adjust($secondary-color, $lightness: 40%);
         }
     }
 }
 
 .buttonSave {
-    background: lighten($secondary-color, 45%);
+    background: color.adjust($secondary-color, $lightness: 45%);
     color: $secondary-color;
 
     &:hover {
-        background: lighten($secondary-color, 40%);
+        background: color.adjust($secondary-color, $lightness: 40%);
     }
 }
 
@@ -185,8 +186,8 @@ $transition: all 0.2s ease-in-out;
 // Upload progress
 .uploadProgress {
     padding: 0.75rem;
-    background: lighten($primary-color, 48%);
-    border-bottom: 1px solid lighten($primary-color, 35%);
+    background: color.adjust($primary-color, $lightness: 48%);
+        border-bottom: 1px solid color.adjust($primary-color, $lightness: 35%);
 }
 
 .uploadItem {
@@ -516,7 +517,7 @@ $transition: all 0.2s ease-in-out;
         border-color: $primary-color;
 
         &:hover {
-            background: darken($primary-color, 5%);
+            background: color.adjust($primary-color, $lightness: -5%);
         }
     }
 }
