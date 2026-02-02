@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import "./styles/navbar.scss"
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { OPEN_CREATE_TICKET_POPUP, SET_FILTERED_TICKETS } from '../Redux/Constants/ticketReducerConstants';
 import { searchTicketByQuery } from '../Redux/Actions/TicketActions/ticketAction';
 import logo from '../assets/platformIcons/Hora-logo.svg'
@@ -64,13 +64,15 @@ const Navbar = () => {
     navigate('/');
   };
 
+    const location = useLocation().pathname;
+    console.log(location)
   return (
     <nav className="main-navbar">
       <div className="main-navbar__container">
-          <img src={logo} style={{width:"5rem"}} alt="" />
-        <div className="main-navbar__left">
+          {location!="/" && <img src={logo} style={{width:"5rem"}} alt="" />}
+    { location!="/" &&  <div className="main-navbar__left">
           <a href="#" className="main-navbar__logo" onClick={() => navigate('/')}>Hora</a>
-        </div>
+        </div>}
 
         {/* Center Section: Search Trigger */}
         <div className="main-navbar__center">
@@ -113,7 +115,15 @@ const Navbar = () => {
               <div className="profile-menu">
                 <a href="#" className="profile-menu__item" onClick={() => navigate('/profile')}>Your Profile</a>
                 <a href="#" className="profile-menu__item">Settings</a>
-                <a href="#" className="profile-menu__item" onClick={handleSignOut}>Sign out</a>
+                {/* <a href="#" className="profile-menu__item" onClick={handleSignOut}>Sign out</a> */}
+                <button className="sidebar__logout" onClick={handleSignOut}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Log out</span>
+            </button>
               </div>
             )}
           </div>
@@ -167,7 +177,15 @@ const Navbar = () => {
             </button>
             <div className="mobile-menu__links">
               <a className="mobile-menu__link" onClick={() => navigate('/profile')}>Your Profile</a>
-              <a href="#" className="mobile-menu__link" onClick={handleSignOut}>Sign out</a>
+              {/* <a href="#" className="mobile-menu__link" onClick={handleSignOut}>Sign out</a> */}
+              <button className="sidebar__logout " onClick={handleSignOut}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Log out</span>
+            </button>
             </div>
           </div>
         </div>

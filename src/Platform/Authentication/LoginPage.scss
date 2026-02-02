@@ -1,0 +1,426 @@
+// ============================================================================
+// Login Page - Professional Hora Theme
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// Colors
+// ----------------------------------------------------------------------------
+$primary: #6366f1;
+$primary-hover: #5558e3;
+$primary-light: #eef2ff;
+
+$gray-50: #fafafa;
+$gray-100: #f4f4f5;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$white: #ffffff;
+$black: #000000;
+$danger: #ef4444;
+
+// ----------------------------------------------------------------------------
+// Spacing
+// ----------------------------------------------------------------------------
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;
+$space-12: 48px;
+
+// ============================================================================
+// Layout
+// ============================================================================
+.login-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+// ============================================================================
+// Brand Section (Left)
+// ============================================================================
+.login-brand {
+  background: $gray-700;
+  padding: $space-12;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: $white;
+}
+
+.brand-content {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-12;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.brand-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: $white;
+}
+
+.brand-title {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 $space-6;
+  color: $white;
+}
+
+.brand-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: $gray-400;
+  margin: 0 0 $space-12;
+}
+
+.brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  color: $gray-300;
+  font-size: 15px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================================
+// Form Section (Right)
+// ============================================================================
+.login-form-section {
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: $space-12;
+}
+
+.login-form-container {
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-header {
+  margin-bottom: $space-8;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 $space-2;
+}
+
+.login-subtitle {
+  font-size: 15px;
+  color: $gray-600;
+  margin: 0;
+}
+
+// ============================================================================
+// Form Elements
+// ============================================================================
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: $space-6;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-700;
+  margin-bottom: $space-2;
+}
+
+.form-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 $space-4;
+  border: 1px solid $gray-300;
+  background: $white;
+  font-size: 15px;
+  color: $gray-900;
+  transition: all 150ms;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  &:disabled {
+    background: $gray-50;
+    color: $gray-500;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================================================
+// OTP Inputs
+// ============================================================================
+.otp-inputs {
+  display: flex;
+  gap: $space-2;
+  justify-content: space-between;
+}
+
+.otp-input {
+  width: 56px;
+  height: 56px;
+  border: 1px solid $gray-300;
+  background: $white;
+  font-size: 20px;
+  font-weight: 600;
+  color: $gray-900;
+  text-align: center;
+  transition: all 150ms;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+}
+
+// ============================================================================
+// Buttons
+// ============================================================================
+.btn-primary {
+  width: 100%;
+  height: 44px;
+  padding: 0 $space-6;
+  background: $primary;
+  border: none;
+  color: $white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms;
+  margin-bottom: $space-4;
+
+  &:hover:not(:disabled) {
+    background: $primary-hover;
+  }
+
+  &:disabled {
+    background: $gray-300;
+    cursor: not-allowed;
+  }
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: $primary;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 150ms;
+
+  &:hover:not(:disabled) {
+    color: $primary-hover;
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    color: $gray-400;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================================================
+// Divider
+// ============================================================================
+.divider {
+  display: flex;
+  align-items: center;
+  margin: $space-6 0;
+  color: $gray-500;
+  font-size: 14px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $gray-200;
+  }
+
+  span {
+    padding: 0 $space-4;
+  }
+}
+
+// ============================================================================
+// Form Actions
+// ============================================================================
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $space-4;
+}
+
+.form-footer {
+  text-align: center;
+  font-size: 14px;
+  color: $gray-600;
+  margin: $space-6 0 0;
+
+  .link {
+    color: $primary;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ============================================================================
+// Error Message
+// ============================================================================
+.error-message {
+  padding: $space-3 $space-4;
+  background: rgba($danger, 0.1);
+  border: 1px solid rgba($danger, 0.2);
+  color: $danger;
+  font-size: 14px;
+  margin-bottom: $space-4;
+}
+
+// ============================================================================
+// Footer
+// ============================================================================
+.login-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: $space-8;
+  padding-top: $space-6;
+  border-top: 1px solid $gray-200;
+  font-size: 13px;
+  color: $gray-500;
+
+  p {
+    margin: 0;
+  }
+}
+
+.footer-links {
+  display: flex;
+  gap: $space-6;
+
+  a {
+    color: $gray-500;
+    text-decoration: none;
+    transition: color 150ms;
+
+    &:hover {
+      color: $gray-900;
+    }
+  }
+}
+
+// ============================================================================
+// Responsive
+// ============================================================================
+@media (max-width: 1024px) {
+  .login-page {
+    grid-template-columns: 400px 1fr;
+  }
+
+  .brand-title {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-brand {
+    display: none;
+  }
+
+  .login-form-section {
+    padding: $space-6;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .otp-inputs {
+    gap: $space-2;
+  }
+
+  .otp-input {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .login-footer {
+    flex-direction: column;
+    gap: $space-4;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-section {
+    padding: $space-4;
+  }
+
+  .otp-input {
+    width: 42px;
+    height: 42px;
+  }
+}

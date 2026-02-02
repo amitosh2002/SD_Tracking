@@ -1,9 +1,10 @@
-import  { useState, useEffect } from 'react';
-import { Mail, UserPlus, X, Check, AlertCircle, Send, Users, FolderOpen } from 'lucide-react';
+
+
+import { useState, useEffect } from 'react';
+import { Mail, UserPlus, X, Check, AlertCircle, Send, Users, Info } from 'lucide-react';
 import './styles/invitation.scss';
 import { getProjectWithHigherAccess, invitationToProjet } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 import { useDispatch, useSelector } from 'react-redux';
-import CircularLoader from '../../customFiles/customComponent/Loader/circularLoader';
 import HoraLoader from '../../customFiles/customComponent/Loader/loaderV1';
 
 const TeamInvitationPage = () => {
@@ -12,50 +13,29 @@ const TeamInvitationPage = () => {
   const [role, setRole] = useState(100);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingProjects, setLoadingProjects] = useState(true);
-  const [projects, setProjects] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const dispatch=useDispatch();
+  
+  const dispatch = useDispatch();
+  const { userDetails } = useSelector((state) => state.user);
+  const { projectWithAccess, sucessFetchProjects } = useSelector((state) => state.projects);
 
-  // Fetch projects on component mount
-  const {userDetails}= useSelector((state)=>state.user)
   useEffect(() => {
-    dispatch(getProjectWithHigherAccess(userDetails?.id))
-  }, [dispatch,userDetails?.id]);
+    if (userDetails?.id) {
+      dispatch(getProjectWithHigherAccess(userDetails.id));
+    }
+  }, [dispatch, userDetails?.id]);
 
-  const {projectWithAccess,sucessFetchProjects}= useSelector((state)=>state.projects)
-  // const fetchProjects = async () => {
-  //   setLoadingProjects(true);
-  //   try {
-  //     // Simulate API call - Replace with actual API
-  //     await new Promise(resolve => setTimeout(resolve, 1000));
-      
-  //     // Mock project data - Replace with actual API call
-  //     const mockProjects = [
-  //       { id: '1', name: 'E-commerce Platform', memberCount: 12, status: 'active' },
-  //       { id: '2', name: 'Mobile App Development', memberCount: 8, status: 'active' },
-  //       { id: '3', name: 'Marketing Campaign', memberCount: 15, status: 'active' },
-  //       { id: '4', name: 'AI Research Project', memberCount: 6, status: 'active' },
-  //       { id: '5', name: 'Website Redesign', memberCount: 10, status: 'active' }
-  //     ];
-
-  //     setProjects(mockProjects);
-  //   } catch (error) {
-  //     setErrorMessage('Failed to load projects',error);
-  //   } finally {
-  //     setLoadingProjects(false);
-  //   }
-  // };
-
+  // ============================================================================
+  // Handlers
+  // ============================================================================
   const addEmailField = () => {
     setEmails([...emails, '']);
   };
 
   const removeEmailField = (index) => {
     if (emails.length > 1) {
-      const newEmails = emails.filter((_, i) => i !== index);
-      setEmails(newEmails);
+      setEmails(emails.filter((_, i) => i !== index));
     }
   };
 
@@ -69,275 +49,304 @@ const TeamInvitationPage = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-const handleSendInvitations = async (e) => {
-  e.preventDefault();
-  setErrorMessage('');
-  setSuccessMessage('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
 
-  // Validate project selection
-  if (!selectedProject) {
-    setErrorMessage('Please select a project');
-    return;
-  }
-
-  const validEmails = emails.filter(email => email.trim() !== '');
-  const invalidEmails = validEmails.filter(email => !validateEmail(email));
-
-  if (validEmails.length === 0) {
-    setErrorMessage('Please enter at least one email address');
-    return;
-  }
-
-  if (invalidEmails.length > 0) {
-    setErrorMessage('Please enter valid email addresses');
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const response = await dispatch(invitationToProjet({
-      projectId: selectedProject,
-      emails: validEmails,
-      accessType: role,  // FIXED name
-      message,
-      invitedBy: userDetails?.id
-    }));
-
-    console.log("API RESPONSE:", response);
-
-    const projectName = projects.find(p => p.id === selectedProject)?.name;
-
-    setSuccessMessage(
-      `Successfully sent ${validEmails.length} invitation${validEmails.length > 1 ? 's' : ''} to ${projectName}!`
-    );
-
-    setEmails(['']);
-    setSelectedProject('');
-    setMessage('');
-    
-    setTimeout(() => setSuccessMessage(''), 5000);
-
-  } catch (error) {
-    console.log("ERROR:", error);
-    setErrorMessage('Failed to send invitations. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  const accesTypeValue=(value)=>{
-    if (value===100) {
-      return "Viewer"
+    if (!selectedProject) {
+      setErrorMessage('Please select a project');
+      return;
     }
-    if (value===200) {
-      return "Editor"
-    }
-    if (value===300) {
-      return "Manager"
-    }
-    if (value===400) {
-      return "Admin"
-    }
-  }
 
+    const validEmails = emails.filter(email => email.trim() !== '');
+    const invalidEmails = validEmails.filter(email => !validateEmail(email));
+
+    if (validEmails.length === 0) {
+      setErrorMessage('Please enter at least one email address');
+      return;
+    }
+
+    if (invalidEmails.length > 0) {
+      setErrorMessage('Please enter valid email addresses');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await dispatch(invitationToProjet({
+        projectId: selectedProject,
+        emails: validEmails,
+        accessType: role,
+        message,
+        invitedBy: userDetails?.id
+      }));
+
+      const projectName = projectWithAccess?.find(p => p.id === selectedProject)?.name;
+      setSuccessMessage(
+        `Successfully sent ${validEmails.length} invitation${validEmails.length > 1 ? 's' : ''} to ${projectName}`
+      );
+
+      setEmails(['']);
+      setSelectedProject('');
+      setMessage('');
+      setRole(100);
+      
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } catch (error) {
+      setErrorMessage('Failed to send invitations. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ============================================================================
+  // Helper Functions
+  // ============================================================================
+  const getRoleLabel = (value) => {
+    const roles = {
+      100: 'Viewer',
+      200: 'Editor',
+      300: 'Manager',
+      400: 'Admin'
+    };
+    return roles[value];
+  };
+
+  const getRoleDescription = (value) => {
+    const descriptions = {
+      100: 'Can view project content',
+      200: 'Can edit and create content',
+      300: 'Can manage project and assign tasks',
+      400: 'Full access to project settings'
+    };
+    return descriptions[value];
+  };
+
+  // ============================================================================
+  // Loading State
+  // ============================================================================
   if (!sucessFetchProjects) {
-    return <HoraLoader/>
-    // return <CircularLoader/>
-    
+    return <HoraLoader />;
   }
 
+  // ============================================================================
+  // Render
+  // ============================================================================
   return (
-    <div className="invitation-page">
-      <div className="invitation-container">
-        <div className="invitation-header">
-          <div className="invitation-header__icon">
-            <Users size={32} />
-          </div>
-          <h1 className="invitation-header__title">Invite Team Members</h1>
-          <p className="invitation-header__subtitle">
-            Send invitations to join your project workspace
+    <div className="invite-page">
+      <div className="invite-container">
+        {/* Page Header */}
+        <div className="invite-header">
+          <h1 className="invite-title">Invite Team Members</h1>
+          <p className="invite-description">
+            Add people to collaborate on your projects
           </p>
         </div>
 
-        {successMessage && (
-          <div className="alert alert--success">
-            <Check size={20} />
-            <span>{successMessage}</span>
-          </div>
-        )}
+        <div className="invite-layout">
+          {/* Main Form Section */}
+          <div className="invite-form-section">
+            {/* Alerts */}
+            {successMessage && (
+              <Alert type="success" message={successMessage} />
+            )}
 
-        {errorMessage && (
-          <div className="alert alert--error">
-            <AlertCircle size={20} />
-            <span>{errorMessage}</span>
-          </div>
-        )}
+            {errorMessage && (
+              <Alert type="error" message={errorMessage} />
+            )}
 
-        <form onSubmit={handleSendInvitations} className="invitation-form">
-          {/* Project Selection Section */}
-          <div className="form-section">
-            <label className="form-label" htmlFor="project">
-              <FolderOpen size={18} />
-              Select Project
-            </label>
-            {!sucessFetchProjects ? (
-              <div className="loading-projects">
-                <div className="spinner" />
-                <span>Loading projects...</span>
-              </div>
-            ) : (
-              <>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="invite-form">
+              {/* Project Selection */}
+              <FormField label="Project" required>
                 <select
-                  id="project"
                   className="form-select"
                   value={selectedProject}
                   onChange={(e) => setSelectedProject(e.target.value)}
                   required
                 >
-                  <option value="">Choose a project...</option>
-
+                  <option value="">Select a project</option>
                   {projectWithAccess?.map((project) => (
                     <option key={project.id} value={project.id}>
                       {project.name} ({project.memberCount} members)
                     </option>
                   ))}
                 </select>
+              </FormField>
 
-                <p className="form-hint">
-                  {selectedProject
-                    ? `Inviting members to ${
-                        projectWithAccess?.find((p) => p.id === selectedProject)?.name
-                      }`
-                    : "Select the project you want to invite members to"}
-                </p>
-
-              </>
-            )}
-          </div>
-
-          {/* Email Inputs Section */}
-          <div className="form-section">
-            <div className="email-inputs">
-              <label className="form-label">
-                <Mail size={18} />
-                Email Addresses
-              </label>
-              {emails.map((email, index) => (
-                <div key={index} className="email-input-group">
-                  <input
-                    type="email"
-                    className="form-input"
-                    placeholder="colleague@company.com"
-                    value={email}
-                    onChange={(e) => updateEmail(index, e.target.value)}
-                    required={index === 0}
-                  />
-                  {emails.length > 1 && (
-                    <button
-                      type="button"
-                      className="btn-icon btn-icon--danger"
-                      onClick={() => removeEmailField(index)}
-                      aria-label="Remove email"
-                    >
-                      <X size={18} />
-                    </button>
-                  )}
+              {/* Email Addresses */}
+              <FormField label="Email Addresses" required>
+                <div className="email-inputs">
+                  {emails.map((email, index) => (
+                    <EmailInput
+                      key={index}
+                      value={email}
+                      onChange={(value) => updateEmail(index, value)}
+                      onRemove={() => removeEmailField(index)}
+                      canRemove={emails.length > 1}
+                      required={index === 0}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+                <button
+                  type="button"
+                  className="btn-add-email"
+                  onClick={addEmailField}
+                >
+                  <UserPlus size={16} />
+                  <span>Add another email</span>
+                </button>
+              </FormField>
 
-            <button
-              type="button"
-              className="btn-add-email"
-              onClick={addEmailField}
-            >
-              <UserPlus size={18} />
-              Add Another Email
-            </button>
+              {/* Role Selection */}
+              <FormField label="Role" required>
+                <select
+                  className="form-select"
+                  value={role}
+                  onChange={(e) => setRole(Number(e.target.value))}
+                  required
+                >
+                  <option value={100}>{getRoleLabel(100)}</option>
+                  <option value={200}>{getRoleLabel(200)}</option>
+                  <option value={300}>{getRoleLabel(300)}</option>
+                  <option value={400}>{getRoleLabel(400)}</option>
+                </select>
+                <p className="field-hint">{getRoleDescription(role)}</p>
+              </FormField>
+
+              {/* Message */}
+              <FormField label="Personal Message" optional>
+                <textarea
+                  className="form-textarea"
+                  placeholder="Add a personal message to your invitation..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={4}
+                  maxLength={500}
+                />
+                <p className="field-hint">{message.length}/500 characters</p>
+              </FormField>
+
+              {/* Submit Button */}
+              <div className="form-submit">
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading || !sucessFetchProjects}
+                >
+                  {loading ? (
+                    <>
+                      <span className="btn-spinner"></span>
+                      <span>Sending Invitations...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={18} />
+                      <span>Send Invitations</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
 
-          {/* Role Selection Section */}
-          <div className="form-section">
-            <label className="form-label" htmlFor="role">
-              Role
-            </label>
-            <select
-              id="role"
-              className="form-select"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value={100}>{accesTypeValue(100)}</option>
-              <option value={200}>{accesTypeValue(200)}</option>
-              <option value={300}>{accesTypeValue(300)}</option>
-              <option value={400}>{accesTypeValue(400)}</option>
-            </select>
-            <p className="form-hint">
-              {role === 400 && 'Admins can manage team members and project settings'}
-              {role === 300 && 'Managers can oversee projects and assign tasks'}
-              {role === 200 && 'Members can create and manage their own tasks'}
-              {role === 100 && 'Viewers have read-only access to the project'}
-            </p>
-          </div>
-
-          {/* Personal Message Section */}
-          <div className="form-section">
-            <label className="form-label" htmlFor="message">
-              Personal Message (Optional)
-            </label>
-            <textarea
-              id="message"
-              className="form-textarea"
-              placeholder="Add a personal message to your invitation..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={4}
-              maxLength={500}
-            />
-            <p className="form-hint">
-              {message.length}/500 characters
-            </p>
-          </div>
-
-          {/* Submit Button */}
-          <div className="form-actions">
-            <button
-              type="submit"
-              className="btn btn--primary"
-              disabled={!sucessFetchProjects }
-            >
-              {!sucessFetchProjects ? (
-                <>
-                  <div className="spinner" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send size={18} />
-                  Send Invitations
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-
-        {/* Information Card */}
-        <div className="invitation-info">
-          <div className="info-card">
-            <h3 className="info-card__title">What happens next?</h3>
-            <ul className="info-card__list">
-              <li>Invitees will receive an email with a secure link</li>
-              <li>They can accept the invitation and create their account</li>
-              <li>Once accepted, they'll have access to the selected project</li>
-              <li>You can manage team members from the Project settings</li>
-            </ul>
+          {/* Info Sidebar */}
+          <div className="invite-info-section">
+            <InfoCard />
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+// ============================================================================
+// Sub-Components
+// ============================================================================
+
+// Alert Component
+const Alert = ({ type, message }) => (
+  <div className={`alert alert-${type}`}>
+    {type === 'success' ? <Check size={18} /> : <AlertCircle size={18} />}
+    <span>{message}</span>
+  </div>
+);
+
+// Form Field Component
+const FormField = ({ label, required, optional, children }) => (
+  <div className="form-field">
+    <label className="field-label">
+      <span>{label}</span>
+      {required && <span className="field-required">*</span>}
+      {optional && <span className="field-optional">(Optional)</span>}
+    </label>
+    {children}
+  </div>
+);
+
+// Email Input Component
+const EmailInput = ({ value, onChange, onRemove, canRemove, required }) => (
+  <div className="email-input-row">
+    <Mail size={16} className="email-icon" />
+    <input
+      type="email"
+      className="form-input"
+      placeholder="name@company.com"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      required={required}
+    />
+    {canRemove && (
+      <button
+        type="button"
+        className="btn-remove"
+        onClick={onRemove}
+        aria-label="Remove email"
+      >
+        <X size={16} />
+      </button>
+    )}
+  </div>
+);
+
+// Info Card Component
+const InfoCard = () => (
+  <div className="info-card">
+    <div className="info-header">
+      <div className="info-icon">
+        <Info size={20} />
+      </div>
+      <h3 className="info-title">Invitation Process</h3>
+    </div>
+    <div className="info-content">
+      <div className="info-step">
+        <div className="step-number">1</div>
+        <div className="step-text">
+          <h4>Invitation Sent</h4>
+          <p>Recipients receive a secure email invitation link</p>
+        </div>
+      </div>
+      <div className="info-step">
+        <div className="step-number">2</div>
+        <div className="step-text">
+          <h4>Account Setup</h4>
+          <p>They create an account or sign in to accept</p>
+        </div>
+      </div>
+      <div className="info-step">
+        <div className="step-number">3</div>
+        <div className="step-text">
+          <h4>Access Granted</h4>
+          <p>Team members can start collaborating immediately</p>
+        </div>
+      </div>
+    </div>
+    <div className="info-footer">
+      <p>You can manage team members from Project Settings at any time.</p>
+    </div>
+  </div>
+);
 
 export default TeamInvitationPage;

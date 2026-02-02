@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_TEAM_MEMBERS } from "../Constants/PlatformConstatnt/userConstant";
+import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_TEAM_MEMBERS, USER_WORK_DETAILS, USER_WORK_DETAILS_FAIL, USER_WORK_DETAILS_LOADING } from "../Constants/PlatformConstatnt/userConstant";
 const initialState={
     userDetails:null,
     sucessFetch:false,
@@ -10,7 +10,11 @@ const initialState={
     currentWeektotalWorkHours:0,
     currentMonthtotalWorkHours:0,
     currentWeek:null,
-    teamMembers:[]
+    teamMembers:[],
+    workDetailsLoading:false,
+    workDetails:null,
+    workDetailsFail:false,
+    workDetailsErrorMessage:""
 }
 
 
@@ -38,5 +42,21 @@ export const userReducer=createReducer(initialState,(builder)=>{
     })
     .addCase(USER_TEAM_MEMBERS,(state,action)=>{
         state.teamMembers=action.payload.teamMembers;
+    })
+    .addCase(USER_WORK_DETAILS_LOADING,(state)=>{
+        state.workDetailsLoading=true;
+        state.workDetailsFail=false;
+        state.workDetailsErrorMessage="";
+    })
+    .addCase(USER_WORK_DETAILS,(state,action)=>{
+        state.workDetails=action.payload.workDetails;
+        state.workDetailsLoading=false;
+        state.workDetailsFail=false;
+    })
+    .addCase(USER_WORK_DETAILS_FAIL,(state,action)=>{
+        state.workDetailsFail=true;
+        state.workDetailsLoading=false;
+        state.workDetails=null;
+        state.workDetailsErrorMessage=action.payload;
     })
 })

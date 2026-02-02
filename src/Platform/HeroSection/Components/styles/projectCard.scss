@@ -1,0 +1,264 @@
+@use "../../../../customFiles/customDesign/customColor.scss" as colors;
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;
+
+// .project-card {
+//   background: white;
+//   border: 1px solid colors.$gray-200;
+//   border-radius: $space-3; // 12px boxy radius
+//   padding: $space-6;        // 24px internal padding
+//   display: flex;
+//   flex-direction: column;
+//   gap: $space-4;           // 16px gap between header and divider
+//   transition: all 0.2s ease;
+
+//   &:hover {
+//     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+//     border-color: colors.$gray-300;
+//   }
+
+//   .card-header {
+//     display: flex;
+//     gap: $space-4; // 16px gap between icon and text
+//     align-items: center;
+
+//     .project-icon {
+//       width: 48px;
+//       height: 48px;
+//       background: colors.$gray-50;
+//       border-radius: $space-2; // 8px radius
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       font-weight: 800;
+//       color: colors.$primary; 
+//       border: 1px solid colors.$gray-100;
+//     }
+
+//     .title-group {
+//       h3 { font-size: 1.1rem; font-weight: 700; color: colors.$gray-900; margin: 0; }
+//       span { font-size: 0.85rem; color: colors.$gray-500; margin-top: $space-1; }
+//     }
+//   }
+
+//   .card-divider {
+//     height: 1px;
+//     background-color: colors.$gray-100;
+//     width: 100%;
+//     margin: $space-1 0; // Slight vertical breathing room
+//   }
+
+//   .card-footer {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     padding-top: $space-2;
+
+//     .meta-tags {
+//       display: flex;
+//       gap: $space-3; // 12px gap between status and type
+//       align-items: center;
+//       font-size: 0.75rem;
+//       font-weight: 600;
+//       color: colors.$gray-500;
+//     }
+//   }
+
+//   // Stacking Avatar Logic from your Manager Screenshot
+//   .avatar-group {
+//     display: flex;
+//     flex-direction: row-reverse;
+//     align-items: center;
+
+//     .avatar-item {
+//       width: 32px;
+//       height: 32px;
+//       border-radius: 50%;
+//       border: 2px solid white;
+//       margin-left: -$space-3; // Negative 12px margin for perfect overlap
+//       background: colors.$gray-100;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       font-size: 0.7rem;
+//       overflow: hidden;
+
+//       &.count-badge {
+//         background: colors.$gray-800;
+//         color: white;
+//         margin-left: -$space-2; // Tighten the overlap for the count
+//       }
+//     }
+//   }
+// }
+
+
+
+
+
+.jira-space-card {
+  background: white;
+  border: 1px solid colors.$gray-200;
+  border-radius: $space-2; // Boxy 8px radius
+  padding: $space-5; // 20px padding
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    border-color: colors.$gray-300;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+
+  .space-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: $space-4;
+
+    .icon-wrapper {
+      width: 40px;
+      height: 40px;
+      background: colors.$gray-50;
+      border: 1px solid colors.$gray-100;
+      border-radius: $space-1; // Very boxy
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: colors.$gray-800;
+      font-weight: 700;
+    }
+
+    .more-actions {
+      color: colors.$gray-400;
+      cursor: pointer;
+      &:hover { color: colors.$gray-900; }
+    }
+  }
+
+  .space-content {
+    margin-bottom: $space-6;
+    
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: colors.$gray-900;
+      margin: 0 0 $space-1 0;
+    }
+    
+    p {
+      font-size: 0.8rem;
+      color: colors.$gray-500;
+      margin: 0;
+    }
+  }
+
+  .space-divider {
+    height: 1px;
+    background: colors.$gray-100;
+    margin-bottom: $space-4;
+  }
+
+  .space-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .status-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: colors.$gray-600;
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+
+      &::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: colors.$gray-400;
+      }
+    }
+  }
+
+  // Team Avatar Overlap logic from your Screenshot
+  .team-stack {
+    display: flex;
+    flex-direction: row-reverse; // Overlap logic
+    align-items: center;
+
+    .avatar-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: -$space-2; // Overlap
+      background: colors.$gray-100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: colors.$gray-700;
+      overflow: hidden;
+
+      img { width: 100%; height: 100%; object-fit: cover; }
+
+      &.remainder {
+        background: colors.$gray-800;
+        color: white;
+        z-index: 2;
+      }
+    }
+  }
+}
+
+
+.work-stats {
+  margin-bottom: $space-4;
+
+  .stat-group {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: $space-2;
+    .stat-value { font-size: 1.1rem; font-weight: 700; color: colors.$gray-900; }
+    .stat-label { font-size: 0.75rem; color: colors.$gray-500; text-transform: uppercase; }
+  }
+
+  .work-progress-bar {
+    display: flex;
+    height: 6px;
+    background: colors.$gray-100;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: $space-2;
+
+    .bar {
+      height: 100%;
+      &.todo { background: colors.$gray-300; }
+      &.progress { background: #0052CC; } // Jira Blue
+      &.testing { background: #FFAB00; } // Jira Orange/Yellow
+      &.done { background: #36B37E; }    // Jira Green
+    }
+  }
+
+  .stat-summary {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: colors.$gray-600;
+  }
+}

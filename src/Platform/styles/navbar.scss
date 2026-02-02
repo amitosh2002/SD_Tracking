@@ -1,4 +1,4 @@
-@import "../../customFiles/customDesign/customTexts.scss";
+@use "../../customFiles/customDesign/customTexts.scss" as *;
 
 // --- Variables ---
 $primary-color: #3B82F6;

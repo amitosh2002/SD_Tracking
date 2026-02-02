@@ -1,539 +1,310 @@
+// Dashboard - Professional Gray Theme
+// ============================================================================
 
+// ----------------------------------------------------------------------------
+// Colors
+// ----------------------------------------------------------------------------
+$primary: #6366f1;
+$primary-hover: #5558e3;
+$primary-light: #eef2ff;
 
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-          background: #f3f4f6;
-        }
+$gray-50: #fafafa;
+$gray-100: #f4f4f5;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
 
-        .dashboard {
-          display: flex;
-          min-height: 100vh;
-          background: #f3f4f6;
-        }
+$white: #ffffff;
+$danger: #ef4444;
 
-        /* Sidebar Styles */
-        .sidebar {
-          width: 240px;
-          background: #ffffff;
-          color: white;
-          padding: 1.5rem 0;
-          position: fixed;
-          height: 100vh;
-          overflow-y: auto;
-          transition: transform 0.3s ease;
-          // z-index: 000;
-        }
+$sidebar-width: 250px;
+$sidebar-collapsed-width: 80px;
+// ----------------------------------------------------------------------------
+// Base
+// ----------------------------------------------------------------------------
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: $gray-50;
+  margin: 0;
+  padding: 0;
+}
 
-        .sidebar__menu {
-          list-style: none;
-        }
+// ============================================================================
+// Dashboard Layout
+// ============================================================================
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: $white;
+}
 
-        .sidebar__item {
-          padding: 0.875rem 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.875rem;
-          cursor: pointer;
-          transition: all 0.2s;
-          color: #94a3b8;
-          font-size: 0.9375rem;
-        }
-
-        .sidebar__item:hover {
-          background: rgba(255, 255, 255, 0.05);
-          color: white;
-        }
-
-        .sidebar__item--active {
-          background: rgba(99, 102, 241, 0.15);
-          color: white;
-          border-left: 3px solid #6366f1;
-        }
-
-        .sidebar__icon {
-          font-size: 1.25rem;
-          width: 24px;
-          text-align: center;
-        }
-
-        /* Main Content */
-        .main {
-          flex: 1;
-          margin-left: 240px;
-          padding: 2rem;
-          transition: margin-left 0.3s ease;
-        }
-
-        .header {
-          background: white;
-          padding: 2rem;
-          border-radius: 1rem;
-          margin-bottom: 2rem;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .header__top {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 0.5rem;
-        }
-
-        .header__brand {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .header__logo {
-          width: 48px;
-          height: 48px;
-          background: linear-gradient(135deg, #3b82f6, #6366f1);
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: 700;
-          font-size: 1.5rem;
-        }
-
-        .header__title {
-          font-size: 1.75rem;
-          font-weight: 700;
-          color: #0f172a;
-        }
-
-        .header__actions {
-          display: flex;
-          gap: 0.75rem;
-        }
-
-        .btn {
-          padding: 0.625rem 1.25rem;
-          border-radius: 0.5rem;
-          border: none;
-          font-size: 0.875rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .btn--outline {
-          background: white;
-          color: #10b981;
-          border: 2px solid #10b981;
-        }
-
-        .btn--outline:hover {
-          background: #f0fdf4;
-        }
-
-        .btn--primary {
-          background: #10b981;
-          color: white;
-        }
-
-        .btn--primary:hover {
-          background: #059669;
-          transform: translateY(-1px);
-        }
-
-        /* Projects Section */
-        .projects__header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 1.5rem;
-        }
-
-        .projects__title {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #0f172a;
-        }
-
-        .projects__grid {
-          // display: grid;
-          // grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          // gap: 1.5rem;
-          display: flex;
-          flex-direction: row;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-
-        .project-card {
-          background: white;
-          padding: 1.5rem;
-          border-radius: 1rem;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-          transition: all 0.3s;
-          cursor: pointer;
-        }
-
-        .project-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        .project-card__header {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
-        .project-card__icon {
-          color: violet;
-          background-color: gainsboro;
-          width: 48px;
-          height: 48px;
-          border-radius: 0.75rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 1.25rem;
-          flex-shrink: 0;
-        }
-
-        .project-card__info {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .project-card__name {
-          font-size: 1rem;
-          font-weight: 600;
-          color: #0f172a;
-          margin-bottom: 0.25rem;
-        }
-
-        .project-card__client {
-          font-size: 0.875rem;
-          color: #64748b;
-        }
-
-        .project-card__footer {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding-top: 1rem;
-          border-top: 1px solid #f1f5f9;
-        }
-
-        .project-card__meta {
-          display: flex;
-          gap: 1rem;
-          font-size: 0.8125rem;
-          color: #94a3b8;
-        }
-
-        /* Timer Widget */
-        .timer {
-          position: fixed;
-          bottom: 2rem;
-          right: 2rem;
-          background: #1e293b;
-          color: white;
-          padding: 1.25rem 1.5rem;
-          border-radius: 1rem;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          z-index: 100;
-        }
-
-        .timer__display {
-          font-size: 1.5rem;
-          font-weight: 700;
-          font-variant-numeric: tabular-nums;
-        }
-
-        .timer__status {
-          width: 12px;
-          height: 12px;
-          background: #10b981;
-          border-radius: 50%;
-          animation: pulse 2s infinite;
-        }
-
-        .timer__info {
-          font-size: 0.75rem;
-          color: #94a3b8;
-        }
-
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
-        }
-
-        /* Mobile Menu Toggle */
-        .mobile-toggle {
-          display: none;
-          position: fixed;
-          top: 1rem;
-          left: 1rem;
-          z-index: 1001;
-          background: #1e293b;
-          color: white;
-          border: none;
-          padding: 0.75rem;
-          border-radius: 0.5rem;
-          cursor: pointer;
-          font-size: 1.25rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-          .projects__grid {
-            flex-wrap: wrap;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .mobile-toggle {
-            display: block;
-          }
-
-          .sidebar {
-            transform: translateX(-100%);
-          }
-
-          .sidebar--open {
-            transform: translateX(0);
-          }
-
-          .main {
-            margin-left: 0;
-            padding: 1rem;
-            padding-top: 4rem;
-          }
-
-          .header {
-            padding: 1.5rem;
-          }
-
-          .header__top {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-          }
-
-          .header__actions {
-            width: 100%;
-          }
-
-          .btn {
-            flex: 1;
-          }
-
-          .projects__grid {
-            grid-template-rows: 1fr;
-          }
-
-          .timer {
-            bottom: 1rem;
-            right: 1rem;
-            padding: 1rem;
-            font-size: 0.875rem;
-          }
-
-          .timer__display {
-            font-size: 1.25rem;
-          }
-        }
-
-        /* Overlay for mobile sidebar */
-        .overlay {
-          display: none;
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 999;
-        }
-
-        .overlay--visible {
-          display: block;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background: #f1f5f9;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
-        }
-      
-
-        // Hora Theme Variables
-$hora-gradient-start: #667eea;
-$hora-gradient-end: #764ba2;
-$hora-gradient: linear-gradient(135deg, $hora-gradient-start 0%, $hora-gradient-end 100%);
-
-// Sidebar Hora Styling
+// ============================================================================
+// Sidebar
+// ============================================================================
 .sidebar {
-  // Add Hora branding section
+  width: $sidebar-width;
+    background: $gray-800;
+  border-right: 1px solid $gray-200;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  color: $gray-600;
+  z-index: 100;
+  .sidebar__user-name{
+    color: $gray-200;
+  }
+  .sidebar__user-email{
+    color: $gray-300;
+  }
+  
+    /* Collapsed State */
+    &--collapsed {
+      width: $sidebar-collapsed-width;
+      padding: 1.5rem 0.5rem;
+  
+      .sidebar__logo,
+      .sidebar__section-title,
+      .sidebar__user-info,
+      .sidebar__item span,
+      .sidebar__logout span,
+      .sidebar__brand-logo-container span {
+        display: none;
+      }
+  
+      .sidebar__brand {
+        justify-content: center;
+        padding: 0;
+  
+      }
+  
+      .sidebar__brand-logo-container {
+        gap: 0;
+      }
+  
+      .sidebar__item {
+        justify-content: center;
+        padding: 0.75rem 0;
+      }
+  
+      .sidebar__footer {
+        padding: 1rem 0;
+      }
+  
+      .sidebar__profile {
+        justify-content: center;
+        gap: 0;
+      }
+  
+      .sidebar__logout {
+        justify-content: center;
+        padding: 0.75rem 0;
+      }
+    }
+
+  /* Brand / Logo Area */
   &__brand {
-    padding: 0 12px 32px 12px;
-    border-bottom: 2px solid #f1f5f9;
-    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding: 0 0.5rem;
+    position: relative;
+  }
+
+  &__brand-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
   }
 
   &__logo {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    background: $hora-gradient;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: $white;
     margin: 0;
     letter-spacing: -0.5px;
   }
 
-  &__subtitle {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    margin: 4px 0 0 0;
-    font-weight: 500;
+  &__brand-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: rgba($primary, 0.2);
+      border-radius: 8px;
+      color: $primary;
   }
 
+  &__collapse-btn {
+    position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+    background: $white;
+    border: 1px solid $gray-200;
+    border-radius: 50%;
+      width: 24px;
+      height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: $gray-600;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+
+    &:hover {
+      background: $gray-50;
+      color: $primary;
+        transform: translateY(-50%) scale(1.1);
+      }
+      
+      svg {
+        width: 14px;
+        height: 14px;
+    }
+  }
+
+  /* Navigation */
   &__nav {
     flex: 1;
-    overflow-y: auto;
-  }
-
-  &__section-title {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 0 16px 12px 16px;
-    margin: 24px 0 8px 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
+    padding-bottom: 2rem;
   }
 
   &__menu {
     list-style: none;
     padding: 0;
-    margin: 0 0 12px 0;
+    margin: 0 0 1.5rem 0;
+  }
 
-    + .sidebar__section-title {
-      border-top: 2px solid #f1f5f9;
-      padding-top: 24px;
-    }
+  &__section-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: $gray-500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.75rem 0.75rem;
+    padding-top: 0.5rem;
   }
 
   &__item {
     display: flex;
     align-items: center;
     gap: 12px;
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
-    background: transparent;
-    color: #64748b;
-    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 2px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    margin-bottom: 4px;
-    position: relative;
+    color: $gray-300;
+    transition: all 0.2s ease;
     overflow: hidden;
+      white-space: nowrap;
+    
+      span {
+        transition: opacity 0.3s ease;
+      }
 
     &:hover {
-      background: #f1f5f9;
-      color: #475569;
+      color: $white;
+        background: rgba($white, 0.1);
     }
 
     &--active {
-      background: $hora-gradient;
-      color: #ffffff;
+      background-color: rgba($primary, 0.15);
+        color: $primary !important;
       font-weight: 600;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      
-      &:hover {
-        background: $hora-gradient;
-        color: #ffffff;
-      }
 
       .sidebar__icon-svg {
-        stroke-width: 2.5;
+        stroke: $primary;
+        stroke-width: 2.5px;
       }
+&:hover {
+  background-color: rgba($primary, 0.2);
+  color: $primary;
+}
     }
 
-    // Remove emoji icon styling for Lucide icons
-    .sidebar__icon {
-      display: none;
+    &--toggle {
+      justify-content: space-between;
+      margin-top: 1rem;
     }
   }
 
   &__icon-svg {
-    flex-shrink: 0;
-    stroke-width: 2;
-    transition: stroke-width 0.3s ease;
+    stroke-width: 2px;
   }
 
-  &__indicator {
-    position: absolute;
-    right: 12px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  /* Toggle Switch */
+  .toggle-switch {
+    width: 36px;
+    height: 20px;
+    background: $gray-200;
+    border-radius: 9999px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background: $white;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+  }
+
+  /* Footer & Profile */
+  &__footer {
+    margin-top: auto;
+    border-top: 1px solid $gray-200;
+    padding-top: 1.5rem;
   }
 
   &__profile {
-    padding: 16px;
-    background: linear-gradient(135deg, #f8f9ff 0%, #f3f4ff 100%);
-    border-radius: 12px;
-    margin-top: auto;
     display: flex;
     align-items: center;
     gap: 12px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    border: 1px solid #e9ecff;
-
-    &:hover {
-      transform: scale(1.02);
-    }
+    margin-bottom: 1.5rem;
   }
 
   &__avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: $hora-gradient;
+    background: $gray-300;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 1rem;
+    overflow: hidden;
     flex-shrink: 0;
+    color: $white;
+    font-weight: 600;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
   &__user-info {
@@ -544,120 +315,248 @@ $hora-gradient: linear-gradient(135deg, $hora-gradient-start 0%, $hora-gradient-
   &__user-name {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #334155;
-    margin-bottom: 2px;
+    color: $gray-900;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   &__user-email {
     font-size: 0.75rem;
-    color: #94a3b8;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    color: $gray-600;
+  }
+
+  &__logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.65rem 0.75rem;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: $gray-600;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+
+    &:hover {
+      color: $danger;
+      background: rgba($danger, 0.05);
+    }
   }
 }
 
-// Header Logo Gradient
+// ============================================================================
+// Main Content
+// ============================================================================
+.main {
+  flex: 1;
+  margin-left: $sidebar-width;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+    &--collapsed {
+      margin-left: $sidebar-collapsed-width;
+    }
+  
+    .main__content {
+      padding: 2rem;
+  
+}
+
+// ============================================================================
+// Header
+// ============================================================================
 .header {
-  &__logo {
-    background: $hora-gradient;
-    color: #ffffff;
+  background: $white;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  border: 1px solid $gray-200;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
   }
 
   &__title {
-    background: $hora-gradient;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $gray-900;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
   }
 }
 
-// Button Hora Theme
+// ============================================================================
+// Buttons
+// ============================================================================
 .btn {
-  &--primary {
-    background: $hora-gradient;
-    border: none;
-
-    &:hover {
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-      transform: translateY(-2px);
-    }
-  }
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 
   &--outline {
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                $hora-gradient border-box;
-    color: $hora-gradient-start;
+    background: $white;
+    color: $gray-600;
+    border: 1px solid $gray-300;
 
     &:hover {
-      background: $hora-gradient;
-      color: white;
+      border-color: $gray-400;
+      color: $gray-700;
+    }
+  }
+
+  &--primary {
+    background: $primary;
+    color: $white;
+    box-shadow: 0 1px 2px rgba($primary, 0.3);
+
+    &:hover {
+      background: $primary-hover;
+      transform: translateY(-1px);
     }
   }
 }
 
-// Project Card Enhancements
+// ============================================================================
+// Projects Section
+// ============================================================================
+.projects {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $gray-900;
+  }
+
+  &__grid {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+// ============================================================================
+// Project Card
+// ============================================================================
 .project-card {
-  transition: all 0.3s ease;
+  background: $white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid $gray-200;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  cursor: pointer;
+  min-width: 300px;
+  flex: 1;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   &__icon {
-    background: $hora-gradient;
+    color: $primary;
+    background-color: $primary-light;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    flex-shrink: 0;
 
-    p {
-      color: #ffffff;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
     }
   }
-}
 
-// Timer Hora Theme
-.timer {
-  &__status {
-    background: $hora-gradient;
+  &__info {
+    flex: 1;
+    min-width: 0;
   }
 
-  &__display {
-    background: $hora-gradient;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  &__name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $gray-900;
+    margin-bottom: 0.25rem;
+  }
+
+  &__client {
+    font-size: 0.875rem;
+    color: $gray-600;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid $gray-200;
+  }
+
+  &__meta {
+    font-size: 0.8rem;
+    color: $gray-500;
+    display: flex;
+    gap: 8px;
   }
 }
 
-// Mobile Responsive
+// ============================================================================
+// Responsive
+// ============================================================================
+@media (max-width: 1024px) {
+  .projects__grid {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 768px) {
-  .mobile-toggle {
-    background: $hora-gradient;
-    color: white;
-    border: none;
+  .sidebar {
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+        .main {
+    padding: 1rem;
   }
 }
+}
 
-// Scrollbar Styling for Sidebar
-.sidebar__nav {
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: $hora-gradient;
-    border-radius: 3px;
-
-    &:hover {
-      background: linear-gradient(135deg, darken($hora-gradient-start, 10%), darken($hora-gradient-end, 10%));
-    }
-  }
+.logout_button_container{
+  margin-bottom: 4rem;
 }
