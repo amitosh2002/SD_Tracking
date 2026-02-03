@@ -360,6 +360,9 @@ import horalogo from "../../assets/platformIcons/Hora-logo.svg";
 import "./styles/herosection.scss";
 import TeamInvitationPage from '../AccessControl/invitationPage';
 import UserDashboard from './Components/userDashboard';
+import { logoutAction } from '../../Redux/Actions/Auth/AuthActions';
+import SettingPageV1 from './Components/settingPage';
+import InAppNotifications from './Components/inAppNotification';
 
 const HoraDashboard = () => {
   const [activeItem, setActiveItem] = useState('dashboard');
@@ -369,7 +372,7 @@ const HoraDashboard = () => {
   const navigate = useNavigate();
 
   const userDetails = useSelector((state) => state.user.userDetails);
-  const projects = useSelector((state) => state.projects.projects);
+  // const projects = useSelector((state) => state.projects.projects);
   const projectCreateSucess = useSelector((state) => state.projects.projectCreateSucess);
 
   const hasFetchedProjects = useRef(false);
@@ -434,7 +437,9 @@ const HoraDashboard = () => {
     timer: TimeLogTracker,
     projects: WorkSpace,
     teams: TeamsPage,
-    invite:TeamInvitationPage
+    invite:TeamInvitationPage,
+    notifications:InAppNotifications,
+    settings:SettingPageV1
 
   };
 

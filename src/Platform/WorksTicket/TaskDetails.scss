@@ -101,7 +101,9 @@
   border-radius: 1rem;
   padding: 2rem;
   width: 100%;
-  min-height: 400px;
+  min-height: 700px; 
+  overflow-y: auto;
+  height: auto;
 
   @media screen and (max-width: 768px) {
     padding: 1rem;

@@ -766,3 +766,132 @@ export default IconColorDropdown;
 //     return res.data;
 //   }}
 // />
+
+
+// ============================================================================
+// CUSTOM SELECT COMPONENT
+// ============================================================================
+export const CustomDropDownV3 = ({ value, onChange, options, placeholder, disabled, className, showIcon, searchable = true }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dropdownRef = useRef(null);
+  const searchInputRef = useRef(null);
+
+  const selectedOption = options?.find((opt) => opt.value === value);
+  const displayText = selectedOption?.label || placeholder;
+
+  // Filter options based on search term
+  const filteredOptions = searchTerm
+    ? options.filter((opt) =>
+        opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : options;
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+        setSearchTerm("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (isOpen && searchable && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isOpen, searchable]);
+
+  const handleSelect = (option) => {
+    onChange(option.value);
+    setIsOpen(false);
+    setSearchTerm("");
+  };
+
+  const handleToggle = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
+      if (!isOpen) {
+        setSearchTerm("");
+      }
+    }
+  };
+
+  return (
+    <div
+      ref={dropdownRef}
+      className={`ct-custom-select ${disabled ? "ct-custom-select--disabled" : ""} ${className || ""}`}
+    >
+      <div
+        className={`ct-custom-select__trigger ${isOpen ? "ct-custom-select__trigger--open" : ""}`}
+        onClick={handleToggle}
+      >
+        <span className="ct-custom-select__text">
+          {showIcon && (selectedOption?.icon || selectedOption?.image || selectedOption?.initials) && (
+            <span className="ct-custom-select__icon" style={{ color: selectedOption.color }}>
+              {selectedOption.image ? (
+                <img src={selectedOption.image} alt="" className="ct-avatar" />
+              ) : selectedOption.initials ? (
+                <span className="ct-initials">{selectedOption.initials}</span>
+              ) : (
+                selectedOption.icon
+              )}
+            </span>
+          )}
+          {displayText}
+        </span>
+        <ChevronDown size={16} className="ct-custom-select__arrow" />
+      </div>
+
+      {isOpen && !disabled && (
+        <div className="ct-custom-select__dropdown">
+          {searchable && options.length > 5 && (
+            <div className="ct-custom-select__search">
+              <input
+                ref={searchInputRef}
+                type="text"
+                className="ct-custom-select__search-input"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
+
+          <div className="ct-custom-select__options">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <div
+                  key={option.value}
+                  className={`ct-custom-select__option ${
+                    option.value === value ? "ct-custom-select__option--selected" : ""
+                  }`}
+                  onClick={() => handleSelect(option)}
+                >
+                  {(showIcon || option.image || option.initials) && (
+                    <span className="ct-custom-select__icon" style={{ color: option.color }}>
+                      {option.image ? (
+                        <img src={option.image} alt="" className="ct-avatar" />
+                      ) : option.initials ? (
+                        <span className="ct-initials">{option.initials}</span>
+                      ) : (
+                        option.icon
+                      )}
+                    </span>
+                  )}
+                  {option.label}
+                </div>
+              ))
+            ) : (
+              <div className="ct-custom-select__empty">No results found</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

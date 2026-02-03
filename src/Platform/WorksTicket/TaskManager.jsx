@@ -82,9 +82,6 @@ const [filters, setFilters] = useState({
             ...filters,
             type: isInitial ? 'refresh' : 'append' 
         }));
-        
-        console.log("API Response:", res);
-        
         const totalItems = res?.total || 0;
         const currentItemsCount = res?.items?.length || 0;
 

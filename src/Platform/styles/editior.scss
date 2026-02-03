@@ -1,82 +1,67 @@
 .editor-container {
-    display: flex;
+display: flex;
     flex-direction: column;
-    align-items: center; // This centers your content horizontally
-    width: 100%;
-    // height: 100vh;
-    padding: 20px;
-    // box-sizing: border-box; // Ensures padding is included in the total width
+width: 100%;
+height: auto; // Default to auto so it grows with content
+    min-height: 150px;
+    box-sizing: border-box;
+padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+background: #fff;
+    transition: border-color 0.2s;
+
+&:focus-within {
+        border-color: #4f7aff;
+    }
 }
 
-// Responsive Editor.js styles
-.editor-container {
-    max-height: 80vh;
-    min-height: 60vh;
-    box-sizing: border-box;
-    padding: 1rem;
-    overflow-y: scroll;
-     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    padding: 1rem;
-    margin-top: 1.2rem;
-    box-sizing: border-box;
-    border: 1px solid #797575; // Optional: Add a border for better visibility
-    border-radius: 8px;
-
-
+.editor-status {
+    flex-shrink: 0;
 }
 
 .editor-body {
-    width: 100% !important;
-    // height: calc(80vh - 100px); // Adjust height to fit within the viewport
-    background: #fff;
-   
+flex: 1;
+    width: 100%;
+    // Remove overflow: auto if we want it to grow vertically with the container
+    // However, if a fixed height is passed, we DO want scroll.
+    // We can use height: inherit or similar, but the most robust way is:
+    overflow-y: visible;
+    min-height: 0;
+
+    .codex-editor__redactor {
+        padding-bottom: 20px !important;
+        margin-right: 0 !important;
+    }
+}
+// When a height is passed via style prop, the .editor-container will have a fixed height.
+// In that case, we need the .editor-body to scroll.
+.editor-container[style*="height"] {
+    .editor-body {
+        overflow-y: auto;
+    }
 }
 
 .button-group {
-    display: flex;
+display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 1rem;
-    // justify-content: flex-start;
-    align-items: flex-start !important;
+gap: 8px;
+    margin-top: 12px;
+    flex-shrink: 0;
 }
 
-// Editor.js default block styling
 .ce-block {
-    max-width: 100%;
+max-width: 100%;
     word-break: break-word;
 }
 
-// Responsive adjustments
-@media (max-width: 900px) {
-    .editor-body {
-        width: 100% !important;
-        padding: 0.5rem;
-    }
+.ce-toolbar__content,
+.ce-block__content {
+    max-width: 100%;
 }
 
 @media (max-width: 600px) {
-    .editor-container {
-        padding: 0.5rem;
+.editor-container {
+    padding: 8px;
     }
-
-    .editor-body {
-        width: 100% !important;
-        padding: 0.25rem;
-        border-radius: 4px;
-        box-shadow: none;
-    }
-
-    .button-group {
-        gap: 0.5rem;
-    }
-}
-
-// Remove duplicate .editor-body and ensure width: 100% is set above
-
-
-
-
-.editor-full-width {
-    width: 100%;
 }

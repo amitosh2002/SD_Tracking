@@ -391,7 +391,7 @@ function AnalyticsDashBoardV2() {
 
     useEffect(() => {
         dispatch(getSprintVelocityAction(projectId));
-      }, [dispatch]);
+      }, [dispatch,projectId]);
 
   const childrens = {
     0: <ChartReportForSprint analyticsData={sprintAnalyticsData ?? goodAnalyticsData} />,

@@ -65,7 +65,6 @@ const Navbar = () => {
   };
 
     const location = useLocation().pathname;
-    console.log(location)
   return (
     <nav className="main-navbar">
       <div className="main-navbar__container">
