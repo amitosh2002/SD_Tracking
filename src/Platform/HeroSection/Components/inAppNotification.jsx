@@ -139,6 +139,25 @@ useEffect(() => {
   return () => document.removeEventListener('mousedown', closeDropdown);
 }, [filterOpen]);
 
+useEffect(() => {
+  const closeDropdown = (e) => {
+    if (!e.target.closest('.notif-filter-wrapper')) {
+      setFilterOpen(false);
+    }
+  };
+  
+  if (filterOpen) {
+    document.addEventListener('mousedown', closeDropdown);
+  }
+  
+  return () => document.removeEventListener('mousedown', closeDropdown);
+}, [filterOpen]);
+
+useEffect(() => {
+  if (searchTerm.length>0) {
+    setAnalyticsOpen(false);
+  }
+},[searchTerm])
   const allNotification=useMemo(()=>{
     return inAppNotifications.filter( (notif) =>
       notif?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -166,6 +185,8 @@ useEffect(() => {
   console.log("Filter clicked:", filterType);
   setFilterOpen(false); // Close dropdown after selection
 };
+
+
 
 
   return (
@@ -205,7 +226,7 @@ useEffect(() => {
             className="notif-search__input"
             placeholder="Search notifications..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {setSearchTerm(e.target.value)}}
           />
         </div>
 

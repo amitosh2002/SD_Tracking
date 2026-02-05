@@ -3,7 +3,7 @@
   width: 100%;
   flex-direction: row;
   height: 100%;
-  background: #f8fafc;
+  background: #ffffff;
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
@@ -99,7 +99,7 @@
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
-  padding: 2rem;
+  padding: 0.3rem;
   width: 100%;
   min-height: 700px; 
   overflow-y: auto;
