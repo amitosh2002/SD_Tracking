@@ -19,6 +19,8 @@ import FullInvitationPage from "../AccessControl/InvitaionAcceptancePage/Invitai
 import HoraShowcase from "../Onboarding/prelogin";
 import { getAllNotifications } from "../../Redux/Actions/NotificationActions/inAppNotificationAction";
 
+import Sidebar from "../Sidebar/Sidebar";
+
 const Layoutv1 = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -33,6 +35,17 @@ const Layoutv1 = () => {
   // const {userDetails}=useSelector((state)=>state.user)
 
   const [hideNavbar, setHideNavbar] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  /* ---------- responsive sidebar ---------- */
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 754) setIsCollapsed(true);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 1️⃣ INITIALIZE AUTH ONCE
   useEffect(() => {
@@ -46,11 +59,9 @@ const Layoutv1 = () => {
       "/register",
       "/Hora-prelogin",
       "/partner",
-      "/invite",
       "/create/project",
       "/admin",
       "/create-branch",
-      "/",
       "/auth/google/callback" // important for SSO
     ];
 
@@ -128,12 +139,25 @@ const Layoutv1 = () => {
 
 
   // 8 MAIN APP LAYOUT
-  return (
-    <div className="app-container">
-      {!hideNavbar && <Navbar />}
-      <AllRoutes />
+  if (hideNavbar) {
+      return (
+          <div className="app-container">
+            <AllRoutes />
+            {createPopup && <CreateTicket />}
+          </div>
+      );
+  }
 
-      {createPopup && <CreateTicket />}
+  return (
+    <div className="dashboard">
+      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      <main className={`main ${isCollapsed ? 'main--collapsed' : ''}`}>
+       { !hideNavbar &&<Navbar />}
+        <div className="main__content">
+            <AllRoutes />
+        </div>
+      </main>
+       {createPopup && <CreateTicket />}
     </div>
   );
 };

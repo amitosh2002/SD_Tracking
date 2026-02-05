@@ -2,12 +2,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "./styles/navbar.scss"
 import { useDispatch, useSelector } from 'react-redux';
-import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
-import { useLocation, useNavigate } from 'react-router-dom';
+// import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
+// import { useLocation, useNavigate } from 'react-router-dom';
 import { OPEN_CREATE_TICKET_POPUP, SET_FILTERED_TICKETS } from '../Redux/Constants/ticketReducerConstants';
 import { searchTicketByQuery } from '../Redux/Actions/TicketActions/ticketAction';
-import logo from '../assets/platformIcons/Hora-logo.svg'
+// import logo from '../assets/platformIcons/Hora-logo.svg'
 import { BellIcon, NotebookTabsIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Icons (Same as your original)
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>;
@@ -17,18 +18,18 @@ const SearchIcon = () => <svg className="icon icon--search" fill="none" stroke="
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  // const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [unReadNotificationsCount,setUnReadNotificationsCount]=useState(0);
 
   
-  const profileMenuRef = useRef(null);
+  // const profileMenuRef = useRef(null);  
   const searchInputRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { userDetails } = useSelector((state) => state.user);
+  // const { userDetails } = useSelector((state) => state.user);
   const { filteredTickets } = useSelector((state) => state.worksTicket);
   const {inAppNotifications}=useSelector((state)=>state.inAppNotification);
   
@@ -40,15 +41,15 @@ const Navbar = () => {
   },[inAppNotifications]);
 
   // Close profile dropdown clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
-        setIsProfileMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+  //       setIsProfileMenuOpen(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
   // Search Debounce Logic
   useEffect(() => {
@@ -70,19 +71,19 @@ const Navbar = () => {
     }
   }, [isSearchModalOpen]);
 
-  const handleSignOut = () => {
-    dispatch(logoutAction());
-    navigate('/');
-  };
+  // const handleSignOut = () => {
+  //   dispatch(logoutAction());
+  //   navigate('/');
+  // };
 
-    const location = useLocation().pathname;
+    // const location = useLocation().pathname;
   return (
     <nav className="main-navbar">
       <div className="main-navbar__container">
-          {location!="/" && <img src={logo} style={{width:"5rem"}} alt="" />}
+          {/* {location!="/" && <img src={logo} style={{width:"5rem"}} alt="" />}
     { location!="/" &&  <div className="main-navbar__left">
           <a href="#" className="main-navbar__logo" onClick={() => navigate('/')}>Hora</a>
-        </div>}
+        </div>} */}
 
         {/* Center Section: Search Trigger */}
         <div className="main-navbar__center">
@@ -117,33 +118,6 @@ const Navbar = () => {
               )}
             </div>
           
-          <div className="profile" ref={profileMenuRef}>
-            <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="profile__button">
-              <img 
-                className="profile__avatar" 
-                src={`https://placehold.co/100/E2E8F0/4A5568?text=${userDetails?.username?.[0] || 'U'}`} 
-                alt="avatar" 
-              />
-              <span className="profile__name">{userDetails?.profile?.firstName}</span>
-              <ChevronDownIcon />
-            </button>
-
-            {isProfileMenuOpen && (
-              <div className="profile-menu">
-                <a href="#" className="profile-menu__item" onClick={() => navigate('/profile')}>Your Profile</a>
-                <a href="#" className="profile-menu__item">Settings</a>
-                {/* <a href="#" className="profile-menu__item" onClick={handleSignOut}>Sign out</a> */}
-                <button className="sidebar__logout" onClick={handleSignOut}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-                <span>Log out</span>
-            </button>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -185,28 +159,7 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Mobile Menu (Your original) */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu">
-          <div className="mobile-menu__content">
-            <button className="button button--primary button--full-width" onClick={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}>
-              Create
-            </button>
-            <div className="mobile-menu__links">
-              <a className="mobile-menu__link" onClick={() => navigate('/profile')}>Your Profile</a>
-              {/* <a href="#" className="mobile-menu__link" onClick={handleSignOut}>Sign out</a> */}
-              <button className="sidebar__logout " onClick={handleSignOut}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-                <span>Log out</span>
-            </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </nav>
   );
 };
