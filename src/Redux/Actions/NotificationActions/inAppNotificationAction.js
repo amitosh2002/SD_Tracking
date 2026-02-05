@@ -69,3 +69,4 @@ export const getNotificationAnalytics=()=>async(dispatch)=>{
         dispatch({type:GET_NOTIFICATION_ANALYTICS_FAILURE,payload:error.response.data.message});
     }
 }
+

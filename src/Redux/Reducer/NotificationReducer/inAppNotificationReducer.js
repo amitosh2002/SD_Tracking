@@ -1,6 +1,6 @@
 
 import {createReducer} from "@reduxjs/toolkit";
-import { FETCH_IN_APP_NOTIFICATIONS_FAILURE, FETCH_IN_APP_NOTIFICATIONS_REQUEST, FETCH_IN_APP_NOTIFICATIONS_SUCCESS, GET_NOTIFICATION_ANALYTICS_FAILURE, GET_NOTIFICATION_ANALYTICS_REQUEST, GET_NOTIFICATION_ANALYTICS_SUCCESS, MARK_AS_READ_NOTIFICATION_FAILURE, MARK_AS_READ_NOTIFICATION_REQUEST, MARK_AS_READ_NOTIFICATION_SUCCESS } from "../../Constants/NotificationConstants/inAppNotificationConstant";
+import { FETCH_IN_APP_NOTIFICATIONS_FAILURE, FETCH_IN_APP_NOTIFICATIONS_REQUEST, FETCH_IN_APP_NOTIFICATIONS_SUCCESS, FETCH_NEW_NOTIFICATION, GET_NOTIFICATION_ANALYTICS_FAILURE, GET_NOTIFICATION_ANALYTICS_REQUEST, GET_NOTIFICATION_ANALYTICS_SUCCESS, MARK_AS_READ_NOTIFICATION_FAILURE, MARK_AS_READ_NOTIFICATION_REQUEST, MARK_AS_READ_NOTIFICATION_SUCCESS } from "../../Constants/NotificationConstants/inAppNotificationConstant";
 
 const initialState = {
     loading: false,
@@ -53,5 +53,8 @@ export const inAppNotificationReducer = createReducer(initialState, (builder) =>
         .addCase(GET_NOTIFICATION_ANALYTICS_FAILURE, (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        })
+        .addCase(FETCH_NEW_NOTIFICATION, (state, action) => {
+            state.inAppNotifications = [action.payload, ...state.inAppNotifications];
         });
 });

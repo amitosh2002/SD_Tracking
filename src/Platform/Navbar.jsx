@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { OPEN_CREATE_TICKET_POPUP, SET_FILTERED_TICKETS } from '../Redux/Constants/ticketReducerConstants';
 import { searchTicketByQuery } from '../Redux/Actions/TicketActions/ticketAction';
 import logo from '../assets/platformIcons/Hora-logo.svg'
+import { BellIcon, NotebookTabsIcon } from 'lucide-react';
 
 // Icons (Same as your original)
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>;
@@ -19,6 +20,8 @@ const Navbar = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [unReadNotificationsCount,setUnReadNotificationsCount]=useState(0);
+
   
   const profileMenuRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -27,6 +30,14 @@ const Navbar = () => {
 
   const { userDetails } = useSelector((state) => state.user);
   const { filteredTickets } = useSelector((state) => state.worksTicket);
+  const {inAppNotifications}=useSelector((state)=>state.inAppNotification);
+  
+
+  // // getting the notification count
+  useEffect(()=>{
+      const unReadNotifications = inAppNotifications.filter((item) => item.status === false || item.status === 0);
+      setUnReadNotificationsCount(unReadNotifications.length);
+  },[inAppNotifications]);
 
   // Close profile dropdown clicking outside
   useEffect(() => {
@@ -98,6 +109,13 @@ const Navbar = () => {
           <button className="button button--primary" onClick={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}>
             Create
           </button>
+
+            <div className="notification_bell">
+              <BellIcon size={24} color="#000" />
+              {unReadNotificationsCount > 0 && (
+                <span className="notification__badge">{unReadNotificationsCount}</span>
+              )}
+            </div>
           
           <div className="profile" ref={profileMenuRef}>
             <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="profile__button">
