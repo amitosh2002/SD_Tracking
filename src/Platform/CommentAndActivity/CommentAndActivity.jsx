@@ -28,8 +28,7 @@ const CommentActivitySection = ({ task }) => {
 
 
   // ====================== Reducer calls ================
-      const {activityLogLoading,activityLogs}=useSelector((state)=>state.worksTicket)
-    console.log(activityLogLoading,activityLogs)
+      const {activityLogs}=useSelector((state)=>state.worksTicket)
 
   const [activeTab, setActiveTab] = useState('comments');
   const [commentText, setCommentText] = useState('');

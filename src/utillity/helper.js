@@ -141,7 +141,6 @@ export function formatCreatedAtDate(dateInput, locale = 'en-US') {
  */
 export function transformWeeklyAggregates(dailyAggregates) {
     // ⚠️ FIX: Check if dailyAggregates is undefined, null, or not an object
-    console.log(dailyAggregates,"from helper")
     if (!dailyAggregates || typeof dailyAggregates !== 'object') {
         // Return an empty array to prevent crashing and signal no data
         return []; 
@@ -375,9 +374,7 @@ export const getLabelsbyId = (labelsArray, labelId) => {
   if (!Array.isArray(labelsArray) || labelsArray.length === 0) {
     return null; // or return an empty object/array based on your needs
   }
-  console.log(labelsArray,labelId)
   const label =labelsArray.find(label => label.id === labelId) || null;
-  console.log(label)
   return label;
 };
 
@@ -385,9 +382,7 @@ export const getPriorityById = (prioritiesArray, priorityId) => {
   if (!Array.isArray(prioritiesArray) || prioritiesArray.length === 0) {
     return null; // or return an empty object/array based on your needs
   }
-  console.log(prioritiesArray,priorityId)
   const priority =prioritiesArray.find(priority => priority.id == priorityId) || null;
-  console.log(priority)
   return priority;
 };
 

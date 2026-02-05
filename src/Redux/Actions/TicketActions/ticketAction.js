@@ -79,7 +79,6 @@ export const createTicket = (ticketData) => async (dispatch) => {
                 type: CREATE_TICKET,
                 payload: response.data
             });
-            console.log("Ticket created successfully:", response.data);
         }
     } catch (error) {
         console.error("Error creating ticket:", error);
@@ -93,8 +92,6 @@ export const assignTaskApi = (taskId) => async (dispatch) => {
           
         );
 
-        console.log("Task assigned successfully:", response.data);
-        
         // Dispatch success action to update Redux state
         dispatch({
             type: ASSIGN_TICKET,
@@ -112,14 +109,12 @@ export const assignTaskApi = (taskId) => async (dispatch) => {
 
 // change the status for ticket
 export const changeTicketStatus = (ticketId, status) => async (dispatch) => {
-    console.log("Changing ticket status:", ticketId, "to:", status);
     
     try {
-        const response = await apiClient.post(`${ticketStatusurl}/${ticketId}/status`, {
+        await apiClient.post(`${ticketStatusurl}/${ticketId}/status`, {
             status
         });
 
-        console.log("Ticket status updated successfully:", response.data);
         
         // Dispatch success action to update Redux state
         dispatch({
@@ -166,7 +161,6 @@ export const updateTicket = (ticketId, data) => async (dispatch) => {
 
 //Time log adding to ticket
 export const addTimeLogForWork = (ticketId, userId, timelogged, note) => async (dispatch) => {
-    console.log("Adding time log for ticket:", ticketId, "by user:", userId);
     
     try {
         const response = await apiClient.post(`${tickettimelogsurl}`, {
@@ -233,12 +227,10 @@ export const getTicketById = (ticketId) => async (dispatch) => {
 
 export const searchTicketByQuery = (searchQuery) => async(dispatch) => {
     // if(!searchQuery) return;
-    console.log(" api callf or search")
  try {
        const res =await apiClient.get(`${ticketSearchQueryApi}`,{//this api client automatically add token
         params: { query: searchQuery }
     })
-    console.log(ticketSearchQueryApi)
 
     if(res?.data){
         dispatch({
@@ -264,7 +256,6 @@ export const searchTicketByQuery = (searchQuery) => async(dispatch) => {
 
 
 export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
-    console.log(point,userId,ticketId)
     try {
         const res = await apiClient.post(`${addStoryPoints}`,{
             userId,

@@ -4,8 +4,6 @@ import './styles/TeamAnalytics.scss';
 
 const TeamAnalytics = ({ data }) => {
   const [selectedUser, setSelectedUser] = useState(null);
-  console.log(data)
-
   return (
     <div className="team-analytics-page">
       <div className="team-main-list">

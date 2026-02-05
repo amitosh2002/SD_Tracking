@@ -120,7 +120,6 @@ const InAppNotifications = () => {
   const [typeOpen, setTypeOpen] = useState(false);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
   const {inAppNotifications,loading}=useSelector((state)=>state.inAppNotification);
-  console.log(inAppNotifications);
   useEffect(()=>{
     dispatch(getAllNotifications());
   },[dispatch])

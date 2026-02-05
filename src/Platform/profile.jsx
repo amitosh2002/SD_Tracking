@@ -195,7 +195,6 @@ export default function UserProfile() {
     );
   }
 
-  console.log('Rendering with userData:', userData);
   
   const displayData = isEditing ? editedData : userData;
 

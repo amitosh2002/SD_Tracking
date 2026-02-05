@@ -246,7 +246,6 @@ export const DropDownV2 = ({
   /* ---------- select ---------- */
 
   const handleSelect = (option) => {
-    console.log('DropDownV2 - handleSelect called with:', option);
     setSelected(option);
     setIsOpen(false);
     setSearch("");
