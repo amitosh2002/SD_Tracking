@@ -1,0 +1,873 @@
+@use "sass:color";
+// ============================================================================
+// Sprint Task List
+// ============================================================================
+
+// ── palette ─────────────────────────────────────────────────────────────────
+$primary: #6366f1;
+$teal: #14b8a6;
+$teal-hover: #0d9488;
+
+$gray-50:  #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$white: #ffffff;
+$yellow: #f59e0b;
+$purple: #8b5cf6;
+$pink: #ec4899;
+$red: #ef4444;
+
+// ============================================================================
+// CONTAINER
+// ============================================================================
+.sprint-task-list {
+  min-height: 100vh;
+  background: $gray-50;
+  padding: 24px 32px;
+}
+
+// ============================================================================
+// PAGE HEADER
+// ============================================================================
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  animation: fadeInDown 0.5s ease-out;
+
+  &__left {
+    flex: 1;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  &__icon {
+    color: $primary;
+    background: rgba($primary, 0.1);
+    padding: 8px;
+    border-radius: 10px;
+  }
+
+  &__title {
+    font-size: 28px;
+    font-weight: 800;
+    color: $gray-900;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  &__description {
+    font-size: 15px;
+    color: $gray-500;
+    max-width: 600px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.primary-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 20px;
+  background: linear-gradient(135deg, $primary, color.adjust($primary, $lightness: -10%));
+  color: $white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba($primary, 0.2);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($primary, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// SPRINT INFO HIGHLIGHT
+// ============================================================================
+.sprint-info-highlight {
+  display: flex;
+  align-items: center;
+  background: $white;
+  padding: 16px 24px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  border: 1px solid $gray-200;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+
+    .icon {
+      color: $primary;
+      background: rgba($primary, 0.05);
+      padding: 10px;
+      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+    }
+
+    .details {
+      display: flex;
+      flex-direction: column;
+
+      .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: $gray-400;
+        font-weight: 700;
+      }
+
+      .value {
+        font-size: 16px;
+        font-weight: 700;
+        color: $gray-800;
+      }
+    }
+  }
+
+  &__divider {
+    width: 1px;
+    height: 32px;
+    background: $gray-200;
+    margin: 0 24px;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// TOOLBAR
+// ============================================================================
+.task-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 16px;
+    background: $white;
+    border: 1px solid $gray-300;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $gray-700;
+    cursor: pointer;
+    transition: all 150ms;
+    font-family: inherit;
+
+    &:hover {
+      background: $gray-50;
+      border-color: $gray-400;
+    }
+  }
+
+  &__add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 20px;
+    background: $teal;
+    color: $white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms;
+    font-family: inherit;
+
+    &:hover {
+      background: $teal-hover;
+    }
+  }
+}
+
+.task-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.clear-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px dashed $red;
+  color: $red;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba($red, 0.05);
+  }
+}
+
+// ============================================================================
+// SEARCH
+// ============================================================================
+.task-search {
+  position: relative;
+  flex: 1;
+  max-width: 320px;
+
+  &__icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $gray-400;
+    pointer-events: none;
+  }
+
+  &__input {
+    width: 100%;
+    height: 40px;
+    padding: 0 16px 0 44px;
+    border: 1px solid $gray-300;
+    border-radius: 8px;
+    font-size: 14px;
+    color: $gray-900;
+    background: $white;
+    font-family: inherit;
+    transition: all 150ms;
+
+    &::placeholder {
+      color: $gray-400;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $teal;
+      box-shadow: 0 0 0 3px rgba($teal, 0.1);
+    }
+  }
+}
+
+// ============================================================================
+// VIEW TOGGLE
+// ============================================================================
+.view-toggle {
+  display: inline-flex;
+  background: $white;
+  border: 1px solid $gray-300;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 14px;
+    background: transparent;
+    border: none;
+    border-right: 1px solid $gray-300;
+    font-size: 14px;
+    font-weight: 500;
+    color: $gray-600;
+    cursor: pointer;
+    transition: all 150ms;
+    font-family: inherit;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &:hover {
+      background: $gray-50;
+      color: $gray-900;
+    }
+
+    &--active {
+      background: $gray-100;
+      color: $gray-900;
+      font-weight: 600;
+    }
+  }
+}
+
+// ============================================================================
+// FILTER DROPDOWN OVERRIDES (Ensuring consistency)
+// ============================================================================
+.filter_dropdown {
+  position: relative;
+
+  .dropdown_trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 12px;
+    background: $white;
+    border: 1px solid $gray-300;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: $gray-400;
+    }
+
+    .label {
+      color: $gray-500;
+      font-weight: 500;
+    }
+
+    .value {
+      color: $gray-900;
+      font-weight: 600;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    svg {
+      color: $gray-400;
+      margin-left: auto;
+    }
+  }
+
+  .dropdown_menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 200px;
+    background: $white;
+    border: 1px solid $gray-200;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    z-index: 1000;
+    padding: 8px 0;
+  }
+
+  .dropdown_list {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  .dropdown_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: $gray-50;
+    }
+
+    &.active {
+      background: rgba($primary, 0.05);
+      .item_label {
+        color: $primary;
+        font-weight: 600;
+      }
+    }
+
+    .checkbox {
+      width: 16px;
+      height: 16px;
+      border: 1px solid $gray-300;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &.checked {
+        background: $primary;
+        border-color: $primary;
+        color: $white;
+      }
+    }
+
+    .avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: $white;
+    }
+
+    .item_label {
+      font-size: 13px;
+      color: $gray-700;
+    }
+  }
+}
+
+// ============================================================================
+// TASK GROUPS
+// ============================================================================
+.task-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.task-group {
+  background: $white;
+  border-radius: 12px;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 150ms;
+
+    &:hover {
+      background: $gray-50;
+    }
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &Indicator {
+    width: 4px;
+    height: 24px;
+    border-radius: 2px;
+  }
+
+  &__indicator {
+    width: 4px;
+    height: 24px;
+    border-radius: 2px;
+  }
+
+  &__label {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 24px;
+    padding: 0 8px;
+    background: $gray-100;
+    color: $gray-600;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 12px;
+  }
+
+  &__toggle {
+    background: none;
+    border: none;
+    color: $gray-400;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 150ms;
+
+    &:hover {
+      color: $gray-600;
+    }
+  }
+
+  &__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: $gray-600;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 150ms;
+    font-family: inherit;
+
+    svg {
+      color: $gray-400;
+    }
+
+    &:hover {
+      background: $gray-100;
+      color: $gray-900;
+
+      svg {
+        color: $gray-600;
+      }
+    }
+  }
+}
+
+// ============================================================================
+// TABLE
+// ============================================================================
+.task-table {
+  border-top: 1px solid $gray-200;
+
+  &__header {
+    display: grid;
+    grid-template-columns: 120px 2fr 1.5fr 1.5fr 120px 150px 100px 60px;
+    gap: 16px;
+    padding: 12px 20px;
+    background: $gray-50;
+    border-bottom: 1px solid $gray-200;
+  }
+
+  &__col {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: $gray-600;
+
+    button {
+      background: none;
+      border: none;
+      color: $gray-400;
+      cursor: pointer;
+      padding: 2px;
+      display: flex;
+      transition: color 150ms;
+
+      &:hover {
+        color: $gray-600;
+      }
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// ============================================================================
+// TABLE ROW
+// ============================================================================
+.task-row {
+  display: grid;
+  grid-template-columns: 120px 2fr 1.5fr 1.5fr 120px 150px 100px 60px;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid $gray-200;
+  align-items: center;
+  transition: background 150ms;
+
+  &:hover {
+    background: $gray-50;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__col {
+    font-size: 14px;
+    color: $gray-700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--id {
+      font-size: 13px;
+      font-weight: 500;
+      color: $gray-500;
+      font-family: 'SF Mono', Monaco, monospace;
+    }
+
+    &--name {
+      font-weight: 500;
+      color: $gray-900;
+    }
+
+    &--project {
+      color: $gray-600;
+    }
+
+    &--progress {
+      font-weight: 600;
+      color: $gray-700;
+    }
+
+    &--deadline {
+      font-size: 13px;
+      color: $gray-600;
+    }
+  }
+}
+
+.active-sort {
+  color: $primary !important;
+}
+
+.labels-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  .label-tag {
+    background: $gray-100;
+    color: $gray-600;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid $gray-200;
+  }
+
+  .no-labels {
+    color: $gray-400;
+    font-style: italic;
+  }
+}
+
+.empty-group-state {
+  padding: 32px;
+  text-align: center;
+  color: $gray-400;
+  font-size: 14px;
+  background: $gray-50;
+  border-bottom: 1px solid $gray-200;
+}
+
+// ============================================================================
+// ASSIGNEE
+// ============================================================================
+.story_point_text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  width: 32px;
+  height: 24px;
+  font-weight: 700;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.assignee {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: $white;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-weight: 500;
+    color: $gray-900;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ============================================================================
+// PRIORITY BADGE
+// ============================================================================
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.priority-low {
+    background: rgba($purple, 0.1);
+    color: $purple;
+  }
+
+  &.priority-medium {
+    background: rgba($teal, 0.1);
+    color: $teal;
+  }
+
+  &.priority-high {
+    background: rgba($pink, 0.1);
+    color: $pink;
+  }
+
+  &.priority-critical {
+    background: rgba($red, 0.1);
+    color: $red;
+  }
+}
+
+// ============================================================================
+// ACTION MENU
+// ============================================================================
+.action-menu-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: $gray-400;
+  cursor: pointer;
+  transition: all 150ms;
+
+  &:hover {
+    background: $gray-100;
+    color: $gray-700;
+  }
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 1400px) {
+  .task-table__header,
+  .task-row {
+    grid-template-columns: 110px 1.5fr 1.2fr 1.2fr 90px 130px 90px 50px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .task-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+
+    &__left,
+    &__right {
+      width: 100%;
+    }
+
+    &__right {
+      justify-content: space-between;
+    }
+  }
+
+  .task-search {
+    max-width: 100%;
+  }
+
+  .task-table__header,
+  .task-row {
+    grid-template-columns: 100px 1fr 1fr 80px 110px 80px 50px;
+    
+    .task-table__col--project,
+    .task-row__col--project {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .sprint-task-list {
+    padding: 16px;
+  }
+
+  .view-toggle__btn span {
+    display: none;
+  }
+
+  .task-table {
+    overflow-x: auto;
+  }
+
+  .task-table__header,
+  .task-row {
+    min-width: 800px;
+  }
+}

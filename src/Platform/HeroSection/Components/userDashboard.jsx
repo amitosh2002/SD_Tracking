@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserWorkDetails } from "../../../Redux/Actions/PlatformActions.js/userActions";
 import "./styles/userdashboard.scss";
 import { DropDownV1 } from "../../../customFiles/customComponent/DropDown";
+import { OPEN_CREATE_TICKET_POPUP } from "../../../Redux/Constants/ticketReducerConstants";
+import { useNavigate } from "react-router-dom";
 
 // ============================================================================
 // HELPERS
@@ -52,21 +54,9 @@ const fmtDate = (date) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 
-// Deterministic avatar color from ticketKey
-const avatarColor = (key) => {
-  if (!key) return "#6366f1";
-  const colors = ["#6366f1","#10b981","#f59e0b","#ef4444","#8b5cf6","#3b82f6","#ec4899"];
-  let hash = 0;
-  for (let i = 0; i < key.length; i++) hash = key.charCodeAt(i) + ((hash << 5) - hash);
-  return colors[Math.abs(hash) % colors.length];
-};
 
-// Two-letter avatar initials from ticketKey prefix
-const avatarInitials = (key) => {
-  if (!key) return "??";
-  const prefix = key.split("-")[0] || "??";
-  return prefix.slice(0, 2).toUpperCase();
-};
+
+
 
 // Priority label style
 const priorityStyle = (priority) => {
@@ -91,7 +81,6 @@ const UserDashboard = () => {
   const loading = useSelector((state) => state.user.workDetailsLoading);
   const error = useSelector((state) => state.user.workDetailsFail);
   const errorMessage = useSelector((state) => state.user.workDetailsErrorMessage);
-
   // Local State
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
@@ -203,7 +192,7 @@ const UserDashboard = () => {
             No tasks assigned to you in this project yet. <br />
             It's a great time to grab a coffee or start something new!
           </p>
-          <button className="sb-empty__btn" onClick={() => {/* navigate or open task creation */}}>
+          <button className="sb-empty__btn" onClick={() => {dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}}>
             <Plus size={18} />
             <span>Create New Task</span>
           </button>
@@ -273,9 +262,10 @@ const TicketCard = ({ ticket }) => {
   const timeStr          = fmtTime(ticket.totalTimeLogged);
   const date             = latestDate(ticket);
   const dateStr          = fmtDate(date);
+  const navigate = useNavigate();
 
   return (
-    <div className="sb-ticket">
+    <div className="sb-ticket" onClick={()=>navigate(`/tickets/${ticket.id}`)}>
       {/* row 1: key + priority */}
       <div className="sb-ticket__top">
         <span className="sb-ticket__key">{short}</span>

@@ -288,7 +288,7 @@ try {
     if (res.status===200) {
     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
       dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
-      console.log(res.data)
+      // console.log(res.data)
     }
 
 

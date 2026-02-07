@@ -1,34 +1,641 @@
-.ticket_name_container{
-    display: flex;
-    flex-direction: column;
-    // margin-bottom: 1rem;
-    gap: 1rem;
-    .drop_down_container{
-        display: flex;
-        flex-direction: column;
-        height: fit-content;
-        gap: 1rem;
-        margin-bottom: 1.2rem;
-    }
-    .ticket_type_dropdown{
-        max-width: 20%;
-    }
-    .ticket_priority_dropdown{
-        @extend .ticket_type_dropdown;
-    }
+// ============================================================================
+// Create Ticket Modal
+// ============================================================================
 
-    .ticket-input{
-        width: 100%;
-        padding:10px;
-        border-radius: 3px;
-            font-size: large;
-            border-color: whitesmoke;
-            
-    }
+// ── palette ─────────────────────────────────────────────────────────────────
+$primary:       #4f7aff;
+$primary-hover: #3d68e6;
+$primary-light: #eff6ff;
+$gray-50:  #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+$white:    #ffffff;
+$red:      #ef4444;
+
+$amber:       #f59e0b;
+$amber-light: #fffbeb;
+
+// ============================================================================
+// OVERLAY
+// ============================================================================
+.ct-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
 }
 
-.ticket_project_dropdown{
-    height: auto;
-    min-height: 2.75rem;
-    max-height: 2.75rem;
+// ============================================================================
+// MODAL
+// ============================================================================
+.ct-modal {
+  background: $white;
+  border-radius: 12px;
+  max-width: 760px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+.ct-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid $gray-200;
+  flex-shrink: 0;
+
+  &__text {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: $gray-900;
+    margin: 0 0 4px;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: $gray-500;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: $gray-400;
+    cursor: pointer;
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-left: 16px;
+    transition: all 120ms;
+
+    &:hover {
+      background: $gray-100;
+      color: $gray-600;
+    }
+  }
+}
+
+// ============================================================================
+// BODY (scrollable)
+// ============================================================================
+.ct-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  &::-webkit-scrollbar       { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: $gray-300; border-radius: 3px; }
+}
+
+// ============================================================================
+// HELPER BOX
+// ============================================================================
+.ct-helper {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: $primary;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+
+  &__icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  &__text {
+    font-size: 13px;
+    color: $gray-700;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// ============================================================================
+// FIELD
+// ============================================================================
+.ct-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ct-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-700;
+}
+
+.ct-required {
+  color: $red;
+  margin-left: 2px;
+}
+
+.ct-input,
+.ct-select,
+.ct-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+  color: $gray-900;
+  font-family: inherit;
+  background: $white;
+  transition: all 150ms;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+
+  &:disabled {
+    background: $gray-50;
+    color: $gray-400;
+    cursor: not-allowed;
+  }
+}
+
+.ct-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 36px;
+
+  &--priority {
+    // Show amber dash before "Medium"
+    &[value="2"]::before {
+      content: "— ";
+      color: $amber;
+      font-weight: 700;
+    }
+  }
+}
+
+.ct-textarea {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
+}
+
+.ct-input--number {
+  text-align: center;
+  font-weight: 600;
+  color: $primary;
+}
+
+// ============================================================================
+// CUSTOM SELECT
+// ============================================================================
+.ct-custom-select {
+  position: relative;
+  width: 100%;
+
+  &--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid $gray-300;
+    border-radius: 6px;
+    background: $white;
+    font-size: 14px;
+    color: $gray-900;
+    cursor: pointer;
+    transition: all 150ms;
+    box-sizing: border-box;
+
+    &:hover:not(.ct-custom-select--disabled &) {
+      border-color: $gray-400;
+    }
+
+    &--open {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+  }
+
+  &__text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $gray-900;
+
+    .ct-custom-select--disabled & {
+      color: $gray-400;
+    }
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    .ct-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ct-initials {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: $primary-light;
+      color: $primary;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+  }
+
+  &__arrow {
+    color: $gray-400;
+    flex-shrink: 0;
+    transition: transform 150ms;
+
+    .ct-custom-select__trigger--open & {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: $white;
+    border: 1px solid $gray-200;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 280px;
+    overflow: hidden;
+    z-index: 1000;
+    animation: ct-dropdown-open 150ms ease-out;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__search {
+    padding: 8px;
+    border-bottom: 1px solid $gray-200;
+    flex-shrink: 0;
+  }
+
+  &__search-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid $gray-300;
+    border-radius: 4px;
+    font-size: 13px;
+    color: $gray-900;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: all 150ms;
+
+    &::placeholder {
+      color: $gray-400;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 2px rgba($primary, 0.1);
+    }
+  }
+
+  &__options {
+    overflow-y: auto;
+    flex: 1;
+
+    &::-webkit-scrollbar       { width: 5px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: $gray-300; border-radius: 3px; }
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: $gray-700;
+    cursor: pointer;
+    transition: background 100ms;
+
+    &:hover {
+      background: $gray-50;
+    }
+
+    &--selected {
+      background: $primary-light;
+      color: $primary;
+      font-weight: 600;
+
+      &:hover {
+        background: $primary-light;
+      }
+    }
+  }
+
+  &__empty {
+    padding: 20px 12px;
+    text-align: center;
+    font-size: 13px;
+    color: $gray-500;
+  }
+}
+
+@keyframes ct-dropdown-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// ROW (2-column)
+// ============================================================================
+.ct-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+// ============================================================================
+// DATE FIELD
+// ============================================================================
+.ct-date {
+  position: relative;
+
+  input[type="date"] {
+    padding-right: 40px;
+  }
+
+  &__icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $gray-400;
+    pointer-events: none;
+  }
+}
+
+// ============================================================================
+// LABELS
+// ============================================================================
+.ct-labels {
+  display: flex;
+  gap: 8px;
+
+  &__input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid $gray-300;
+    border-radius: 6px;
+    font-size: 14px;
+    color: $gray-900;
+    font-family: inherit;
+    background: $white;
+    transition: all 150ms;
+
+    &::placeholder { color: $gray-400; }
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+    &:disabled {
+      background: $gray-50;
+      color: $gray-400;
+      cursor: not-allowed;
+    }
+  }
+
+  &__add {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border: 1px dashed $gray-300;
+    background: transparent;
+    color: $gray-500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 150ms;
+
+    &:hover:not(:disabled) {
+      border-color: $primary;
+      color: $primary;
+      background: rgba($primary, 0.05);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+}
+
+.ct-label-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+
+  &--active {
+    margin-top: 12px;
+  }
+}
+
+.ct-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 120ms;
+
+  &--available {
+    background: transparent;
+    color: $gray-600;
+    border: 1px solid $gray-300;
+
+    &:hover:not(:disabled) {
+      background: $gray-100;
+      border-color: $gray-400;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  &--active {
+    background: $gray-100;
+    color: $gray-700;
+    border: 1px solid $gray-300;
+    cursor: default;
+  }
+
+  &__remove {
+    border: none;
+    background: transparent;
+    color: $gray-500;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 2px;
+    transition: color 120ms;
+
+    &:hover {
+      color: $gray-700;
+    }
+  }
+}
+
+// ============================================================================
+// FOOTER
+// ============================================================================
+.ct-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid $gray-200;
+  flex-shrink: 0;
+}
+
+.ct-btn {
+  height: 40px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 150ms;
+
+  &--cancel {
+    background: $white;
+    color: $gray-700;
+    border: 1px solid $gray-300;
+
+    &:hover {
+      background: $gray-50;
+      border-color: $gray-400;
+    }
+  }
+
+  &--primary {
+    background: $primary;
+    color: $white;
+
+    &:hover {
+      background: $primary-hover;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 640px) {
+  .ct-overlay {
+    padding: 12px;
+  }
+
+  .ct-modal {
+    max-height: 95vh;
+  }
+
+  .ct-header {
+    padding: 20px 20px 14px;
+  }
+
+  .ct-body {
+    padding: 16px 20px;
+  }
+
+  .ct-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ct-footer {
+    padding: 14px 20px;
+    flex-direction: column;
+
+    .ct-btn {
+      width: 100%;
+    }
+  }
 }

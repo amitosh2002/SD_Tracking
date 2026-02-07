@@ -1,7 +1,7 @@
-import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_WORK_DETAILS, USER_WORK_DETAILS_FAIL, USER_WORK_DETAILS_LOADING } from "../../Constants/PlatformConstatnt/userConstant"
+import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_TEAM_MEMBERS_FAIL, USER_TEAM_MEMBERS_FETCH, USER_TEAM_MEMBERS_LOADING, USER_WORK_DETAILS, USER_WORK_DETAILS_FAIL, USER_WORK_DETAILS_LOADING } from "../../Constants/PlatformConstatnt/userConstant"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
-import { getRescentUserTimeLogApi, getRescentUserWorkApi, getUserMembers, getUserWorkDetailsApi } from "../../../Api/Plat/userPlatformApi";
+import { getRescentUserTimeLogApi, getRescentUserWorkApi, getUserMembers, getUserTeamMembersApi, getUserWorkDetailsApi } from "../../../Api/Plat/userPlatformApi";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
 
 export const fetchUserDetails = () => async (dispatch) => {
@@ -175,4 +175,34 @@ export const getUserWorkDetails =(projectId)=>async(dispatch)=>{
         dispatch({type:USER_WORK_DETAILS_FAIL, payload: error.response?.data?.message || error.message})
     }
 
+}
+
+
+export const getProjectTeamMembers=(projectId)=>async(dispatch)=>{
+    if (!projectId) {
+        console.log("project not found")
+    }
+    try {
+        const res = await apiClient.post(`${getUserTeamMembersApi}?projectId=${projectId}`);
+        dispatch({type:USER_TEAM_MEMBERS_LOADING,})
+        if (res.data.success) {
+         dispatch({
+            type:USER_TEAM_MEMBERS_FETCH,payload:{
+                teamMembers:res.data.data
+            }
+         })   
+        }
+        else{
+            dispatch({type:USER_TEAM_MEMBERS_FAIL, payload: res.data.message || "Something Went Wrong"})
+            dispatch({type:SHOW_SNACKBAR,
+                payload:{
+                    type:"error",
+                    message: res.data.message || "Someting Went Wrong"
+                }
+            })
+            
+        }
+    } catch (error) {
+        dispatch({type:USER_WORK_DETAILS_FAIL, payload: error.response?.data?.message || error.message})
+    }
 }

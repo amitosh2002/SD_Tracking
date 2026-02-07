@@ -370,7 +370,7 @@ const IssueDetails = ({ task }) => {
                                     <DropDownV1
                                         defaultType= {getPriorityById(projectsPriorities,selectedTicket?.priority[0])?.name || 'select priority'}
                                         accentColor={getPriorityById(projectsPriorities,selectedTicket?.priority[0])?.color || "#f7eeee"}
-                                        dataTypes={projectsPriorities.map((_ele) => _ele.name)} // array of label names
+                                        dataTypes={projectsPriorities?.map((_ele) => _ele.name)} // array of label names
                                         onChange={(selectedName) => {
                                                         // 1. Find the label object that matches the selected name
                                                 const selectedpriority = projectsPriorities.find(_ele => _ele.name === selectedName);

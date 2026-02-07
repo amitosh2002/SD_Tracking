@@ -14,7 +14,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 import './style/commentActivitySection.scss';
-import { useEffect } from 'react';
 import { getActivityLogs } from '../../Redux/Actions/TicketActions/ticketAction';
 import { useDispatch, useSelector } from 'react-redux';
 import ActivityLogCards from './ActivityLogCards';
@@ -29,8 +28,7 @@ const CommentActivitySection = ({ task }) => {
 
 
   // ====================== Reducer calls ================
-      const {activityLogLoading,activityLogs}=useSelector((state)=>state.worksTicket)
-    console.log(activityLogLoading,activityLogs)
+      const {activityLogs}=useSelector((state)=>state.worksTicket)
 
   const [activeTab, setActiveTab] = useState('comments');
   const [commentText, setCommentText] = useState('');
@@ -50,66 +48,6 @@ const CommentActivitySection = ({ task }) => {
       timestamp: '1 hour ago'
     }
   ]);
-
-  const activities = [
-    {
-      id: 1,
-      type: 'status_change',
-      user: 'Amitosh',
-      avatar: 'A',
-      action: 'changed status from',
-      from: 'IN_PROGRESS',
-      to: 'IN_REVIEW',
-      timestamp: '3 hours ago',
-      icon: CheckCircle,
-      color: '#10b981'
-    },
-    {
-      id: 2,
-      type: 'assignment',
-      user: 'John Doe',
-      avatar: 'J',
-      action: 'assigned this task to',
-      assignee: 'Amitosh',
-      timestamp: '5 hours ago',
-      icon: User,
-      color: '#6366f1'
-    },
-    {
-      id: 3,
-      type: 'priority_change',
-      user: 'Amitosh',
-      avatar: 'A',
-      action: 'changed priority from',
-      from: 'LOW',
-      to: 'HIGH',
-      timestamp: '1 day ago',
-      icon: AlertCircle,
-      color: '#f59e0b'
-    },
-    {
-      id: 4,
-      type: 'comment',
-      user: 'Sarah Smith',
-      avatar: 'S',
-      action: 'added a comment',
-      timestamp: '2 days ago',
-      icon: MessageSquare,
-      color: '#8b5cf6'
-    },
-    {
-      id: 5,
-      type: 'tag_added',
-      user: 'Amitosh',
-      avatar: 'A',
-      action: 'added tag',
-      tag: 'urgent',
-      timestamp: '2 days ago',
-      icon: Tag,
-      color: '#06b6d4'
-    }
-  ];
-
   const handleSubmitComment = () => {
     if (!commentText.trim()) return;
 
@@ -145,7 +83,7 @@ const CommentActivitySection = ({ task }) => {
         >
           <Activity size={18} />
           <span>Activity</span>
-          <span className="badge">{activities.length}</span>
+          <span className="badge">{activityLogs?.length ?? 0}</span>
         </button>
       </div>
 
