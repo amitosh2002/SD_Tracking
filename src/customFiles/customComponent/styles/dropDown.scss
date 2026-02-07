@@ -366,7 +366,6 @@ $tablet: 768px;
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
-  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideDown {
@@ -504,11 +503,8 @@ $tablet: 768px;
 
 @keyframes checkPop {
   0% {
-    transform: scale(0.5);
+    transform: scale(0.8);
     opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
   }
   100% {
     transform: scale(1);

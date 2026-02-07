@@ -1,0 +1,344 @@
+// ============================================================================
+// Settings Page
+// ============================================================================
+
+// ── palette ─────────────────────────────────────────────────────────────────
+$primary: #6366f1;
+
+$gray-50: #fafafa;
+$gray-100: #f4f4f5;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$white: #ffffff;
+$green: #10b981;
+$green-light: #d1fae5;
+
+// ============================================================================
+// PAGE
+// ============================================================================
+.settings-page {
+  min-height: 100vh;
+  background: $gray-50;
+  padding: 40px 48px;
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+
+  svg {
+    color: $gray-900;
+  }
+}
+
+.settings-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0;
+}
+
+// ============================================================================
+// TABS
+// ============================================================================
+.settings-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.settings-tab {
+  padding: 12px 28px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: $gray-700;
+  cursor: pointer;
+  border-radius: 24px;
+  transition: all 180ms;
+  font-family: inherit;
+
+  &:hover {
+    background: $gray-100;
+  }
+
+  &--active {
+    background: $white;
+    color: $gray-900;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      background: $white;
+    }
+  }
+}
+
+// ============================================================================
+// CONTENT
+// ============================================================================
+.settings-content {
+  max-width: 1200px;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+// ============================================================================
+// SECTION HEADER
+// ============================================================================
+.section-header {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 8px;
+}
+
+.section-desc {
+  font-size: 15px;
+  color: $gray-600;
+  margin: 0;
+  line-height: 1.5;
+}
+
+// ============================================================================
+// SETTING GROUP
+// ============================================================================
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ============================================================================
+// SETTING ITEM
+// ============================================================================
+.setting-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+
+  &--checkbox {
+    align-items: flex-start;
+    padding-left: 0;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 17px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0 0 8px;
+  }
+
+  &__desc {
+    font-size: 14px;
+    color: $gray-600;
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+// ============================================================================
+// TOGGLE SWITCH
+// ============================================================================
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle__track {
+  width: 48px;
+  height: 26px;
+  background: $gray-300;
+  border-radius: 13px;
+  position: relative;
+  transition: background 200ms;
+
+  &--on {
+    background: $green;
+  }
+}
+
+.toggle__thumb {
+  width: 22px;
+  height: 22px;
+  background: $white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 200ms;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+  .toggle__track--on & {
+    transform: translateX(22px);
+  }
+}
+
+.toggle__label {
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-700;
+  user-select: none;
+}
+
+// ============================================================================
+// CHECKBOX
+// ============================================================================
+.checkbox-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0 0 6px;
+  }
+
+  &__desc {
+    font-size: 14px;
+    color: $gray-600;
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+.checkbox {
+  cursor: pointer;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.checkbox__box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid $gray-300;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+  transition: all 180ms;
+
+  &:hover {
+    border-color: $gray-400;
+  }
+
+  &--checked {
+    background: $green;
+    border-color: $green;
+
+    &:hover {
+      background: darken($green, 5%);
+      border-color: darken($green, 5%);
+    }
+  }
+}
+
+// ============================================================================
+// PLACEHOLDER CONTENT
+// ============================================================================
+.placeholder-content {
+  padding: 40px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 8px;
+  text-align: center;
+
+  p {
+    font-size: 15px;
+    color: $gray-500;
+    margin: 0;
+  }
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 24px 20px;
+  }
+
+  .settings-header {
+    margin-bottom: 28px;
+  }
+
+  .settings-title {
+    font-size: 24px;
+  }
+
+  .settings-tabs {
+    margin-bottom: 32px;
+    gap: 8px;
+  }
+
+  .settings-tab {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .setting-item {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .toggle {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 20px 16px;
+  }
+
+  .settings-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .settings-tab {
+    white-space: nowrap;
+  }
+}

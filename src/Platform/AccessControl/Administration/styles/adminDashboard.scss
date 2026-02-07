@@ -1,3 +1,4 @@
+@use "sass:color";
 // Variables
 $primary-color: #667eea;
 $primary-dark: #5568d3;
@@ -597,7 +598,7 @@ $header-height: 72px;
     color: white;
 
     &:hover {
-      background: darken($danger-color, 5%);
+      background: color.adjust($danger-color, $lightness: -5%);
     }
   }
 

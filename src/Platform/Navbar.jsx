@@ -2,11 +2,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "./styles/navbar.scss"
 import { useDispatch, useSelector } from 'react-redux';
-import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
-import { useNavigate } from 'react-router-dom';
+// import { logoutAction } from '../Redux/Actions/Auth/AuthActions';
+// import { useLocation, useNavigate } from 'react-router-dom';
 import { OPEN_CREATE_TICKET_POPUP, SET_FILTERED_TICKETS } from '../Redux/Constants/ticketReducerConstants';
 import { searchTicketByQuery } from '../Redux/Actions/TicketActions/ticketAction';
-import logo from '../assets/platformIcons/Hora-logo.svg'
+// import logo from '../assets/platformIcons/Hora-logo.svg'
+import { BellIcon, NotebookTabsIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { HANDLE_NOTIFACTION_SIDE_PANEL } from '../Redux/Constants/NotificationConstants/inAppNotificationConstant';
 
 // Icons (Same as your original)
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>;
@@ -16,28 +19,38 @@ const SearchIcon = () => <svg className="icon icon--search" fill="none" stroke="
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  // const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [unReadNotificationsCount,setUnReadNotificationsCount]=useState(0);
+
   
-  const profileMenuRef = useRef(null);
+  // const profileMenuRef = useRef(null);  
   const searchInputRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { userDetails } = useSelector((state) => state.user);
+  // const { userDetails } = useSelector((state) => state.user);
   const { filteredTickets } = useSelector((state) => state.worksTicket);
+  const {inAppNotifications}=useSelector((state)=>state.inAppNotification);
+  
+
+  // // getting the notification count
+  useEffect(()=>{
+      const unReadNotifications = inAppNotifications.filter((item) => item.status === false || item.status === 0);
+      setUnReadNotificationsCount(unReadNotifications.length);
+  },[inAppNotifications]);
 
   // Close profile dropdown clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
-        setIsProfileMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+  //       setIsProfileMenuOpen(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
   // Search Debounce Logic
   useEffect(() => {
@@ -59,18 +72,19 @@ const Navbar = () => {
     }
   }, [isSearchModalOpen]);
 
-  const handleSignOut = () => {
-    dispatch(logoutAction());
-    navigate('/');
-  };
+  // const handleSignOut = () => {
+  //   dispatch(logoutAction());
+  //   navigate('/');
+  // };
 
+    // const location = useLocation().pathname;
   return (
     <nav className="main-navbar">
       <div className="main-navbar__container">
-          <img src={logo} style={{width:"5rem"}} alt="" />
-        <div className="main-navbar__left">
+          {/* {location!="/" && <img src={logo} style={{width:"5rem"}} alt="" />}
+    { location!="/" &&  <div className="main-navbar__left">
           <a href="#" className="main-navbar__logo" onClick={() => navigate('/')}>Hora</a>
-        </div>
+        </div>} */}
 
         {/* Center Section: Search Trigger */}
         <div className="main-navbar__center">
@@ -97,26 +111,14 @@ const Navbar = () => {
           <button className="button button--primary" onClick={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}>
             Create
           </button>
-          
-          <div className="profile" ref={profileMenuRef}>
-            <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="profile__button">
-              <img 
-                className="profile__avatar" 
-                src={`https://placehold.co/100/E2E8F0/4A5568?text=${userDetails?.username?.[0] || 'U'}`} 
-                alt="avatar" 
-              />
-              <span className="profile__name">{userDetails?.profile?.firstName}</span>
-              <ChevronDownIcon />
-            </button>
 
-            {isProfileMenuOpen && (
-              <div className="profile-menu">
-                <a href="#" className="profile-menu__item" onClick={() => navigate('/profile')}>Your Profile</a>
-                <a href="#" className="profile-menu__item">Settings</a>
-                <a href="#" className="profile-menu__item" onClick={handleSignOut}>Sign out</a>
-              </div>
-            )}
-          </div>
+            <div className="notification_bell" onClick={()=>dispatch({type:HANDLE_NOTIFACTION_SIDE_PANEL})}>
+              <BellIcon size={24} color="#000" />
+              {unReadNotificationsCount > 0 && (
+                <span className="notification__badge">{unReadNotificationsCount}</span>
+              )}
+            </div>
+          
         </div>
       </div>
 
@@ -158,20 +160,7 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Mobile Menu (Your original) */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu">
-          <div className="mobile-menu__content">
-            <button className="button button--primary button--full-width" onClick={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}>
-              Create
-            </button>
-            <div className="mobile-menu__links">
-              <a className="mobile-menu__link" onClick={() => navigate('/profile')}>Your Profile</a>
-              <a href="#" className="mobile-menu__link" onClick={handleSignOut}>Sign out</a>
-            </div>
-          </div>
-        </div>
-      )}
+
     </nav>
   );
 };

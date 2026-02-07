@@ -47,10 +47,14 @@
   }
 
   .content {
-    padding: 1.5rem;
+    padding: 0.5rem;
     // max-height: 600px;
     height: 80%;
     overflow-y: auto;
+  }
+  .activity-log__timestamp{
+    font-size: 13px;
+    color: #64748b;
   }
 
   .comment-form {

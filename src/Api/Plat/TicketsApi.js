@@ -13,6 +13,7 @@ export const ticketLogs =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/ti
 export const ticketSortKeyValues =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/getSortKeyValues/get`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const addLabelToTicket = (id) => `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/${id}/labels/add`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const addPriorityToTicket = (id) => `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/${id}/priority`;// if using axiosClient do not use import from env it already imported into axiosclient
+export const getCurrentProjectSprintWork =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/sprint/work`;// if using axiosClient do not use import from env it already imported into axiosclient
 
 
 /*

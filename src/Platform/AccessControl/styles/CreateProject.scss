@@ -1,0 +1,495 @@
+// ============================================================================
+// Create Project - Professional Clean Version
+// ============================================================================
+
+// ── palette ─────────────────────────────────────────────────────────────────
+$primary: #6366f1;
+$primary-dark: #4f46e5;
+
+$gray-50:  #fafafa;
+$gray-100: #f4f4f5;
+$gray-200: #e4e4e7;
+$gray-300: #d4d4d8;
+$gray-400: #a1a1aa;
+$gray-500: #71717a;
+$gray-600: #52525b;
+$gray-700: #3f3f46;
+$gray-800: #27272a;
+$gray-900: #18181b;
+
+$white: #ffffff;
+$green: #10b981;
+$red: #ef4444;
+
+// ============================================================================
+// CONTAINER
+// ============================================================================
+.hora-create-project {
+  min-height: 100vh;
+  background: $gray-50;
+  padding: 32px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.hora-create-project__container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hora-create-project__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: $gray-600;
+  gap: 16px;
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+.hora-create-project__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.hora-create-project__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 8px;
+}
+
+.hora-create-project__subtitle {
+  color: $gray-600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.hora-badge {
+  background: $gray-100;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: $gray-700;
+  border: 1px solid $gray-200;
+}
+
+// ============================================================================
+// CARD
+// ============================================================================
+.hora-card {
+  background: $white;
+  border-radius: 8px;
+  border: 1px solid $gray-200;
+  padding: 32px;
+}
+
+// ============================================================================
+// FORM STRUCTURE
+// ============================================================================
+.hora-form__section {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid $gray-200;
+
+  &:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.hora-form__section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: $gray-900;
+  margin: 0 0 24px;
+
+  svg {
+    color: $primary;
+  }
+}
+
+.hora-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.hora-form__group {
+  margin-bottom: 20px;
+}
+
+.hora-form__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-700;
+  margin-bottom: 8px;
+}
+
+// ============================================================================
+// INPUTS
+// ============================================================================
+.hora-input,
+.hora-select,
+.hora-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  font-size: 14px;
+  color: $gray-900;
+  background: $white;
+  font-family: inherit;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+
+  &--error {
+    border-color: $red;
+  }
+}
+
+.hora-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.hora-textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.hora-form__error {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: $red;
+}
+
+.hora-form__hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: $gray-500;
+}
+
+// ============================================================================
+// FEATURES
+// ============================================================================
+.hora-feature-input {
+  display: flex;
+  gap: 10px;
+}
+
+.hora-feature-list {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hora-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $gray-100;
+  border: 1px solid $gray-200;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: $gray-700;
+}
+
+.hora-feature-item__remove {
+  background: none;
+  border: none;
+  color: $red;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: darken($red, 10%);
+  }
+}
+
+// ============================================================================
+// UPLOAD
+// ============================================================================
+.hora-upload-area {
+  position: relative;
+}
+
+.hora-upload-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.hora-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  border: 2px dashed $gray-300;
+  border-radius: 8px;
+  cursor: pointer;
+  background: $gray-50;
+
+  svg {
+    color: $gray-400;
+  }
+
+  &:hover {
+    border-color: $primary;
+    background: rgba($primary, 0.02);
+
+    svg {
+      color: $primary;
+    }
+  }
+}
+
+.hora-upload-label__text {
+  margin-top: 12px;
+  font-weight: 600;
+  color: $gray-700;
+  font-size: 14px;
+}
+
+.hora-upload-label__hint {
+  margin-top: 6px;
+  font-size: 13px;
+  color: $gray-500;
+}
+
+// ============================================================================
+// IMAGE GRID
+// ============================================================================
+.hora-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.hora-image-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid $gray-200;
+}
+
+.hora-image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hora-image-item__remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: $red;
+  color: $white;
+  border: none;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background: darken($red, 10%);
+  }
+}
+
+// ============================================================================
+// ALERTS
+// ============================================================================
+.hora-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid;
+
+  &--success {
+    background: rgba($green, 0.08);
+    color: darken($green, 10%);
+    border-color: rgba($green, 0.2);
+
+    svg {
+      color: $green;
+    }
+  }
+
+  &--error {
+    background: rgba($red, 0.08);
+    color: darken($red, 10%);
+    border-color: rgba($red, 0.2);
+
+    svg {
+      color: $red;
+    }
+  }
+}
+
+// ============================================================================
+// BUTTONS
+// ============================================================================
+.hora-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid $gray-200;
+}
+
+.hora-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: $primary;
+    color: $white;
+
+    &:hover:not(:disabled) {
+      background: $primary-dark;
+    }
+  }
+
+  &--secondary {
+    background: $white;
+    color: $gray-700;
+    border: 1px solid $gray-300;
+
+    &:hover:not(:disabled) {
+      background: $gray-50;
+    }
+  }
+
+  &--tertiary {
+    background: $gray-100;
+    color: $gray-700;
+    border: 1px solid $gray-200;
+
+    &:hover:not(:disabled) {
+      background: $gray-200;
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: $gray-600;
+    border: 1px solid $gray-300;
+
+    &:hover {
+      background: $gray-100;
+    }
+  }
+
+  &--sm {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+// ============================================================================
+// SPINNER
+// ============================================================================
+.hora-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 768px) {
+  .hora-create-project {
+    padding: 16px;
+  }
+
+  .hora-card {
+    padding: 20px;
+  }
+
+  .hora-create-project__title {
+    font-size: 24px;
+  }
+
+  .hora-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hora-form__section-title {
+    font-size: 16px;
+  }
+
+  .hora-form__actions {
+    flex-direction: column-reverse;
+
+    .hora-btn {
+      width: 100%;
+    }
+  }
+
+  .hora-image-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+}

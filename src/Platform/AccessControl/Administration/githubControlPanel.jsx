@@ -11,7 +11,7 @@ import { SHOW_SNACKBAR } from '../../../Redux/Constants/PlatformConstatnt/platfo
 import './styles/GitHubAdminPanel.scss';
 import apiClient from '../../../utils/axiosConfig';
 
-const GitHubAdminPanel = () => {
+const GitHubAdminPanel = ({projectId}) => {
   const dispatch = useDispatch();
   const { projects } = useSelector((state) => state.projects);
   const { userDetails } = useSelector((state) => state.user);
