@@ -9,6 +9,7 @@ import { searchTicketByQuery } from '../Redux/Actions/TicketActions/ticketAction
 // import logo from '../assets/platformIcons/Hora-logo.svg'
 import { BellIcon, NotebookTabsIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { HANDLE_NOTIFACTION_SIDE_PANEL } from '../Redux/Constants/NotificationConstants/inAppNotificationConstant';
 
 // Icons (Same as your original)
 const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>;
@@ -111,7 +112,7 @@ const Navbar = () => {
             Create
           </button>
 
-            <div className="notification_bell">
+            <div className="notification_bell" onClick={()=>dispatch({type:HANDLE_NOTIFACTION_SIDE_PANEL})}>
               <BellIcon size={24} color="#000" />
               {unReadNotificationsCount > 0 && (
                 <span className="notification__badge">{unReadNotificationsCount}</span>

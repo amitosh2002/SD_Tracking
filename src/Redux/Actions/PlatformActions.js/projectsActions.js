@@ -321,7 +321,7 @@ export const acceptProjectInvitation = (invitationId) => async (dispatch) => {
 // actions/userAnalyticsActions.js
 
 export const getUserProjectAggreation =
-  (startDate, endDate) =>
+  (startDate, endDate, projectId) =>
   async (dispatch) => {
     try {
       // 🔄 Start loading
@@ -334,7 +334,7 @@ export const getUserProjectAggreation =
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
 
-      const res = await apiClient.get(getUserProjectsLogsAgg, {
+      const res = await apiClient.post(getUserProjectsLogsAgg, { projectId }, {
         params,
       });
 

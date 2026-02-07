@@ -20,101 +20,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllNotifications, getNotificationAnalytics, markAsReadNotification } from "../../../Redux/Actions/NotificationActions/inAppNotificationAction";
 import { formatNotificationTime } from "../../../utillity/helper";
 import NotificationAnalytics from "./notficationAnalytics";
-
-// Sample notification data
-const SAMPLE_NOTIFICATIONS = [
-  {
-    id: 1,
-    type: "ticket",
-    icon: "ticket",
-    iconColor: "#6366f1",
-    title: "New Ticket Assigned",
-    description: "You have been assigned to ticket #1234 - Website Redesign",
-    category: "Ticket",
-    time: "5 minutes ago",
-    status: "unread",
-  },
-  {
-    id: 2,
-    type: "message",
-    icon: "message",
-    iconColor: "#10b981",
-    title: "New Message",
-    description: "Sarah Johnson sent you a message in the Website Redesign project",
-    category: "Message",
-    time: "1 hour ago",
-    status: "unread",
-  },
-  {
-    id: 3,
-    type: "team",
-    icon: "team",
-    iconColor: "#8b5cf6",
-    title: "Team Update",
-    description: "New team member John Smith has joined the project",
-    category: "Team",
-    time: "2 hours ago",
-    status: "read",
-  },
-  {
-    id: 4,
-    type: "ticket",
-    icon: "ticket",
-    iconColor: "#6366f1",
-    title: "Ticket Status Update",
-    description: "Ticket #1235 - Bug Fix has been marked as completed",
-    category: "Ticket",
-    time: "3 hours ago",
-    status: "read",
-  },
-  {
-    id: 5,
-    type: "message",
-    icon: "message",
-    iconColor: "#10b981",
-    title: "New Message",
-    description: "Michael Brown mentioned you in a comment on ticket #1236",
-    category: "Message",
-    time: "5 hours ago",
-    status: "read",
-  },
-  {
-    id: 6,
-    type: "team",
-    icon: "team",
-    iconColor: "#8b5cf6",
-    title: "Team Update",
-    description: "Project deadline has been updated to June 15, 2024",
-    category: "Team",
-    time: "1 day ago",
-    status: "read",
-  },
-  {
-    id: 7,
-    type: "ticket",
-    icon: "ticket",
-    iconColor: "#6366f1",
-    title: "New Ticket Created",
-    description: "A new ticket has been created: #1237 - API Integration",
-    category: "Ticket",
-    time: "1 day ago",
-    status: "read",
-  },
-  {
-    id: 8,
-    type: "message",
-    icon: "message",
-    iconColor: "#10b981",
-    title: "New Message",
-    description: "Emily Davis shared a document in the Website Redesign project",
-    category: "Message",
-    time: "2 days ago",
-    status: "read",
-  },
-];
+import { useNavigate } from "react-router-dom";
 
 const InAppNotifications = () => {
   const dispatch=useDispatch();
+  const navigate=useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [typeOpen, setTypeOpen] = useState(false);
@@ -191,7 +101,7 @@ useEffect(() => {
   return (
     <div className="notifications-page">
       {/* Back Button */}
-      <button className="notif-back">
+      <button className="notif-back" onClick={() => navigate("/")}>
         <ArrowLeft size={16} />
         <span>Back to Dashboard</span>
       </button>

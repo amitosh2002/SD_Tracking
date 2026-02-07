@@ -20,12 +20,15 @@ import HoraShowcase from "../Onboarding/prelogin";
 import { getAllNotifications } from "../../Redux/Actions/NotificationActions/inAppNotificationAction";
 
 import Sidebar from "../Sidebar/Sidebar";
+import NotificationPanel from "../../customFiles/customComponent/NotificationSidePanel";
+import { HANDLE_NOTIFACTION_SIDE_PANEL } from "../../Redux/Constants/NotificationConstants/inAppNotificationConstant";
 
 const Layoutv1 = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
   const { createPopup } = useSelector((state) => state.worksTicket);
+  const {openNotifiactionSidepanel}=useSelector((state)=>state.inAppNotification)
   const { isAuthenticated, requiresRegistration, loading } = useSelector(
     (state) => state.auth
   );
@@ -157,7 +160,10 @@ const Layoutv1 = () => {
             <AllRoutes />
         </div>
       </main>
+
+        {/* =================== centralizedPopup=============== */}
        {createPopup && <CreateTicket />}
+       <NotificationPanel isOpen={openNotifiactionSidepanel} onClose={()=>dispatch({type:HANDLE_NOTIFACTION_SIDE_PANEL})}/>
     </div>
   );
 };

@@ -7,7 +7,7 @@ const initialState = {
   projectCreateSucess:false,
   projectWithAccess:null,
   sucessFetchProjects:false,
-  userProjectAgg: [],
+  userProjectAgg: null,
   loadingUserProjectAgg: false,
   errorUserProjectAgg: false,
   projectsPriorities:[],

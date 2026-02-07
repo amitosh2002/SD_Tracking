@@ -38,6 +38,7 @@ import WorkSpace from "../HeroSection/Components/WorkSpace";
 import TeamsPage from "../HeroSection/TeamsPage";
 import InAppNotifications from "../HeroSection/Components/inAppNotification";
 import SettingPageV1 from "../HeroSection/Components/settingPage";
+import SprintTaskList from "../TaskManagement/SprintTaskList";
 
 // import { useSelector } from "react-redux";
 
@@ -63,7 +64,6 @@ const AllRoutes = () => {
                 <Route path="/" element={<Dashboard />} />
                 
                 {/* Sidebar Routes */}
-                <Route path="/tasks" element={<EmptyStateGraphic />} />
                 <Route path="/calendar" element={<UserCalendar />} />
                 <Route path="/timer" element={<TimeLogTracker />} />
                 <Route path="/projects" element={<WorkSpace />} />
@@ -86,6 +86,8 @@ const AllRoutes = () => {
                 <Route path="/sprint/dashboard" element={<SprintManagement />} />
                 <Route path="/sprint" element={<SprintHome />} />
                 <Route path="/create/project-space" element={<ProjectCreationFlow />} />
+                <Route path="/user-work-space" element={<SprintTaskList />} />
+
 
                 <Route path="/sprint/board" element={<SprintBoard />} />
                 <Route path="/confrigurator/flow" element={<WorkflowManager />} />

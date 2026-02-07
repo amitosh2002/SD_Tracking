@@ -1,5 +1,5 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs, ticketbyKeyurl, ticketSortKeyValues, addLabelToTicket, addPriorityToTicket, } from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS } from "../../Constants/ticketReducerConstants"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs, ticketbyKeyurl, ticketSortKeyValues, addLabelToTicket, addPriorityToTicket, getCurrentProjectSprintWork, } from "../../../Api/Plat/TicketsApi"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS, GET_CURRENT_PROJECT_SPRINT_WORK_REQUEST, GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
@@ -439,5 +439,36 @@ export const ticketPriorityActions = (ticketId, priorityId) => async (dispatch) 
                 message: error.response?.data?.message || "Failed to update priority"
             }
         });
+    }
+};
+
+export const getCurrentProjectSprintWorkActions = (projectId) => async (dispatch) => {
+    try {
+      dispatch({ type: GET_CURRENT_PROJECT_SPRINT_WORK_REQUEST });
+        const response = await apiClient.get(`${getCurrentProjectSprintWork}?projectId=${projectId}`);
+        if (response.data.success) {
+          dispatch({
+            type: GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS,
+            payload: response.data
+        });
+        }else{
+          dispatch({
+            type: GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS,
+            payload: { sprintWork: [] }
+        });
+        }
+    } catch (error) {
+      dispatch({
+        type: GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS,
+        payload: { sprintWork: [] }
+      });
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: error?.response?.data?.message || "Failed to fetch the data"
+        }
+      })
+        console.error("Error fetching current project sprint work:", error);
     }
 };

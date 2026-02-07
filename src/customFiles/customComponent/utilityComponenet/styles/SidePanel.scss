@@ -1,0 +1,65 @@
+// SidePanel.scss
+
+// Variables
+$overlay-bg: rgba(0, 0, 0, 0.5);
+$panel-bg: #ffffff;
+$transition-speed: 0.35s;
+$transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Overlay
+.side-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: $overlay-bg;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity $transition-speed ease, visibility $transition-speed ease;
+  z-index: 999;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Side Panel
+.side-panel {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background: $panel-bg;
+  transition: all $transition-speed $transition-easing;
+  z-index: 1000;
+  overflow: hidden;
+
+  // Right position (default)
+  &.right {
+    right: -100%;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+
+    &.active {
+      right: 0;
+    }
+  }
+
+  // Left position
+  &.left {
+    left: -100%;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+
+    &.active {
+      left: 0;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .side-panel {
+    max-width: 100% !important;
+  }
+}

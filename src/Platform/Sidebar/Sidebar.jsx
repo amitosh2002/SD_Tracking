@@ -9,6 +9,8 @@ import {
   Settings,
   Users,
   Bell,
+  UserPlus,
+  Layers2,
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -24,12 +26,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
   const menuItems = [
     { id: 'dashboard', icon: BarChart3, label: 'Dashboard', route: '/' },
-    { id: 'tasks', icon: CheckSquare, label: 'Tasks', route: '/tasks' },
+    { id: 'tasks', icon: CheckSquare, label: 'Tasks', route: '/user-work-space' },
     { id: 'calendar', icon: Calendar, label: 'Calendar', route: '/calendar' },
     { id: 'timer', icon: Clock, label: 'Time Tracker', route: '/timer' },
     {
       id: 'workspace',
-      icon: FolderKanban,
+      icon: Layers2,
       label: 'Workspace',
       route: '/work-space/confrigurator',
     },
@@ -38,7 +40,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
   const secondaryItems = [
     { id: 'teams', icon: Users, label: 'Team', route: '/teams' },
-    { id: 'invite', icon: Users, label: 'Invite', route: '/invite' },
+    { id: 'invite', icon: UserPlus, label: 'Invite', route: '/invite' },
     { id: 'notifications', icon: Bell, label: 'Notifications', route: '/notifications' },
     { id: 'settings', icon: Settings, label: 'Settings', route: '/settings' },
   ];
@@ -63,7 +65,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   return (
     <aside className={`sidebar ${isCollapsed ? 'sidebar--collapsed' : ''}`}>
       <div className="sidebar__brand">
-        <div className="sidebar__brand-logo-container">
+        <div className="sidebar__brand-logo-container" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <div className="sidebar__brand-icon">
             <img src={horalogo} alt="" style={{ width: "5rem" }} />
           </div>
