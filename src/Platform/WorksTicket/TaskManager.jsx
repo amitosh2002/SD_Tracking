@@ -1,206 +1,332 @@
+// import { useEffect, useState, useRef, useCallback } from 'react';
+// import { useParams } from 'react-router-dom';
+// import './TaskManager.scss';
+// import TaskItem from './TaskItem';
+// import TaskDetails from './TaskDetails';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { getAllWorkTicket, getSortKeyValues } from '../../Redux/Actions/TicketActions/ticketAction';
+// import { Loader2 } from 'lucide-react';
+// import FilterBar from './Components/filterBar';
+
+// const TaskManager = () => {
+//   const dispatch = useDispatch();
+//   const { userDetails } = useSelector((state) => state.user);
+//   const { tickets,users,status,projects,sprints,labels,priority,ticketConvention } = useSelector((state) => state.worksTicket);
+//   const { projectId } = useParams();
+//   const [selectedTaskId, setSelectedTaskId] = useState(null);
+//   const [currentLimit, setCurrentLimit] = useState(10);
+//   const [loadingMore, setLoadingMore] = useState(false);
+//   const [hasMore, setHasMore] = useState(true);
+  
+//   const observerLoader = useRef();
+  
+//   // Sentinel-based observer
+//   const sentinelRef = useCallback(node => {
+//     if (loadingMore || !hasMore) return;
+//     if (observerLoader.current) observerLoader.current.disconnect();
+    
+//     observerLoader.current = new IntersectionObserver(entries => {
+//       if (entries[0].isIntersecting && hasMore && !loadingMore) {
+//         console.log("Sentinel intersected, incrementing limit...");
+//         setCurrentLimit(prev => prev + 10);
+//       }
+//     }, { 
+//       threshold: 0,
+//       rootMargin: '100px'
+//     });
+    
+//     if (node) observerLoader.current.observe(node);
+//   }, [loadingMore, hasMore]);
+
+
+  
+// const [filters, setFilters] = useState({
+//   status: [],
+//   sprint: [],
+//   assignee: [],
+//   project: [],
+//   labels: [],
+//   priority: [],
+//   ticketConvention: [],
+//   sort: "",
+// });
+
+//   // Reset on Project/User/Filter Switch
+//   useEffect(() => {
+//     setCurrentLimit(10);
+//     setHasMore(true);
+//   }, [projectId, userDetails?.id, filters]);
+
+//   // Initial data fetch for dropdowns
+//   useEffect(() => {
+//     if (userDetails?.id) {
+//        dispatch(getSortKeyValues());
+//     }
+//   }, [dispatch, userDetails?.id]);
+
+//   // Fetch Logic
+
+
+//   useEffect(() => {
+//     if (!userDetails?.id) return;
+//     const fetchTickets = async () => {
+//       const isInitial = currentLimit === 10;
+//       if (!isInitial) setLoadingMore(true);
+//       const fetchParams = projectId 
+//         ? { projectId, userId: userDetails.id, page: 1, limit: currentLimit } 
+//         : { userId: userDetails.id, page: 1, limit: currentLimit };
+
+//       try {
+//         const res = await dispatch(getAllWorkTicket({ 
+//             ...fetchParams, 
+//             ...filters,
+//             type: isInitial ? 'refresh' : 'append' 
+//         }));
+//         const totalItems = res?.total || 0;
+//         const currentItemsCount = res?.items?.length || 0;
+
+//         // Correct hasMore logic for cumulative limits
+//         // We have more if the total in backend is greater than what we currently requested
+//         if (totalItems > currentLimit && currentItemsCount >= currentLimit) {
+//             setHasMore(true);
+//         } else {
+//             setHasMore(false);
+//         }
+        
+//       } catch (err) {
+//         console.error("Fetch failed:", err);
+//         setHasMore(false);
+//       } finally {
+//         if (!isInitial) setLoadingMore(false);
+//       }
+//     };
+
+//     fetchTickets();
+//   }, [dispatch, currentLimit, projectId, userDetails?.id,filters]);
+
+//   // Auto-select first task only when the initial list loads
+//   useEffect(() => {
+//     if (tickets?.items?.length > 0 && !selectedTaskId && currentLimit === 10) {
+//       setSelectedTaskId(tickets.items[0]?._id);
+//     }
+//   }, [tickets?.items, selectedTaskId, currentLimit]);
+
+//   const selectedTask = tickets?.items?.find((task) => task?._id === selectedTaskId);
+
+
+//   const sortOptions = [
+//     { label: "Created", value: "createdAt" },
+//     { label: "Updated", value: "updatedAt" },
+//   ];
+// const onFilterChange = (key, value) => {
+//   setFilters(prev => ({
+//     ...prev,
+//     [key]: value,
+//   }));
+// };
+
+
+// const [search, setSearch] = useState("");
+
+
+//   return (
+//     <>
+//       <FilterBar
+//         search={search}
+//         onSearchChange={setSearch}
+//         filters={filters}
+//         onFilterChange={onFilterChange}
+//         statusOptions={status}
+//         sprintOptions={sprints}
+//         assigneeOptions={users}
+//         projectOptions={projects}
+//         sortOptions={sortOptions}
+//         labelsOptions={labels}
+//         priorityOptions={priority}
+//         ticketConventionOptions={ticketConvention}
+//       />
+
+//     <div className="task-manager-container">
+//       <div className="task-list-panel">
+//         <div className="task-list-header">
+//             <h2>Tasks <span>({tickets?.items?.length || 0} / {tickets?.total || 0})</span></h2>
+//         </div>
+        
+//         <div className="task-items-scroll">
+
+//             {Array.isArray(tickets?.items) &&
+//               tickets.items.map((task) => (
+//                 <div key={task._id} className="task-item-wrapper">
+//                   <TaskItem
+//                     task={task}
+//                     isSelected={selectedTaskId === task?._id}
+//                     onClick={setSelectedTaskId}
+//                   />
+//                 </div>
+//               ))}
+            
+//             {/* Infinite Scroll Sentinel */}
+//             {hasMore && (
+//                 <div ref={sentinelRef} className="sentinel" style={{ padding: '10px 0', minHeight: '40px' }}>
+//                     {loadingMore ? (
+//                         <div className="loading-more-container">
+//                             <Loader2 className="animate-spin" size={20} />
+//                             <span>Loading more...</span>
+//                         </div>
+//                     ) : (
+//                         <div style={{ height: '40px' }} /> 
+//                     )}
+//                 </div>
+//             )}
+            
+//             {!hasMore && (tickets?.total || 0) > 0 && (
+//                 <div className="end-of-list">
+//                     <p>No more tasks</p>
+//                 </div>
+//             )}
+            
+//             {(!tickets?.items || tickets.items.length === 0) && !loadingMore && (
+//                 <div className="placeholder">
+//                     <p>No tasks found</p>
+//                 </div>
+//             )}
+//         </div>
+//       </div>
+//       <div className="task-details-panel">
+//         <TaskDetails task={selectedTask} />
+//       </div>
+//     </div>
+//     </>
+
+//   );
+// };
+
+// export default TaskManager;
+
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import './TaskManager.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { getAllWorkTicket, getSortKeyValues } from '../../Redux/Actions/TicketActions/ticketAction';
 import TaskItem from './TaskItem';
 import TaskDetails from './TaskDetails';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllWorkTicket, getSortKeyValues } from '../../Redux/Actions/TicketActions/ticketAction';
-import { Loader2 } from 'lucide-react';
 import FilterBar from './Components/filterBar';
+import './TaskManager.scss';
 
 const TaskManager = () => {
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.user);
-  const { tickets,users,status,projects,sprints,labels,priority,ticketConvention } = useSelector((state) => state.worksTicket);
+  const { tickets, users, status, projects, sprints, labels, priority, ticketConvention } = useSelector((state) => state.worksTicket);
   const { projectId } = useParams();
+
+  // State Management
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [currentLimit, setCurrentLimit] = useState(10);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  
+  const [isShrunk, setIsShrunk] = useState(false); // State to handle shrinking
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({
+    status: [], sprint: [], assignee: [], project: [], labels: [], priority: [], ticketConvention: [], sort: "",
+  });
+
   const observerLoader = useRef();
-  
-  // Sentinel-based observer
+
+  // Infinite Scroll Observer
   const sentinelRef = useCallback(node => {
     if (loadingMore || !hasMore) return;
     if (observerLoader.current) observerLoader.current.disconnect();
-    
     observerLoader.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore && !loadingMore) {
-        console.log("Sentinel intersected, incrementing limit...");
         setCurrentLimit(prev => prev + 10);
       }
-    }, { 
-      threshold: 0,
-      rootMargin: '100px'
-    });
-    
+    }, { threshold: 0, rootMargin: '100px' });
     if (node) observerLoader.current.observe(node);
   }, [loadingMore, hasMore]);
 
-
-  
-const [filters, setFilters] = useState({
-  status: [],
-  sprint: [],
-  assignee: [],
-  project: [],
-  labels: [],
-  priority: [],
-  ticketConvention: [],
-  sort: "",
-});
-
-  // Reset on Project/User/Filter Switch
   useEffect(() => {
-    setCurrentLimit(10);
-    setHasMore(true);
-  }, [projectId, userDetails?.id, filters]);
-
-  // Initial data fetch for dropdowns
-  useEffect(() => {
-    if (userDetails?.id) {
-       dispatch(getSortKeyValues());
-    }
+    if (userDetails?.id) dispatch(getSortKeyValues());
   }, [dispatch, userDetails?.id]);
-
-  // Fetch Logic
-
 
   useEffect(() => {
     if (!userDetails?.id) return;
     const fetchTickets = async () => {
       const isInitial = currentLimit === 10;
       if (!isInitial) setLoadingMore(true);
-      const fetchParams = projectId 
-        ? { projectId, userId: userDetails.id, page: 1, limit: currentLimit } 
-        : { userId: userDetails.id, page: 1, limit: currentLimit };
-
+      const fetchParams = { userId: userDetails.id, page: 1, limit: currentLimit, ...(projectId && { projectId }) };
       try {
-        const res = await dispatch(getAllWorkTicket({ 
-            ...fetchParams, 
-            ...filters,
-            type: isInitial ? 'refresh' : 'append' 
-        }));
-        
-        console.log("API Response:", res);
-        
-        const totalItems = res?.total || 0;
-        const currentItemsCount = res?.items?.length || 0;
-
-        // Correct hasMore logic for cumulative limits
-        // We have more if the total in backend is greater than what we currently requested
-        if (totalItems > currentLimit && currentItemsCount >= currentLimit) {
-            setHasMore(true);
-        } else {
-            setHasMore(false);
-        }
-        
+        const res = await dispatch(getAllWorkTicket({ ...fetchParams, ...filters, type: isInitial ? 'refresh' : 'append' }));
+        setHasMore((res?.total || 0) > currentLimit);
       } catch (err) {
-        console.error("Fetch failed:", err);
         setHasMore(false);
+        console.log(err);
       } finally {
         if (!isInitial) setLoadingMore(false);
       }
     };
-
     fetchTickets();
-  }, [dispatch, currentLimit, projectId, userDetails?.id,filters]);
-
-  // Auto-select first task only when the initial list loads
-  useEffect(() => {
-    if (tickets?.items?.length > 0 && !selectedTaskId && currentLimit === 10) {
-      setSelectedTaskId(tickets.items[0]?._id);
-    }
-  }, [tickets?.items, selectedTaskId, currentLimit]);
+  }, [dispatch, currentLimit, projectId, userDetails?.id, filters]);
 
   const selectedTask = tickets?.items?.find((task) => task?._id === selectedTaskId);
 
-
-  const sortOptions = [
-    { label: "Created", value: "createdAt" },
-    { label: "Updated", value: "updatedAt" },
-  ];
-const onFilterChange = (key, value) => {
-  setFilters(prev => ({
-    ...prev,
-    [key]: value,
-  }));
-};
-
-
-const [search, setSearch] = useState("");
-
-
   return (
-    <>
+    <div className="task-page-main">
       <FilterBar
         search={search}
         onSearchChange={setSearch}
         filters={filters}
-        onFilterChange={onFilterChange}
+        onFilterChange={(k, v) => setFilters(p => ({ ...p, [k]: v }))}
         statusOptions={status}
         sprintOptions={sprints}
         assigneeOptions={users}
         projectOptions={projects}
-        sortOptions={sortOptions}
         labelsOptions={labels}
         priorityOptions={priority}
         ticketConventionOptions={ticketConvention}
       />
 
-    <div className="task-manager-container">
-      <div className="task-list-panel">
-        <div className="task-list-header">
-            <h2>Tasks <span>({tickets?.items?.length || 0} / {tickets?.total || 0})</span></h2>
-        </div>
-        
-        <div className="task-items-scroll">
+      <div className={`task-manager-row ${isShrunk ? 'is-shrunk' : ''}`}>
+        {/* Task List Panel (Left) */}
+        <aside className="task-sidebar">
+          <header className="sidebar-header">
+              <h3>
+                Tasks 
+                <span>
+                  ({tickets?.items?.length || 0} of {tickets?.total || 0})
+                </span>
+              </h3>
+            <button className="shrink-btn" onClick={() => setIsShrunk(!isShrunk)}>
+              {isShrunk ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+            </button>
+          </header>
 
-            {Array.isArray(tickets?.items) &&
-              tickets.items.map((task) => (
-                <div key={task._id} className="task-item-wrapper">
-                  <TaskItem
-                    task={task}
-                    isSelected={selectedTaskId === task?._id}
-                    onClick={setSelectedTaskId}
-                  />
-                </div>
-              ))}
+          <div className="task-scroll-area">
+            {tickets?.items?.map((task) => (
+              <TaskItem
+                key={task._id}
+                task={task}
+                isSelected={selectedTaskId === task?._id}
+                onClick={setSelectedTaskId}
+                isShrunk={isShrunk}
+              />
+            ))}
             
-            {/* Infinite Scroll Sentinel */}
+            {/* Updated Loading Section with Text */}
             {hasMore && (
-                <div ref={sentinelRef} className="sentinel" style={{ padding: '10px 0', minHeight: '40px' }}>
-                    {loadingMore ? (
-                        <div className="loading-more-container">
-                            <Loader2 className="animate-spin" size={20} />
-                            <span>Loading more...</span>
-                        </div>
-                    ) : (
-                        <div style={{ height: '40px' }} /> 
-                    )}
-                </div>
+              <div ref={sentinelRef} className="loader-box">
+                <Loader2 className="animate-spin" size={18} />
+                <span className="loading-text">Loading more tasks...</span>
+              </div>
             )}
-            
-            {!hasMore && (tickets?.total || 0) > 0 && (
-                <div className="end-of-list">
-                    <p>No more tasks</p>
-                </div>
-            )}
-            
-            {(!tickets?.items || tickets.items.length === 0) && !loadingMore && (
-                <div className="placeholder">
-                    <p>No tasks found</p>
-                </div>
-            )}
-        </div>
-      </div>
-      <div className="task-details-panel">
-        <TaskDetails task={selectedTask} />
+          </div>
+        </aside>
+
+        {/* Task Details Panel (Right) */}
+        <main className="task-main-view">
+          <TaskDetails task={selectedTask} />
+        </main>
       </div>
     </div>
-    </>
-
   );
 };
 

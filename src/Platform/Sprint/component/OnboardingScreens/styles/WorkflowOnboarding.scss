@@ -1,3 +1,4 @@
+@use "sass:color";
 // Variables
 $primary-blue: #3b82f6;
 $success-green: #22c55e;
@@ -94,7 +95,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     span {
       font-size: 0.875rem;
       font-weight: 500;
-      color: darken($text-muted, 10%);
+      color: color.adjust($text-muted, $lightness: -10%);
     }
   }
 
@@ -140,8 +141,11 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
 
     .model-text {
       font-size: 0.875rem;
-      color: darken($warning-amber, 30%);
-      strong { color: darken($warning-amber, 40%); }
+      color: color.adjust($warning-amber, $lightness: -30%);
+      
+        strong {
+          color: color.adjust($warning-amber, $lightness: -40%);
+        }
     }
   }
 }

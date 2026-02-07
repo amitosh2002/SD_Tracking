@@ -1313,7 +1313,8 @@ $sidebar-error: #ef4444;
 
 .modern_sidebar_container {
   width: 380px;
-  height: 100vh;
+  // height: 100vh;
+  height: auto;
   background: $sidebar-bg;
   border-left: 1px solid $sidebar-border;
   display: flex;

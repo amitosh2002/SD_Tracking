@@ -49,6 +49,7 @@ const TicketLabelManager = ({projectId}) => {
   };
 
   const handelSaveAllLabels = () => {
+    console.log("first")
     dispatch(ticketConfiguratorActionV1(projectId,"labels",labels))
   }
 
@@ -106,7 +107,7 @@ const TicketLabelManager = ({projectId}) => {
       <footer className="manager-footer">
         <div className="footer-content">
           <p className="footer-hint">These labels sync directly to your GitHub Issue Labels.</p>
-          <button className="save-main-btn" onClick={()=>handelSaveAllLabels}>Save All Labels</button>
+          <button className="save-main-btn" onClick={handelSaveAllLabels}>Save All Labels</button>
         </div>
       </footer>
 

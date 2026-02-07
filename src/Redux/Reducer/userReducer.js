@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_TEAM_MEMBERS } from "../Constants/PlatformConstatnt/userConstant";
+import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_TEAM_MEMBERS, USER_TEAM_MEMBERS_FAIL, USER_TEAM_MEMBERS_FETCH, USER_TEAM_MEMBERS_LOADING, USER_WORK_DETAILS, USER_WORK_DETAILS_FAIL, USER_WORK_DETAILS_LOADING } from "../Constants/PlatformConstatnt/userConstant";
 const initialState={
     userDetails:null,
     sucessFetch:false,
@@ -10,7 +10,15 @@ const initialState={
     currentWeektotalWorkHours:0,
     currentMonthtotalWorkHours:0,
     currentWeek:null,
-    teamMembers:[]
+    teamMembers:[],
+    workDetailsLoading:false,
+    workDetails:null,
+    workDetailsFail:false,
+    workDetailsErrorMessage:"",
+    projectTeamMembers:[],
+    projectTeamMembersLoading:false,
+    projectTeamMembersFail:false,
+    projectTeamMembersErrorMessage:""
 }
 
 
@@ -38,5 +46,37 @@ export const userReducer=createReducer(initialState,(builder)=>{
     })
     .addCase(USER_TEAM_MEMBERS,(state,action)=>{
         state.teamMembers=action.payload.teamMembers;
+    })
+    .addCase(USER_WORK_DETAILS_LOADING,(state)=>{
+        state.workDetailsLoading=true;
+        state.workDetailsFail=false;
+        state.workDetailsErrorMessage="";
+    })
+    .addCase(USER_WORK_DETAILS,(state,action)=>{
+        state.workDetails=action.payload.workDetails;
+        state.workDetailsLoading=false;
+        state.workDetailsFail=false;
+    })
+    .addCase(USER_WORK_DETAILS_FAIL,(state,action)=>{
+        state.workDetailsFail=true;
+        state.workDetailsLoading=false;
+        state.workDetails=null;
+        state.workDetailsErrorMessage=action.payload;
+    })
+    .addCase(USER_TEAM_MEMBERS_LOADING,(state)=>{
+        state.projectTeamMembersLoading=true;
+        state.projectTeamMembersFail=false;
+        state.projectTeamMembersErrorMessage="";
+    })
+    .addCase(USER_TEAM_MEMBERS_FETCH,(state,action)=>{
+        state.projectTeamMembers=action.payload.teamMembers;
+        state.projectTeamMembersLoading=false;
+        state.projectTeamMembersFail=false;
+    })
+    .addCase(USER_TEAM_MEMBERS_FAIL,(state,action)=>{
+        state.projectTeamMembersFail=true;
+        state.projectTeamMembersLoading=false;
+        state.projectTeamMembers=null;
+        state.projectTeamMembersErrorMessage=action.payload;
     })
 })

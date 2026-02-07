@@ -1,0 +1,313 @@
+// ============================================================================
+// Activity Log Cards
+// ============================================================================
+
+// ── palette ─────────────────────────────────────────────────────────────────
+$gray-50:  #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$white:  #ffffff;
+$green:  #10b981;
+$red:    #ef4444;
+$blue:   #6366f1;
+
+// ============================================================================
+// ACTIVITY LOG
+// ============================================================================
+.activity-log {
+  display: grid;
+  grid-template-columns: 140px 60px 1fr;
+  gap: 0;
+  position: relative;
+  padding-bottom: 32px;
+
+  // Vertical timeline line (between icon and content)
+  &::before {
+    content: '';
+    position: absolute;
+    left: 169px; // timestamp (140px) + half of icon column (60px/2 - 1px)
+    top: 48px; // below the icon
+    bottom: -32px;
+    width: 2px;
+    background: $gray-200;
+    z-index: 0;
+  }
+
+  // Hide line on last item
+  &:last-child::before {
+    display: none;
+  }
+
+  // ── Timestamp ─────────────────────────────────────────────────────────────
+  &__timestamp {
+    font-size: 13px;
+    font-weight: 500;
+    color: $gray-500;
+    padding-top: 10px;
+    text-align: right;
+    padding-right: 20px;
+  }
+
+  // ── Icon ──────────────────────────────────────────────────────────────────
+  &__icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  // ── Content ───────────────────────────────────────────────────────────────
+  &__content {
+    padding-top: 4px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0 0 12px;
+  }
+
+  // ── Main Event ────────────────────────────────────────────────────────────
+  &__event {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__event-indicator {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: $gray-300;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+
+  &__event-text {
+    flex: 1;
+    font-size: 14px;
+    color: $gray-700;
+    line-height: 1.6;
+    background: $gray-50;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+
+  // ── Sub Events ────────────────────────────────────────────────────────────
+  &__sub-events {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-left: 16px;
+  }
+
+  &__sub-event {
+    display: grid;
+    grid-template-columns: 100px 24px 1fr;
+    gap: 8px;
+    align-items: start;
+  }
+
+  &__sub-timestamp {
+    font-size: 12px;
+    color: $gray-500;
+    text-align: right;
+    padding-top: 2px;
+  }
+
+  &__sub-dot {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: $white;
+    border: 2px solid $gray-200;
+    flex-shrink: 0;
+
+    .activity-log__sub-event--success & {
+      border-color: $green;
+      color: $green;
+    }
+
+    .activity-log__sub-event--error & {
+      border-color: $red;
+      color: $red;
+    }
+  }
+
+  &__sub-text {
+    font-size: 13px;
+    color: $gray-700;
+    background: $gray-50;
+    padding: 8px 12px;
+    border-left: 3px solid transparent;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.5;
+
+    .activity-log__sub-event--success & {
+      border-left-color: $green;
+      background: rgba($green, 0.05);
+    }
+
+    .activity-log__sub-event--error & {
+      border-left-color: $red;
+      background: rgba($red, 0.05);
+    }
+  }
+}
+
+// ============================================================================
+// CONTAINER (Parent wrapper)
+// ============================================================================
+.activity-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 20px 0;
+}
+
+.log_container_fill {
+  position: relative;
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 768px) {
+  .activity-log {
+    grid-template-columns: 100px 50px 1fr;
+    padding-bottom: 28px;
+
+    &::before {
+      left: 124px; // adjusted for smaller columns
+    }
+
+    &__timestamp {
+      font-size: 12px;
+      padding-right: 12px;
+    }
+
+    &__icon {
+      width: 36px;
+      height: 36px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    &__title {
+      font-size: 15px;
+    }
+
+    &__event-text {
+      font-size: 13px;
+      padding: 6px 10px;
+    }
+
+    &__sub-event {
+      grid-template-columns: 80px 20px 1fr;
+    }
+
+    &__sub-timestamp {
+      font-size: 11px;
+    }
+
+    &__sub-dot {
+      width: 20px;
+      height: 20px;
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    &__sub-text {
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-log {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding-left: 20px;
+    border-left: 2px solid $gray-200;
+
+    &::before {
+      display: none;
+    }
+
+    &__timestamp {
+      text-align: left;
+      padding-right: 0;
+      order: 2;
+      font-size: 11px;
+    }
+
+    &__icon-wrapper {
+      position: absolute;
+      left: -20px;
+      top: 0;
+    }
+
+    &__icon {
+      width: 32px;
+      height: 32px;
+
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    &__content {
+      order: 1;
+    }
+
+    &__title {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    &__sub-events {
+      margin-left: 0;
+    }
+
+    &__sub-event {
+      grid-template-columns: 20px 1fr;
+    }
+
+    &__sub-timestamp {
+      display: none;
+    }
+  }
+}

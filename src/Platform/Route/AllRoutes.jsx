@@ -27,6 +27,19 @@ import ProjectCreationFlow from "../GenerailForms/projectCreationFlow";
 import ForYouPage from "../HeroSection/Components/forYouPage";
 import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel";
 import WorkspaceConfig from "../Sprint/WorkspacConfigurator";
+import ScrumMasterSetup from "../Confriguration/DoraConfig";
+import ProjectSettings from "../ProjectSetting/ProjectSettings";
+import HoraServiceManagement from "../../../CurrentHoraInternal/ServiceKVP";
+import AnalyticsDashBoardV2 from "../Analytics/AnalyticsDashBoard";
+import { EmptyStateGraphic } from "../../customFiles/customComponent/emptyState";
+import UserCalendar from "../HeroSection/Components/UserCalendar";
+import TimeLogTracker from "../HeroSection/Components/TimeLogTracker";
+import WorkSpace from "../HeroSection/Components/WorkSpace";
+import TeamsPage from "../HeroSection/TeamsPage";
+import InAppNotifications from "../HeroSection/Components/inAppNotification";
+import SettingPageV1 from "../HeroSection/Components/settingPage";
+import SprintTaskList from "../TaskManagement/SprintTaskList";
+import ProjectCreationPage from "../GenerailForms/projectCreationFlow";
 
 // import { useSelector } from "react-redux";
 
@@ -50,6 +63,16 @@ const AllRoutes = () => {
                 
                 {/* <Route path="/editor" element={<TextEditor />} /> */}
                 <Route path="/" element={<Dashboard />} />
+                
+                {/* Sidebar Routes */}
+                <Route path="/calendar" element={<UserCalendar />} />
+                <Route path="/timer" element={<TimeLogTracker />} />
+                <Route path="/projects" element={<WorkSpace />} />
+                <Route path="/teams" element={<TeamsPage />} />
+                <Route path="/notifications" element={<InAppNotifications />} />
+                <Route path="/settings" element={<SettingPageV1 />} />
+
+
                 <Route path="/profile" element={<UserProfile />} />
                 <Route path="/tickets/:id" element={<TicketPage />} />
                 <Route path="/v2" element={<Dashboard />} />
@@ -63,14 +86,18 @@ const AllRoutes = () => {
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
                 <Route path="/sprint/dashboard" element={<SprintManagement />} />
                 <Route path="/sprint" element={<SprintHome />} />
-                <Route path="/create/project-space" element={<ProjectCreationFlow />} />
+                <Route path="/create/project-space" element={<ProjectCreationPage />} />
+                <Route path="/user-work-space" element={<SprintTaskList />} />
+
 
                 <Route path="/sprint/board" element={<SprintBoard />} />
                 <Route path="/confrigurator/flow" element={<WorkflowManager />} />
                 <Route path="/work-space/confrigurator" element={<ScrumMasterDashboard />} />
                 <Route path="/scrum/configurator/:projectId" element={<SprintBoardManager />} />
                 <Route path="/workspace/:projectId" element={<WorkspaceConfig />} />
-
+                <Route path="/workspace/:projectId/setting" element={<ProjectSettings />} />
+                <Route path="/workspace/:projectId/analytics" element={<AnalyticsDashBoardV2 />} />
+                <Route path="/service" element={<HoraServiceManagement />} />
 
                 {/* // letter it turn down into popup */}
 
@@ -81,7 +108,8 @@ const AllRoutes = () => {
 
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
-                <Route path="/test" element={<GitHubAdminPanel />} />
+                <Route path="/test" element={<ScrumMasterSetup />} />
+                {/* <Route path="/test2" element={<SprintAnalyticsDashboard />} /> */}
 
             </Routes>
         // </BrowserRouter>
