@@ -39,6 +39,7 @@ import TeamsPage from "../HeroSection/TeamsPage";
 import InAppNotifications from "../HeroSection/Components/inAppNotification";
 import SettingPageV1 from "../HeroSection/Components/settingPage";
 import SprintTaskList from "../TaskManagement/SprintTaskList";
+import ProjectCreationPage from "../GenerailForms/projectCreationFlow";
 
 // import { useSelector } from "react-redux";
 
@@ -85,7 +86,7 @@ const AllRoutes = () => {
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
                 <Route path="/sprint/dashboard" element={<SprintManagement />} />
                 <Route path="/sprint" element={<SprintHome />} />
-                <Route path="/create/project-space" element={<ProjectCreationFlow />} />
+                <Route path="/create/project-space" element={<ProjectCreationPage />} />
                 <Route path="/user-work-space" element={<SprintTaskList />} />
 
 

@@ -10,6 +10,7 @@ import { getUserWorkDetails } from "../../../Redux/Actions/PlatformActions.js/us
 import "./styles/userdashboard.scss";
 import { DropDownV1 } from "../../../customFiles/customComponent/DropDown";
 import { OPEN_CREATE_TICKET_POPUP } from "../../../Redux/Constants/ticketReducerConstants";
+import { useNavigate } from "react-router-dom";
 
 // ============================================================================
 // HELPERS
@@ -80,7 +81,6 @@ const UserDashboard = () => {
   const loading = useSelector((state) => state.user.workDetailsLoading);
   const error = useSelector((state) => state.user.workDetailsFail);
   const errorMessage = useSelector((state) => state.user.workDetailsErrorMessage);
-
   // Local State
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
@@ -262,9 +262,10 @@ const TicketCard = ({ ticket }) => {
   const timeStr          = fmtTime(ticket.totalTimeLogged);
   const date             = latestDate(ticket);
   const dateStr          = fmtDate(date);
+  const navigate = useNavigate();
 
   return (
-    <div className="sb-ticket">
+    <div className="sb-ticket" onClick={()=>navigate(`/tickets/${ticket.id}`)}>
       {/* row 1: key + priority */}
       <div className="sb-ticket__top">
         <span className="sb-ticket__key">{short}</span>

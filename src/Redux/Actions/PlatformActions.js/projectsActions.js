@@ -101,7 +101,7 @@ export const createProject = (projectData,userId) => async (dispatch) => {
     );
     console.log("Create Project Response:", response);
     if (response.status !== 201) {
-      dispatch({
+      dispatch({ 
       type: "SHOW_SNACKBAR",
       payload: {
         type: "error",
