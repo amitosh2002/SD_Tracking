@@ -565,10 +565,10 @@ $red: #ef4444;
   background: $gray-100;
   border-radius: 8px;
   padding: 16px;
-  height: 70vh;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: $gray-300 transparent;
+  // height: 70vh;
+  // overflow-y: auto;
+  // scrollbar-width: thin;
+  // scrollbar-color: $gray-300 transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -615,6 +615,19 @@ $red: #ef4444;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 70vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $gray-300 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $gray-300;
+    border-radius: 10px;
+  }
 }
 
 // ============================================================================
