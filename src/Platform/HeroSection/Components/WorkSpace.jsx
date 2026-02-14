@@ -37,7 +37,8 @@ const WorkSpace = () => {
                   <div 
                     key={project._id} 
                     onClick={() => {
-                      navigate(`/projects/${project?.projectId}/tasks`);
+                      // navigate(`/projects/${project?.projectId}/tasks`);
+                      navigate(`/workspace/${project?.projectId}/insight`);
                     }}
                   >
               

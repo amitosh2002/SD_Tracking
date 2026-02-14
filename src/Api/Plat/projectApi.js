@@ -14,3 +14,4 @@ export const getProjectServicesByIdApi = `${import.meta.env.VITE_BACKEND_URL}/ap
 export const updateServiceStatusApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/user-projects/services/service/update`
 export const checkValidPartnerCodeApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/partnerCode/check`
 
+export const projectInsightApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/user-projects/insights`;
