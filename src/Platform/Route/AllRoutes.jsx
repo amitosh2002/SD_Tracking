@@ -40,6 +40,7 @@ import InAppNotifications from "../HeroSection/Components/inAppNotification";
 import SettingPageV1 from "../HeroSection/Components/settingPage";
 import SprintTaskList from "../TaskManagement/SprintTaskList";
 import ProjectCreationPage from "../GenerailForms/projectCreationFlow";
+import GitHubConnect from "../Github/GithubConnect";
 
 // import { useSelector } from "react-redux";
 
@@ -80,7 +81,7 @@ const AllRoutes = () => {
                 <Route path="/invite" element={<TeamInvitationPage />} />
                 <Route path="/Hora-prelogin" element={<HoraShowcase />} />
                 {/* // letter it turn down into popup */}
-                <Route path="/create/project" element={<CreateProject />} />
+                {/* <Route path="/create/project" element={<CreateProject />} />. decrepted as we have new flow for now ,compatable with our current flow of creation */}
                 <Route path="/invitation" element={<FullInvitationPage />} />
                 <Route path="/admin" element={<HoraAdminDashboard />} />
                 <Route path="/analytics" element={<DeveloperMetricsMatrix />} />
@@ -101,6 +102,10 @@ const AllRoutes = () => {
 
                 {/* // letter it turn down into popup */}
 
+
+                <Route path="/api/auth/github/github/setup" element={<GitHubConnect />} />
+
+
                 {/* <Route path="/register" element={<HoraRegisration />} /> */}
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 
@@ -108,7 +113,7 @@ const AllRoutes = () => {
 
 
                 {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
-                <Route path="/test" element={<ScrumMasterSetup />} />
+                {/* <Route path="/test" element={<GitHubServicePage />} /> */}
                 {/* <Route path="/test2" element={<SprintAnalyticsDashboard />} /> */}
 
             </Routes>
