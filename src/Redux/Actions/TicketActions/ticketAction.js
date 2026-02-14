@@ -3,6 +3,7 @@ import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
+import { getUserWorkDetails } from "../PlatformActions.js/userActions";
 // import { PROJECT_CONFIG_FETCH_SUCESS } from "../../Constants/projectConstant";
 
 export const getAllWorkTicket =
@@ -79,6 +80,7 @@ export const createTicket = (ticketData) => async (dispatch) => {
                 type: CREATE_TICKET,
                 payload: response.data
             });
+            dispatch(getUserWorkDetails(ticketData?.projectId))
         }
     } catch (error) {
         console.error("Error creating ticket:", error);

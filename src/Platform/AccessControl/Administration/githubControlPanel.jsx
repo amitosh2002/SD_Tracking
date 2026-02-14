@@ -319,7 +319,7 @@ const GitHubAdminPanel = ({projectId}) => {
                           e.preventDefault();
                           e.stopPropagation();
                           try {
-                            window.location.href = "https://github.com/apps/themysticsquadapp/installations/new";
+                            window.location.href = `https://github.com/apps/themysticsquadapp/installations/new?state=${projectId}`;
                           } catch (error) {
                             console.error("Redirect failed:", error);
                             // Fallback: open in new tab

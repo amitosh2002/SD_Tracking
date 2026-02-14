@@ -12,3 +12,5 @@ export const getAllHoraServiceApi = `${import.meta.env.VITE_BACKEND_URL}/api/pla
 export const associateServiceToProjectApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/user-projects/services/associate`
 export const getProjectServicesByIdApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/user-projects/services/active`
 export const updateServiceStatusApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/user-projects/services/service/update`
+export const checkValidPartnerCodeApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/partnerCode/check`
+
