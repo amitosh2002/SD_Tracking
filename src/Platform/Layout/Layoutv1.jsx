@@ -65,7 +65,8 @@ const Layoutv1 = () => {
       "/create/project",
       "/admin",
       "/create-branch",
-      "/auth/google/callback" // important for SSO
+      "/auth/google/callback",
+      "/api/auth/github/github/setup"
     ];
 
     setHideNavbar(hideNavbarRoutes.includes(location.pathname));
@@ -95,11 +96,12 @@ const Layoutv1 = () => {
   //  Socket connection 
 
   // 4️⃣ PUBLIC ROUTES (NO AUTH REQUIRED)
-  const publicRoutes = ["/invitation", "/forgot-password", "/reset-password", "/verify-email","/Hora-prelogin",];
+  const publicRoutes = ["/invitation", "/forgot-password", "/reset-password", "/verify-email","/Hora-prelogin", "/api/auth/github/github/setup"];
 
   if (publicRoutes.includes(location.pathname)) {
     if (location.pathname === "/invitation") return <FullInvitationPage />;
     if (location.pathname === "/Hora-prelogin") return <HoraShowcase />;
+    if (location.pathname === "/api/auth/github/github/setup") return <AllRoutes />; // Just render components
     return <div>Public Route</div>;
   }
 

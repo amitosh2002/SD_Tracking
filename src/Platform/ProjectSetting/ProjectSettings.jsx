@@ -17,7 +17,6 @@ import GitHubAdminPanel from "../AccessControl/Administration/githubControlPanel
 import UserAccess from "./UserAccess";
 import AnalyticsPage from "./AnalyticsPage";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 const SECTIONS = [
   {
