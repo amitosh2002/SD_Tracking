@@ -18,7 +18,9 @@ import {
   TrendingDown,
   CheckCircle2,
   Ticket,
-  ArrowLeft
+  ArrowLeft,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import './styles/projectInsight.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
@@ -27,6 +29,7 @@ import { useDispatch } from 'react-redux';
 export default function ProjectInsight() {
   const { projectId } = useParams();
   const [viewMode, setViewMode] = useState('kanban'); // kanban, table, timeline
+  const [collapsedGroups, setCollapsedGroups] = useState({});
   const [loading, setLoading] = useState(false);
   const [insightData, setInsightData] = useState({
     projectBoard: [],
@@ -55,6 +58,13 @@ export default function ProjectInsight() {
 
     fetchInsights();
   }, [projectId]);
+
+  const toggleGroup = (groupName) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [groupName]: !prev[groupName]
+    }));
+  };
 
 
   const stats = [
@@ -357,110 +367,203 @@ export default function ProjectInsight() {
             Sort
           </button>
           <div className="view-toggle">
-            <button className={viewMode === 'table' ? 'active' : ''}>Table</button>
-            <button className={viewMode === 'kanban' ? 'active' : ''}>
+            <button 
+              className={viewMode === 'table' ? 'active' : ''} 
+              onClick={() => setViewMode('table')}
+            >
+              <List size={16} />
+              Table
+            </button>
+            <button 
+              className={viewMode === 'kanban' ? 'active' : ''} 
+              onClick={() => setViewMode('kanban')}
+            >
               <LayoutGrid size={16} />
               Kanban
             </button>
-            <button className={viewMode === 'timeline' ? 'active' : ''}>Timeline</button>
+            <button 
+              className={viewMode === 'timeline' ? 'active' : ''} 
+              onClick={() => setViewMode('timeline')}
+            >
+              <Calendar size={16} />
+              Timeline
+            </button>
           </div>
         </div>
       </div>
 
       {/* Kanban Board */}
-      <div className="kanban-board">
-        {kanbanColumns.map((column) => (
-          <div key={column.id} className="kanban-column">
-            <div className="column-header">
-              <div className="column-title">
-                <div className="column-indicator" style={{ backgroundColor: column.color }}></div>
-                <span className="column-count">{column.count}</span>
-                <span className="column-name">{column.title}</span>
+      {/* Task Content */}
+      {viewMode === 'kanban' ? (
+        <div className="kanban-board">
+          {kanbanColumns.map((column) => (
+            <div key={column.id} className="kanban-column">
+              <div className="column-header">
+                <div className="column-title">
+                  <div className="column-indicator" style={{ backgroundColor: column.color }}></div>
+                  <span className="column-count">{column.count}</span>
+                  <span className="column-name">{column.title}</span>
+                </div>
+                <button className="btn-icon">
+                  <Plus size={18} />
+                </button>
               </div>
-              <button className="btn-icon">
-                <Plus size={18} />
-              </button>
-            </div>
 
-            <div className="column-tasks">
-              {column.tasks.map((task) => (
-                <div key={task.id} className="task-card">
-                  <div className="task-card__header">
-                    <Clock size={14} />
-                    <span className="task-due">Due: {task.dueDate}</span>
-                    <button className="btn-icon">
-                      <MoreHorizontal size={16} />
-                    </button>
-                  </div>
+              <div className="column-tasks">
+                {column.tasks.map((task) => (
+                  <div key={task.id} className="task-card">
+                    <div className="task-card__header">
+                      <Clock size={14} />
+                      <span className="task-due">Due: {task.dueDate}</span>
+                      <button className="btn-icon">
+                        <MoreHorizontal size={16} />
+                      </button>
+                    </div>
 
-                  <h4 className="task-title">
-                    <span className="task-flag">{getPriorityFlag(task.priority, task.priorityColor)}</span>
-                    {task.title}
-                  </h4>
-                  <div className="task-info">
-                    <p className="task-project">{task.project}</p>
-                    {task.labels && task.labels.length > 0 && (
-                      <div className="task-labels">
-                        {task.labels.map((label, i) => (
-                          <span 
-                            key={i} 
-                            className="label-badge" 
-                            style={{ backgroundColor: `${label.color}20`, color: label.color, borderColor: label.color }}
-                          >
-                            {label.name}
-                          </span>
-                        ))}
+                    <h4 className="task-title">
+                      <span className="task-flag">{getPriorityFlag(task.priority, task.priorityColor)}</span>
+                      {task.id}
+                    </h4>
+                    <div className="task-info">
+                      <p className="task-project">
+                      {task.title}
+                        
+                        </p>
+                      {task.labels && task.labels.length > 0 && (
+                        <div className="task-labels">
+                          {task.labels.map((label, i) => (
+                            <span 
+                              key={i} 
+                              className="label-badge" 
+                              style={{ backgroundColor: `${label.color}20`, color: label.color, borderColor: label.color }}
+                            >
+                              {label.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {task.progress > 0 && (
+                      <div className="task-progress">
+                        <div className="progress-label">
+                          <span>Progress</span>
+                          <span>{task.progress}%</span>
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${task.progress}%` }}
+                          ></div>
+                        </div>
                       </div>
                     )}
-                  </div>
 
-                  {task.progress > 0 && (
-                    <div className="task-progress">
-                      <div className="progress-label">
-                        <span>Progress</span>
-                        <span>{task.progress}%</span>
+                    <div className="task-card__footer">
+                      <div className="task-assignee">
+                        <div className="avatar">
+                          {task.assignee.image ? (
+                            <img src={task.assignee.image} alt={task.fullAssignee || 'Unassigned'} />
+                          ) : (
+                            task.assignee.name || 'UN'
+                          )}
+                        </div>
+                        <span className="assignee-name">{task.fullAssignee || 'Unassigned'}</span>
                       </div>
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-fill" 
-                          style={{ width: `${task.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="task-card__footer">
-                    <div className="task-assignee">
-                      <div className="avatar">
-                        {task.assignee.image ? (
-                          <img src={task.assignee.image} alt={task.fullAssignee || 'Unassigned'} />
-                        ) : (
-                          task.assignee.name || 'UN'
+                      <div className="task-meta">
+                        {task.attachments > 0 && (
+                          <span className="meta-item">
+                            <Paperclip size={14} />
+                            {task.attachments}
+                          </span>
+                        )}
+                        {task.comments > 0 && (
+                          <span className="meta-item">
+                            <MessageSquare size={14} />
+                            {task.comments}
+                          </span>
                         )}
                       </div>
-                      <span className="assignee-name">{task.fullAssignee || 'Unassigned'}</span>
-                    </div>
-                    <div className="task-meta">
-                      {task.attachments > 0 && (
-                        <span className="meta-item">
-                          <Paperclip size={14} />
-                          {task.attachments}
-                        </span>
-                      )}
-                      {task.comments > 0 && (
-                        <span className="meta-item">
-                          <MessageSquare size={14} />
-                          {task.comments}
-                        </span>
-                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+          ))}
+        </div>
+      ) : viewMode === 'table' ? (
+        <div className="table-view">
+          <div className="task-list">
+            <div className="task-header">
+              <div className="header-cell th-toggle"></div>
+              <div className="header-cell th-id">Task ID</div>
+              <div className="header-cell th-title">Title</div>
+              <div className="header-cell th-status">Status</div>
+              <div className="header-cell th-assignee">Assignee</div>
+              <div className="header-cell th-priority">Priority</div>
+              <div className="header-cell th-date">Due Date</div>
+            </div>
+
+            {kanbanColumns.map((column) => (
+              <div key={column.id} className={`task-group ${collapsedGroups[column.title] ? 'collapsed' : ''}`}>
+                <div 
+                  className="group-header" 
+                  onClick={() => toggleGroup(column.title)}
+                  style={{ borderLeft: `4px solid ${column.color}` }}
+                >
+                  <div className="task-cell th-toggle">
+                    {collapsedGroups[column.title] ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                  <div className="group-info-cell">
+                    <span className="group-name">{column.title}</span>
+                    <span className="group-count">{column.count} tasks</span>
+                  </div>
+                </div>
+
+                {!collapsedGroups[column.title] && column.tasks.map((task) => (
+                  <div key={task.id} className="task-row">
+                    <div className="task-cell th-toggle"></div>
+                    <div className="task-cell task-key-cell">
+                      <span className="key-badge">{task.id}</span>
+                    </div>
+                    <div className="task-cell task-title-cell">
+                      <div className="title-wrapper">
+                        {getPriorityFlag(task.priority, task.priorityColor)}
+                        <span className="task-title-text">{task.title}</span>
+                      </div>
+                    </div>
+                    <div className="task-cell task-status-cell">
+                      <div className="status-cell-wrapper">
+                        <div className="dot" style={{ backgroundColor: column.color }}></div>
+                        {column.title}
+                      </div>
+                    </div>
+                    <div className="task-cell task-assignee-cell">
+                      <div className="assignee-cell-wrapper">
+                        <div className="mini-avatar">
+                          {task.assignee.image ? <img src={task.assignee.image} alt="" /> : task.assignee.name}
+                        </div>
+                        <span className="assignee-name">{task.fullAssignee || 'Unassigned'}</span>
+                      </div>
+                    </div>
+                    <div className="task-cell task-priority-cell">
+                      <span 
+                        className="priority-tag" 
+                        style={{ color: task.priorityColor, backgroundColor: `${task.priorityColor}15` }}
+                      >
+                        {task.priority || 'Medium'}
+                      </span>
+                    </div>
+                    <div className="task-cell task-date-cell">{task.dueDate}</div>
+                  </div>
+                ))}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="timeline-empty">Timeline view coming soon...</div>
+      )}
     </div>
   );
 }
