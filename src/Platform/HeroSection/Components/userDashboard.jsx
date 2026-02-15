@@ -3,7 +3,8 @@ import {
   CheckCircle2, Clock, AlertCircle, TrendingUp,
   Plus, MoreHorizontal, Calendar, Layout,
   Coffee, Sparkles, AlertTriangle, ChevronDown,
-  ShieldAlert
+  ShieldAlert, LayoutGrid, List,
+  ChevronUp
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserWorkDetails } from "../../../Redux/Actions/PlatformActions.js/userActions";
@@ -54,17 +55,15 @@ const fmtDate = (date) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 
-
-
-
-
 // Priority label style
 const priorityStyle = (priority) => {
-  switch (priority) {
-    case "Critical": return "critical";
-    case "High":     return "high";
-    case "Medium":   return "medium";
-    case "Low":      return "low";
+  const p = (priority || "").toLowerCase();
+  switch (p) {
+    case "critical": return "critical";
+    case "high":     return "high";
+    case "medium":   return "medium";
+    case "low":      return "low";
+    case "urgent":   return "critical";
     default:         return "medium";
   }
 };
@@ -74,15 +73,27 @@ const priorityStyle = (priority) => {
 // ============================================================================
 const UserDashboard = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   // Selectors
   const projects = useSelector((state) => state.projects.projects);
   const data = useSelector((state) => state.user.workDetails);
+  const workColumns = useSelector((state) => state.user.workDetailsColumns);
   const loading = useSelector((state) => state.user.workDetailsLoading);
   const error = useSelector((state) => state.user.workDetailsFail);
   const errorMessage = useSelector((state) => state.user.workDetailsErrorMessage);
+
   // Local State
   const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [viewMode, setViewMode] = useState("kanban"); // kanban, list
+  const [collapsedSections, setCollapsedSections] = useState({});
+
+  const toggleSection = (sectionId) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
 
   // Set default project on load
   useEffect(() => {
@@ -98,47 +109,78 @@ const UserDashboard = () => {
     }
   }, [selectedProjectId, dispatch]);
 
-  const safeData = data || {
-    openTickets: [],
-    inProgressTickets: [],
-    inReviewTickets: [],
-    doneTickets: []
-  };
+  const safeData = useMemo(() => data || {}, [data]);
   
-  const columns = useMemo(() => [
-    { id: "open",       label: "To Do",      dot: "gray",   tickets: safeData.openTickets || [] },
-    { id: "inProgress", label: "In Progress", dot: "blue",   tickets: safeData.inProgressTickets || [] },
-    { id: "inReview",   label: "In Review",   dot: "violet", tickets: safeData.inReviewTickets || [] },
-    { id: "done",       label: "Done",        dot: "green",  tickets: safeData.doneTickets || [] }
-  ], [safeData]);
+  const columns = useMemo(() => {
+    if (workColumns && workColumns.length > 0) {
+      return workColumns.map(col => ({
+        id: col.id,
+        label: col.name,
+        color: col.color || "#94a3b8",
+        tickets: safeData[col.name] || []
+      }));
+    }
 
-  const totalTasks   = columns.reduce((s, c) => s + c.tickets.length, 0);
-  const inProgress   = (safeData.inProgressTickets || []).length;
-  const critical     = columns.reduce((s, c) => s + c.tickets.filter(t => t.priority === "Critical" || t.priority === "High").length, 0);
-  const completed    = (safeData.doneTickets || []).length;
+    // Default Fallback
+    return [
+      { id: "todo",       label: "To Do",      color: "#94a3b8", tickets: safeData["To Do"] || safeData["OPEN"] || [] },
+      { id: "inProgress", label: "In Progress", color: "#3b82f6", tickets: safeData["In Progress"] || safeData["IN_PROGRESS"] || [] },
+      { id: "inReview",   label: "In Review",   color: "#8b5cf6", tickets: safeData["In Review"] || safeData["IN_REVIEW"] || [] },
+      { id: "done",       label: "Done",        color: "#10b981", tickets: safeData["Done"] || safeData["CLOSED"] || [] }
+    ];
+  }, [workColumns, safeData]);
+
+  const allTickets = useMemo(() => {
+    return Object.values(safeData).flat();
+  }, [safeData]);
+
+  const totalTasks   = allTickets.length;
+  const inProgress   = columns.find(c => c.label === "In Progress")?.tickets?.length || 0;
+  const critical     = allTickets.filter(t => ["Critical", "High", "Urgent"].includes(t.priority)).length;
+  const completed    = columns.find(c => c.label === "Done")?.tickets?.length || 0;
 
   return (
     <div className="sb-page">
-      {/* ── Header with Project Selector ── */}
+      {/* ── Header with Project Selector & View Toggle ── */}
       <div className="sb-header">
         <div className="sb-header__left">
            <h1 className="sb-header__title">Work Overview</h1>
            <p className="sb-header__subtitle">Manage and track your assigned tasks across projects</p>
         </div>
-        
-        <div className="sb-project-selector">
-          <Layout size={18} className="sb-project-selector__icon" />
-          <DropDownV1
-            defaultType={projects?.find(p => p.projectId === selectedProjectId) ? { 
-              label: projects.find(p => p.projectId === selectedProjectId).projectName, 
-              value: selectedProjectId 
-            } : null}
-            onChange={(item) => setSelectedProjectId(item.value)}
-            dataTypes={projects?.map(p => ({ label: p.projectName, value: p.projectId })) || []}
-            placeholder="Select a project"
-            className="sb-project-selector__dropdown"
-            accentColor="#94a3b8" // Premium grey theme
-          />
+
+        <div className="sb-header__right" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {/* View Toggle */}
+          <div className="sb-view-toggle">
+            <button 
+              className={`sb-view-toggle__btn ${viewMode === 'kanban' ? 'sb-view-toggle__btn--active' : ''}`}
+              onClick={() => setViewMode('kanban')}
+            >
+              <LayoutGrid size={16} />
+              <span>Board</span>
+            </button>
+            <button 
+              className={`sb-view-toggle__btn ${viewMode === 'list' ? 'sb-view-toggle__btn--active' : ''}`}
+              onClick={() => setViewMode('list')}
+            >
+              <List size={16} />
+              <span>List</span>
+            </button>
+          </div>
+
+          <div className="sb-project-selector">
+            <Layout size={18} className="sb-project-selector__icon" />
+            <DropDownV1
+              defaultType={projects?.find(p => p.projectId === selectedProjectId) ? { 
+                label: projects.find(p => p.projectId === selectedProjectId).projectName, 
+                value: selectedProjectId 
+              } : null}
+              onChange={(item) => setSelectedProjectId(item.value)}
+              dataTypes={projects?.map(p => ({ label: p.projectName, value: p.projectId })) || []}
+              placeholder="Select a project"
+              className="sb-project-selector__dropdown"
+              accentColor="#94a3b8"
+            />
+          </div>
         </div>
       </div>
 
@@ -150,7 +192,7 @@ const UserDashboard = () => {
         <StatCard icon={<TrendingUp   size={22} />} color="green"  num={completed}   label="Completed"    />
       </div>
 
-      {/* ── Board Columns ── */}
+      {/* ── Content ── */}
       {loading ? (
         <div className="sb-loading">
             <div className="sb-loading__spinner"></div>
@@ -167,18 +209,6 @@ const UserDashboard = () => {
             <button className="sb-error__btn sb-error__btn--primary" onClick={() => dispatch(getUserWorkDetails(selectedProjectId))}>
               Retry Now
             </button>
-            <button 
-                className="sb-error__btn sb-error__btn--outline" 
-                onClick={() => {
-                   // Mock notification logic
-                   dispatch({
-                       type: "SHOW_SNACKBAR", 
-                       payload: { type: "info", message: "Scrum Master has been notified about the configuration issue." }
-                   });
-                }}
-            >
-              Notify Scrum Master
-            </button>
           </div>
         </div>
       ) : totalTasks === 0 ? (
@@ -189,19 +219,104 @@ const UserDashboard = () => {
           </div>
           <h2 className="sb-empty__title">All Quiet on the Front</h2>
           <p className="sb-empty__text">
-            No tasks assigned to you in this project yet. <br />
-            It's a great time to grab a coffee or start something new!
+            No tasks assigned to you in this project yet.
           </p>
           <button className="sb-empty__btn" onClick={() => {dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}}>
             <Plus size={18} />
             <span>Create New Task</span>
           </button>
         </div>
-      ) : (
+      ) : viewMode === "kanban" ? (
         <div className="sb-board">
           {columns.map((col) => (
             <Column key={col.id} column={col} />
           ))}
+        </div>
+      ) : (
+        <div className="sb-list-container" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {columns.map((col) => {
+            const isCollapsed = collapsedSections[col.id];
+            return (
+              <div key={col.id} className="sb-list-section">
+                <div 
+                  className="sb-list-section__header" 
+                  onClick={() => toggleSection(col.id)}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '12px', 
+                    marginBottom: '12px',
+                    padding: '8px 12px',
+                    cursor: 'pointer',
+                    background: '#ffffff',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span className="status-dot" style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: col.color }} />
+                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#1e293b', flex: 1 }}>{col.label}</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#64748b', background: '#f1f5f9', padding: '2px 8px', borderRadius: '10px' }}>
+                      {col.tickets.length}
+                    </span>
+                    {isCollapsed ? <ChevronDown size={18} color="#94a3b8" /> : <ChevronUp size={18} color="#94a3b8" />}
+                  </div>
+                </div>
+
+                {!isCollapsed && (
+                  col.tickets.length > 0 ? (
+                    <div className="sb-list-view">
+                      <div className="sb-table">
+                        <div className="sb-table__header">
+                          <span>Task ID</span>
+                          <span>Title</span>
+                          <span>Status</span>
+                          <span>Priority</span>
+                          <span>Updated</span>
+                          <span>Logged</span>
+                          <span></span>
+                        </div>
+                        <div className="sb-table__body">
+                          {col.tickets.map((ticket) => (
+                            <div key={ticket.id} className="sb-row" onClick={() => navigate(`/tickets/${ticket.id}`)}>
+                              <div className="sb-row__col sb-row__col--id">{parseTicketKey(ticket.ticketKey).short}</div>
+                              <div className="sb-row__col sb-row__col--title">{ticket.title}</div>
+                              <div className="sb-row__col sb-row__col--status">
+                                <span 
+                                  className="status-dot" 
+                                  style={{ backgroundColor: col.color }} 
+                                />
+                                {ticket.status}
+                              </div>
+                              <div className="sb-row__col">
+                                <span className={`priority-badge ${priorityStyle(ticket.priority)}`}>
+                                  {ticket.priority}
+                                </span>
+                              </div>
+                              <div className="sb-row__col">
+                                {fmtDate(latestDate(ticket)) || "Recently"}
+                              </div>
+                              <div className="sb-row__col sb-row__col--points">
+                                {fmtTime(ticket.totalTimeLogged) || "0h"}
+                              </div>
+                              <div className="sb-row__col">
+                                <MoreHorizontal size={18} color="#94a3b8" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', border: '1px dashed #e2e8f0', color: '#94a3b8', fontSize: '13px', textAlign: 'center' }}>
+                      No tasks assigned in this stage
+                    </div>
+                  )
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -209,8 +324,9 @@ const UserDashboard = () => {
 };
 
 // ============================================================================
-// STAT CARD
+// COMPONENTS
 // ============================================================================
+
 const StatCard = ({ icon, color, num, label }) => (
   <div className={`sb-stat sb-stat--${color}`}>
     <div className="sb-stat__icon">{icon}</div>
@@ -221,32 +337,30 @@ const StatCard = ({ icon, color, num, label }) => (
   </div>
 );
 
-// ============================================================================
-// COLUMN
-// ============================================================================
 const Column = ({ column }) => (
   <div className="sb-col">
-    {/* header */}
     <div className="sb-col__header">
       <div className="sb-col__header-left">
-        <span className={`sb-col__dot sb-col__dot--${column.dot}`} />
+        <span className="sb-col__dot" style={{ backgroundColor: column.color }} />
         <span className="sb-col__title">{column.label}</span>
         <span className="sb-col__count">{column.tickets.length}</span>
       </div>
       <div className="sb-col__header-right">
         <button className="sb-col__btn"><Plus size={16} /></button>
-        <button className="sb-col__btn"><MoreHorizontal size={16} /></button>
       </div>
     </div>
 
-    {/* ticket stack */}
     <div className="sb-col__body">
       {column.tickets.map((ticket) => (
         <TicketCard key={ticket.ticketKey} ticket={ticket} />
       ))}
+      {column.tickets.length === 0 && (
+         <div style={{ padding: '20px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+            No tasks here
+         </div>
+      )}
     </div>
 
-    {/* add task footer */}
     <div className="sb-col__footer">
       <Plus size={15} />
       <span>Add task</span>
@@ -254,19 +368,15 @@ const Column = ({ column }) => (
   </div>
 );
 
-// ============================================================================
-// TICKET CARD
-// ============================================================================
 const TicketCard = ({ ticket }) => {
-  const { short}  = parseTicketKey(ticket.ticketKey);
-  const timeStr          = fmtTime(ticket.totalTimeLogged);
-  const date             = latestDate(ticket);
-  const dateStr          = fmtDate(date);
+  const { short } = parseTicketKey(ticket.ticketKey);
+  const timeStr = fmtTime(ticket.totalTimeLogged);
+  const date = latestDate(ticket);
+  const dateStr = fmtDate(date);
   const navigate = useNavigate();
 
   return (
-    <div className="sb-ticket" onClick={()=>navigate(`/tickets/${ticket.id}`)}>
-      {/* row 1: key + priority */}
+    <div className="sb-ticket" onClick={() => navigate(`/tickets/${ticket.id}`)}>
       <div className="sb-ticket__top">
         <span className="sb-ticket__key">{short}</span>
         <span className={`sb-ticket__priority sb-ticket__priority--${priorityStyle(ticket.priority)}`}>
@@ -274,17 +384,14 @@ const TicketCard = ({ ticket }) => {
         </span>
       </div>
 
-      {/* row 2: title */}
       <h4 className="sb-ticket__title">{ticket.title}</h4>
 
-      {/* row 3: tags */}
       {ticket.label && (
         <div className="sb-ticket__tags">
-            <span key={ticket.label} className="sb-ticket__tag">{ticket.label}</span>
+            <span className="sb-ticket__tag">{ticket.label}</span>
         </div>
       )}
 
-      {/* row 4: meta (date · points · avatar) */}
       <div className="sb-ticket__meta">
         <div className="sb-ticket__meta-left">
           {dateStr && (
@@ -295,9 +402,6 @@ const TicketCard = ({ ticket }) => {
           )}
           {timeStr && <span className="sb-ticket__points">{timeStr}</span>}
         </div>
-        {/* <span className="sb-ticket__avatar" style={{ background: bgColor }}>
-          {initials}
-        </span> */}
       </div>
     </div>
   );
