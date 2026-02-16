@@ -22,7 +22,7 @@ import {
   ChevronDown,
   ChevronRight
 } from 'lucide-react';
-import './styles/projectInsight.scss';
+import './styles/ProjectInsight.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useDispatch } from 'react-redux';
 
