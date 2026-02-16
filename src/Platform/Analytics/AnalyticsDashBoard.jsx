@@ -16,260 +16,8 @@ import {
   Network, 
   Shield 
 } from 'lucide-react';
-const teamData= [
-    {
-      "userId": "68a9f7f1eda6ac5064a5d87e",
-      "totalTodo": 0,
-      "todoTickets": [],
-      "totalInProgress": 1,
-      "inProgressTickets": [
-        {
-          "ticketKey": "TASK-2-hora-sprint-analytics-integration-suite",
-          "timeLogs": [
-            {
-              "minutes": 360,
-              "note": "",
-              "_id": "697ae011ac83532745b0c746",
-              "at": "2026-01-29T04:20:33.556Z"
-            }
-          ],
-          "tags": [
-            "1768384386137"
-          ],
-          "priority": [
-            "3"
-          ],
-          "sprintName": "Sprint-1",
-          "status": "In Progress",
-          "storyPoint": 22,
-          "title": "Hora Sprint Analytics & Integration Suite"
-        }
-      ],
-      "totalTesting": 0,
-      "testingTickets": [],
-      "totalCompleted": 2,
-      "completedTickets": [
-        {
-          "ticketKey": "ARCH-17-replace-hardcoded-ticket-metadata-with-a-dynamic-p",
-          "timeLogs": [],
-          "tags": [
-            "1768384386137"
-          ],
-          "priority": [
-            "3"
-          ],
-          "sprintName": "Sprint-1",
-          "status": "Done",
-          "storyPoint": 0,
-          "title": "Replace hardcoded ticket metadata with a dynamic \"Project Configuration\" system."
-        },
-        {
-          "ticketKey": "TASK-1-m1-release-18-jan",
-          "timeLogs": [
-            {
-              "minutes": 480,
-              "note": "",
-              "_id": "696daa80adc2f0457f35edd4",
-              "at": "2026-01-19T03:52:32.647Z"
-            }
-          ],
-          "tags": [
-            "1768384386137"
-          ],
-          "priority": [
-            "2"
-          ],
-          "sprintName": "Sprint-1",
-          "status": "Done",
-          "storyPoint": 0,
-          "title": "M1 Release -18 jan"
-        }
-      ],
-      "totalMinutes": 840,
-      "totalStoryPoints": 22,
-      "allTickets": [
-        {
-          "ticketKey": "ARCH-17-replace-hardcoded-ticket-metadata-with-a-dynamic-p",
-          "timeLogs": [],
-          "tags": [
-            "1768384386137"
-          ],
-          "priority": [
-            "3"
-          ],
-          "sprintName": "Sprint-1",
-          "status": "Done",
-          "storyPoint": 0,
-          "title": "Replace hardcoded ticket metadata with a dynamic \"Project Configuration\" system."
-        },
-        {
-          "ticketKey": "TASK-1-m1-release-18-jan",
-          "timeLogs": [
-            {
-              "minutes": 480,
-              "note": "",
-              "_id": "696daa80adc2f0457f35edd4",
-              "at": "2026-01-19T03:52:32.647Z"
-            }
-          ],
-          "tags": [
-            "1768384386137"
-          ],
-          "priority": [
-            "2"
-          ],
-          "sprintName": "Sprint-1",
-          "status": "Done",
-          "storyPoint": 0,
-          "title": "M1 Release -18 jan"
-        },
-        {
-          "ticketKey": "TASK-2-hora-sprint-analytics-integration-suite",
-          "timeLogs": [
-            {
-              "minutes": 360,
-              "note": "",
-              "_id": "697ae011ac83532745b0c746",
-              "at": "2026-01-29T04:20:33.556Z"
-            }
-          ],
-          "tags": [
-            "1768384386137"
-          ],
-          "priority": [
-            "3"
-          ],
-          "sprintName": "Sprint-1",
-          "status": "In Progress",
-          "storyPoint": 22,
-          "title": "Hora Sprint Analytics & Integration Suite"
-        }
-      ],
-      "isTopContributor": true
-    }
-  ]
 
-// Your actual response data
-const analyticsResponse = {
-  "success": true,
-  "analytics": {
-    "summary": {
-      "title": "Sprint Performance Overview",
-      "description": "The current sprint (ID: 2ef11e63...) shows critical performance with zero velocity and task completion. With only one day remaining, significant intervention is required to deliver any planned work. This report lacks historical context for comparative analysis.",
-      "status": "CRITICAL",
-      "insights": [
-        "Current sprint has 0 story points completed and 0% task completion with 1 day remaining.",
-        "Only 3 out of 27 tasks have been resolved, with none marked as truly 'completed' or 'closed'.",
-        "The lack of historical data prevents meaningful trend analysis and accurate future forecasting."
-      ]
-    },
-    "metrics": {
-      "velocity": {
-        "current": 0,
-        "average": 0
-      },
-      "completionRate": {
-        "current": 0,
-        "average": 0
-      },
-      "planningAccuracy": {
-        "current": 0,
-        "average": 0
-      },
-      "taskDensity": {
-        "current": 3.67,
-        "average": 0
-      },
-      "efficiency": {
-        "current": 0.11,
-        "average": 0
-      }
-    },
-    "charts": {
-      "line": {
-        "labels": [
-          "Sprint 2ef11e63"
-        ],
-        "datasets": [
-          {
-            "label": "Velocity",
-            "data": [0]
-          },
-          {
-            "label": "Completion Rate",
-            "data": [0]
-          }
-        ]
-      },
-      "radar": {
-        "labels": [
-          "Velocity",
-          "Planning Accuracy",
-          "Task Density",
-          "Completion Rate",
-          "Efficiency"
-        ],
-        "current": [0, 0, 3.67, 0, 0.11],
-        "average": [0, 0, 0, 0, 0]
-      },
-      "gantt": [
-        {
-          "id": "development",
-          "label": "Development",
-          "start": 0,
-          "duration": 9,
-          "status": "stalled"
-        },
-        {
-          "id": "testing",
-          "label": "Testing",
-          "start": 7,
-          "duration": 2,
-          "status": "stalled"
-        },
-        {
-          "id": "deployment",
-          "label": "Deployment",
-          "start": 9,
-          "duration": 1,
-          "status": "planned"
-        }
-      ],
-      "quadrant": [
-        {
-          "label": "Sprint Backlog",
-          "effort": 99,
-          "value": 0,
-          "quadrant": "High Effort Low Value"
-        }
-      ]
-    },
-    "forecast": {
-      "predictedCapacity": 0,
-      "confidenceLevel": "VERY_LOW",
-      "confidenceText": "Future capacity prediction is unreliable due to insufficient historical data and zero completion in the current sprint."
-    },
-    "warnings": [
-      {
-        "code": "NO_HISTORICAL_DATA",
-        "level": "info",
-        "message": "No historical sprint data available for comparison. All average metrics are set to 0."
-      },
-      {
-        "code": "CRITICAL_SPRINT_PERFORMANCE",
-        "level": "critical",
-        "message": "Current sprint has 0 story points completed and 0% task completion with only 1 day remaining."
-      },
-      {
-        "code": "STALLED_PROGRESS",
-        "level": "critical",
-        "message": "Despite 3 tasks being marked as 'resolved', no tasks have reached 'completed' or 'closed' status, indicating significant workflow blockage."
-      }
-    ]
-  }
-};
-
-// Example with better data
+// Mock data for fallback testing
 const goodAnalyticsData = {
   "summary": {
     "title": "Sprint Performance Overview",
@@ -396,11 +144,15 @@ function AnalyticsDashBoardV2() {
   const childrens = {
     0: <ChartReportForSprint analyticsData={sprintAnalyticsData ?? goodAnalyticsData} />,
     1: <TeamAnalytics data={sprintVelocityData} />,
+    2: <div className="placeholder-tab"><h3>Performance Trends</h3><p>Coming soon: Advanced historical performance comparisons.</p></div>,
+    3: <div className="placeholder-tab"><h3>Developer Productivity</h3><p>Coming soon: Individual contribution and code quality metrics.</p></div>,
+    4: <div className="placeholder-tab"><h3>Infrastructure Health</h3><p>Coming soon: CI/CD pipeline and system uptime analytics.</p></div>,
+    5: <div className="placeholder-tab"><h3>Governance & Compliance</h3><p>Coming soon: Project standards and security audit overview.</p></div>,
   }
 
   if (loading) {
     return (
-      <div className="dashboard-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="dashboard-wrapper dashboard-wrapper--loading">
         <div className="status-badge">Analyzing Sprint Data...</div>
       </div>
     );
@@ -411,8 +163,8 @@ function AnalyticsDashBoardV2() {
       {/* LEFT SIDEBAR */}
       <aside className="analytics-sidebar">
         <div className="go-back-link" onClick={() => navigate(`/work-space/confrigurator`)}> 
-          <MoveLeftIcon size={20} />
-          <span>Go Back</span>
+          <MoveLeftIcon size={18} />
+          <span>Back to Configurator</span>
         </div>
 
         <nav className="nav-list">
@@ -432,8 +184,13 @@ function AnalyticsDashBoardV2() {
       {/* RIGHT MAIN CONTENT */}
       <main className="main-content-analytics">
         <header className="top-bar">
-          <h1>Algorand Metrics Dashboard</h1>
-          <div className="status-badge">Connected</div>
+          <div>
+            <h1>{menuItems[activeTab].label}</h1>
+            <p className="md_body_light" style={{color: '#64748b', marginTop: '4px'}}>
+              {activeTab === 0 ? "Real-time sprint progress and velocity insights" : "Detailed team performance and work distribution"}
+            </p>
+          </div>
+          <div className="status-badge">Live Analytics</div>
         </header>
 
         {/* This is where your mapped route components will go */}
