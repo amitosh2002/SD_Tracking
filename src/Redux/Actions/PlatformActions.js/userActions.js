@@ -157,7 +157,8 @@ export const getUserWorkDetails =(projectId)=>async(dispatch)=>{
         if (res.data.success) {
          dispatch({
             type:USER_WORK_DETAILS,payload:{
-                workDetails:res.data.data
+                workDetails:res.data.data,
+                columns: res.data.columns
             }
          })   
         }

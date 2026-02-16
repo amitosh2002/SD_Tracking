@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Github, 
   Check, 
@@ -16,7 +16,7 @@ import axios from 'axios';
 
 export default function GitHubConnect({  onSkip }) {
   const [loading, setLoading] = useState(false);
-  const setupInitiated = useRef(false);
+  // const setupInitiated = useRef(false);
 
   const [query] = useSearchParams();
   const installationId= query.get('installation_id');
@@ -51,12 +51,12 @@ export default function GitHubConnect({  onSkip }) {
     }
   }, [installationId, setup_action, projectId, loading]);
 
-  useEffect(() => {
-    if (installationId && setup_action && projectId && !setupInitiated.current) {
-      setupInitiated.current = true;
-      handleConnect();
-    }
-  }, [installationId, setup_action, projectId, handleConnect]);
+  // useEffect(() => {
+  //   if (installationId && setup_action && projectId && !setupInitiated.current) {
+  //     setupInitiated.current = true;
+  //     handleConnect();
+  //   }
+  // }, [installationId, setup_action, projectId, handleConnect]);
 
   const handleSkip = () => {
     if (onSkip) {

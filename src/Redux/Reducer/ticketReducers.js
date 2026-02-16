@@ -21,6 +21,8 @@ const initialState = {
   currentProjectSprintWork: [],
   currentProjectSprintName: null,
   totalSprintStoryPoints: 0,
+  projectBoard: {}, 
+  sprintColumns: [],
   sprintFilters: {
     assignee: [],
     status: [],
@@ -176,6 +178,8 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             })
         .addCase(GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS,(state,action)=>{
             state.currentProjectSprintWork=action.payload.sprintWork || [];
+            state.projectBoard = action.payload.data || {};
+            state.sprintColumns = action.payload.columns || [];
             state.currentProjectSprintName=action.payload.sprintName;
             state.totalSprintStoryPoints=action.payload.totalStoryPoint;
             state.sprintFilters=action.payload.allUserFilterAction || {

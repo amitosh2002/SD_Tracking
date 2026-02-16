@@ -41,6 +41,7 @@ import SettingPageV1 from "../HeroSection/Components/settingPage";
 import SprintTaskList from "../TaskManagement/SprintTaskList";
 import ProjectCreationPage from "../GenerailForms/projectCreationFlow";
 import GitHubConnect from "../Github/GithubConnect";
+import ProjectInsight from "../Components/projectInsight";
 
 // import { useSelector } from "react-redux";
 
@@ -98,6 +99,7 @@ const AllRoutes = () => {
                 <Route path="/workspace/:projectId" element={<WorkspaceConfig />} />
                 <Route path="/workspace/:projectId/setting" element={<ProjectSettings />} />
                 <Route path="/workspace/:projectId/analytics" element={<AnalyticsDashBoardV2 />} />
+                <Route path="/workspace/:projectId/insight" element={<ProjectInsight />} />
                 <Route path="/service" element={<HoraServiceManagement />} />
 
                 {/* // letter it turn down into popup */}
@@ -112,7 +114,8 @@ const AllRoutes = () => {
                 {/* Add other routes as needed */}
 
 
-                {/* <Route path="/test" element={<SprintFLowBoard />} /> */}
+                {/* <Route path="/workspace/:projectId/insight" element={<ProjectInsight />} /> */}
+                <Route path="/test" element={<ProjectInsight />} />
                 {/* <Route path="/test" element={<GitHubServicePage />} /> */}
                 {/* <Route path="/test2" element={<SprintAnalyticsDashboard />} /> */}
 
