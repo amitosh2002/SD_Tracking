@@ -13,8 +13,6 @@ import {
 import { 
   LineChart, 
   Line, 
-  BarChart,
-  Bar,
   RadarChart, 
   Radar, 
   PolarGrid, 
@@ -53,10 +51,14 @@ const ChartReportForSprint = ({ analyticsData }) => {
   }));
 
   // Pie chart data for task distribution
+  const completionVal = Number(metrics?.completionRate?.current || 0);
+  const inProgressVal = 30; // Hardcoded fallback or from data
+  const remainingVal = Math.max(0, 100 - completionVal - inProgressVal);
+
   const taskDistributionData = [
-    { name: 'Completed', value: metrics?.completionRate?.current || 0, color: '#10b981' },
-    { name: 'In Progress', value: 30, color: '#3b82f6' },
-    { name: 'Remaining', value: 100 - (metrics?.completionRate?.current || 0) - 30, color: '#e5e7eb' }
+    { name: 'Completed', value: Number(completionVal.toFixed(2)), color: '#10b981' },
+    { name: 'In Progress', value: inProgressVal, color: '#3b82f6' },
+    { name: 'Remaining', value: Number(remainingVal.toFixed(2)), color: '#e5e7eb' }
   ];
 
   // Get status styling
@@ -90,10 +92,6 @@ const ChartReportForSprint = ({ analyticsData }) => {
   const getTrendColor = (current, average) => {
     if (current > average) return '#10b981';
     return '#ef4444';
-  };
-
-  const formatPercentage = (value) => {
-    return value > 0 ? `+${value.toFixed(1)}%` : `${value.toFixed(1)}%`;
   };
 
   return (
@@ -166,7 +164,7 @@ const ChartReportForSprint = ({ analyticsData }) => {
             </div>
             <span className="metric-label">Completion Rate</span>
           </div>
-          <div className="metric-value">{metrics?.completionRate?.current || 0}%</div>
+          <div className="metric-value">{Number(metrics?.completionRate?.current || 0).toFixed(2)}%</div>
           <div className="metric-footer">
             <span className="metric-subtitle">Tasks Completed</span>
             <div 
@@ -174,7 +172,7 @@ const ChartReportForSprint = ({ analyticsData }) => {
               style={{ color: getTrendColor(metrics?.completionRate?.current, metrics?.completionRate?.average) }}
             >
               {getTrendIcon(metrics?.completionRate?.current, metrics?.completionRate?.average)}
-              <span>vs avg {metrics?.completionRate?.average || 0}%</span>
+              <span>vs avg {Number(metrics?.completionRate?.average || 0).toFixed(2)}%</span>
             </div>
           </div>
         </div>
@@ -186,11 +184,11 @@ const ChartReportForSprint = ({ analyticsData }) => {
             </div>
             <span className="metric-label">Task Density</span>
           </div>
-          <div className="metric-value">{(metrics?.taskDensity?.current || 0).toFixed(2)}</div>
+          <div className="metric-value">{Number(metrics?.taskDensity?.current || 0).toFixed(2)}</div>
           <div className="metric-footer">
             <span className="metric-subtitle">Tasks per Day</span>
             <div className="metric-trend">
-              <span>avg {(metrics?.taskDensity?.average || 0).toFixed(2)}</span>
+              <span>avg {Number(metrics?.taskDensity?.average || 0).toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -202,7 +200,13 @@ const ChartReportForSprint = ({ analyticsData }) => {
             </div>
             <span className="metric-label">Efficiency</span>
           </div>
-          <div className="metric-value">{((metrics?.efficiency?.current || 0) * 100).toFixed(1)}%</div>
+          <div className="metric-value">
+            {/* If value is > 5, assume it's already a percentage (like 21.74). Otherwise multiply by 100. */}
+            {(metrics?.efficiency?.current > 5 
+              ? Number(metrics.efficiency.current)
+              : (Number(metrics?.efficiency?.current || 0) * 100)
+            ).toFixed(2)}%
+          </div>
           <div className="metric-footer">
             <span className="metric-subtitle">Work Completion</span>
             <div 
@@ -210,7 +214,10 @@ const ChartReportForSprint = ({ analyticsData }) => {
               style={{ color: getTrendColor(metrics?.efficiency?.current, metrics?.efficiency?.average) }}
             >
               {getTrendIcon(metrics?.efficiency?.current, metrics?.efficiency?.average)}
-              <span>vs avg {((metrics?.efficiency?.average || 0) * 100).toFixed(1)}%</span>
+              <span>vs avg {(metrics?.efficiency?.average > 5 
+                ? Number(metrics.efficiency.average)
+                : (Number(metrics?.efficiency?.average || 0) * 100)
+              ).toFixed(2)}%</span>
             </div>
           </div>
         </div>

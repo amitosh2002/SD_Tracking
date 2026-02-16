@@ -3,32 +3,35 @@
 
 .dashboard-wrapper {
   display: flex;
-  height: 100vh;
-  width: 100vw;
+  height: calc(100vh - 60px); // Adjust based on navbar height
+    width: 100%;
   background-color: white;
   overflow: hidden;
   flex-direction: row;
-  gap: 2rem;
+  border-top: 1px solid $gray-100;
   // Sidebar Styling
   .analytics-sidebar {
-    width: 260px;
+    width: 240px;
+      min-width: 240px;
     color: $gray-500;
     border-right: 1px solid $gray-200;
-    padding: 2.5rem 1.5rem;
+    padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
+    background-color: $gray-50;
     position: relative; 
 
     .go-back-link {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
-      color: $gray-500;
-      font-size: 0.9rem;
+      color: $gray-600;
+        font-size: 0.85rem;
       font-weight: 600;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid $gray-100;
+      padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
       transition: all 0.2s ease;
 
       &:hover {
@@ -40,34 +43,42 @@
     .nav-list {
       list-style: none;
       padding: 0;
-      margin-top: 2rem;
+      margin-top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
 
       .nav-item {
         display: flex;
         align-items: center;
-        padding: 1rem 0;
+        padding: 0.75rem 1rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
-        color: $gray-400;
+        color: $gray-600;
         gap: 12px;
+        border-radius: 8px;
 
         .nav-icon {
-          color: $gray-400;
+          color: $gray-500;
           transition: all 0.2s ease;
         }
 
         &:hover {
-          color: $gray-600;
-          .nav-icon { color: $gray-600; }
+          background-color: $gray-200;
+            color: $gray-900;
+          
+            .nav-icon {
+              color: $gray-900;
+            }
         }
 
         &.active {
+          background-color: rgba($primary-teal, 0.1);
           color: $primary-teal;
           .nav-icon { 
             color: $primary-teal;
-            transform: scale(1.1);
           }
         }
       }
@@ -78,8 +89,8 @@
   .main-content-analytics {
     flex: 1;
     overflow-y: auto;
-    padding: 3rem;
-    background: linear-gradient(135deg, white 0%, $gray-50 100%);
+    padding: 2.5rem;
+      background: $bg-white;
 
     .top-bar {
       display: flex;

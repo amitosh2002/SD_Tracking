@@ -77,8 +77,11 @@ export default function UserProfile() {
     
     if (sucessFetch) {
       const user = userDetails;
-      // Generate avatar initials
-      const getInitials = () => {
+      // Generate avatar content (image or initials)
+      const getAvatarContent = () => {
+        if (user?.profile?.avatar) {
+          return <img src={user.profile.avatar} alt="Avatar" />;
+        }
         if (user?.profile?.firstName && user?.profile?.lastName) {
           return `${user?.profile.firstName[0]}${user?.profile.lastName[0]}`.toUpperCase();
         }
@@ -109,7 +112,7 @@ export default function UserProfile() {
         email: user?.email || '',
         phone: user?.phone || '',
         role: user?.role === 'user' ? 'Team Member' : user?.role.charAt(0).toUpperCase() + user?.role.slice(1),
-        avatar: getInitials(),
+        avatar: getAvatarContent(),
         joinDate: formatJoinDate(user?.createdAt),
         
       

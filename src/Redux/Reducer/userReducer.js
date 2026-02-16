@@ -13,6 +13,7 @@ const initialState={
     teamMembers:[],
     workDetailsLoading:false,
     workDetails:null,
+    workDetailsColumns: [],
     workDetailsFail:false,
     workDetailsErrorMessage:"",
     projectTeamMembers:[],
@@ -54,6 +55,7 @@ export const userReducer=createReducer(initialState,(builder)=>{
     })
     .addCase(USER_WORK_DETAILS,(state,action)=>{
         state.workDetails=action.payload.workDetails;
+        state.workDetailsColumns = action.payload.columns || [];
         state.workDetailsLoading=false;
         state.workDetailsFail=false;
     })
