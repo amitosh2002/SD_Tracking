@@ -33,7 +33,7 @@ function RunningJobs({projectId}) {
         <div className="jobs-list">
           {Array.isArray(currentProjectService) && currentProjectService.length > 0 ? (
             currentProjectService.map((service) => (
-              <div key={service._id} className="job-card professional-card">
+              <div key={service._id} className="job-card professional-card-member ">
                 <div className="job-info">
                   <div className={`job-icon-container ${service.isActive ? 'active' : ''}`}>
                     <Activity size={20} className={service.isActive ? "anim-pulse" : ""} />

@@ -82,7 +82,7 @@ function UserAccess({projectId}) {
           <div className="loading-state">Loading members...</div>
         ) : (
           (projectMembers || []).map((member) => (
-            <div key={member.userId} className="member-card professional-card">
+            <div key={member.userId} className="member-card professional-card-member">
               <div className="member-info">
                 <div className="avatar">
                   {member.details?.userName?.charAt(0) || <Shield size={18} />}

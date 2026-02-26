@@ -29,14 +29,21 @@ import {
     Terminal,
     Zap,
     TagIcon,
-    Presentation
+    Presentation,
+    Plus,
+    PlusIcon,
+    GitPullRequest,
+    GitCommit,
+    ExternalLink,
+    Activity
 } from 'lucide-react';
 import { ticketConfiguratorActionV1 } from '../Redux/Actions/PlatformActions.js/projectsActions';
+import SidePanel from '../customFiles/customComponent/utilityComponenet/sidePanel';
 
 const IssueDetails = ({ task }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    // const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const { ticketDetailsChange, selectedTicket } = useSelector((state) => state.worksTicket);
     const { ticketSprint, statusWorkFlow } = useSelector((state) => state.sprint);
@@ -53,7 +60,7 @@ const IssueDetails = ({ task }) => {
     const [sprints, setSprints] = useState([]);
     const [isEditingSP, setIsEditingSP] = useState(false);
     const [tempSP, setTempSP] = useState(0);
-    const [showBranches, setShowBranches] = useState(false);
+    const [showBranchPanel, setShowBranchPanel] = useState(false);
 
     // Initial Data Fetch
     useEffect(() => {
@@ -139,37 +146,35 @@ const IssueDetails = ({ task }) => {
         dispatch({ type: SHOW_SNACKBAR, payload: { message: "Time logged successfully", type: "success" } });
     };
 
-    const handleCreateBranchClick = async () => {
+    const handleCreateBranchClick = () => {
         if (!selectedTicket?.projectId) return;
-        try {
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${backendUrl}/api/gihub-repo/config/${selectedTicket.projectId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.success && data.config?.githubSecretCode) {
-                setGithubPopup(true);
-            } else {
-                setGithubErrorPopup(true);
-            }
-        } catch (err) {
+        
+        // Use the flag from the ticket if available, otherwise fallback to check
+        if (selectedTicket.isGithubConnected) {
+            setGithubPopup(true);
+        } else {
             setGithubErrorPopup(true);
-            dispatch({
-                type:"error",
-                message:err
-            })
         }
     };
 
     const handleBranchRedirect = () => {
-        navigate('/create-branch', {
-            state: {
-                ticketId: selectedTicket?._id,
-                ticketTitle: selectedTicket?.title,
-                ticketKey: selectedTicket?.ticketKey,
-                projectId: selectedTicket?.projectId
-            }
-        });
+        // const state = {
+        //     ticketId: selectedTicket?._id,
+        //     ticketTitle: selectedTicket?.title,
+        //     ticketKey: selectedTicket?.ticketKey,
+        //     projectId: selectedTicket?.projectId
+        // };
+        
+        // Save state to session storage to retrieve in new tab if needed, 
+        // or just use query params for simpler transport.
+        const queryParams = new URLSearchParams({
+            ticketId: selectedTicket?._id || '',
+            ticketTitle: selectedTicket?.title || '',
+            ticketKey: selectedTicket?.ticketKey || '',
+            projectId: selectedTicket?.projectId || ''
+        }).toString();
+
+        window.open(`/create-branch?${queryParams}`, '_blank');
         setGithubPopup(false);
     };
 
@@ -266,45 +271,14 @@ const IssueDetails = ({ task }) => {
                 <section className="sidebar_section highlight">
                     <h4 className="section_label">Intelligence & Dev</h4>
                     <div className="dev_grid">
-                        {selectedTicket?.githubBranches && selectedTicket.githubBranches.length > 0 ? (
-                            <div className="branch_section_expanded">
-                                <div className="branch_header" onClick={() => setShowBranches(!showBranches)}>
-                                    <div className="branch_info">
-                                        <GitBranch size={16} />
-                                        <span>{selectedTicket.githubBranches.length} Branch{selectedTicket.githubBranches.length > 1 ? 'es' : ''}</span>
-                                    </div>
-                                    <button className="icon_btn" onClick={(e) => { e.stopPropagation(); handleCreateBranchClick(); }}>
-                                        <UserPlus size={16} />
-                                    </button>
-                                </div>
-                                {showBranches && (
-                                    <div className="branch_list">
-                                        {selectedTicket.githubBranches.map((branch, idx) => (
-                                            <a 
-                                                key={idx} 
-                                                href={branch.url} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="branch_item"
-                                            >
-                                                <GitBranch size={14} />
-                                                <span className="branch_name">{branch.name}</span>
-                                                <span className={`branch_status ${branch.status?.toLowerCase()}`}>
-                                                    {branch.status || 'CREATED'}
-                                                </span>
-                                            </a>
-                                        ))}
-                                        <button className="create_branch_btn" onClick={handleCreateBranchClick}>
-                                            <UserPlus size={14} />
-                                            <span>Create New Branch</span>
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="dev_card branch" onClick={handleCreateBranchClick}>
+                        <div className="dev_card branch" onClick={handleCreateBranchClick}>
+                            <GitBranch size={16} />
+                            <span>Create Branch</span>
+                        </div>
+                        {selectedTicket?.githubBranches && selectedTicket.githubBranches.length > 0 && (
+                            <div className="dev_card branch_list_trigger" onClick={() => setShowBranchPanel(true)}>
                                 <GitBranch size={16} />
-                                <span>Create Branch</span>
+                                <span>View {selectedTicket.githubBranches.length} Branch{selectedTicket.githubBranches.length > 1 ? 'es' : ''}</span>
                             </div>
                         )}
                         <div className="dev_card vscode">
@@ -455,14 +429,30 @@ const IssueDetails = ({ task }) => {
             )}
 
             {githubPopup && (
-                <PopupV1 title="Source Control" onClose={() => setGithubPopup(false)}>
-                    <div className="modern_popup_content">
-                        <Zap size={40} className="popup_hero_icon" color="#7C3AED" />
-                        <h3>Ready to code?</h3>
-                        <p>We'll create a synchronized branch on GitHub for this task.</p>
+                <PopupV1 title="Source Control Intelligence" onClose={() => setGithubPopup(false)}>
+                    <div className="modern_popup_content info">
+                        <div className="icon_circle">
+                            <Zap size={32} className="popup_hero_icon" />
+                        </div>
+                        <h3>Synchronize Workflow</h3>
+                        <p>We're ready to create a dedicated development branch. This will link your commits directly to <strong>{selectedTicket?.ticketKey}</strong>.</p>
+                        
+                        <div className="feature_list_mini">
+                            <div className="feature_item_mini">
+                                <GitBranch size={14} /> <span>Automatic branch naming</span>
+                            </div>
+                            <div className="feature_item_mini">
+                                <Terminal size={14} /> <span>Bi-directional sync active</span>
+                            </div>
+                        </div>
+
                         <div className="popup_actions">
-                            <ButtonV1 type="primary" onClick={handleBranchRedirect}>Initialize Branch</ButtonV1>
-                            <ButtonV1 type="secondary" onClick={() => setGithubPopup(false)}>Not now</ButtonV1>
+                            <ButtonV1 type="primary" onClick={handleBranchRedirect} style={{ width: '100%' }}>
+                                Initialize Branch
+                            </ButtonV1>
+                            <ButtonV1 type="secondary" onClick={() => setGithubPopup(false)} style={{ width: '100%' }}>
+                                I'll do it later
+                            </ButtonV1>
                         </div>
                     </div>
                 </PopupV1>
@@ -471,22 +461,183 @@ const IssueDetails = ({ task }) => {
             {githubErrorPopup && (
                 <PopupV1 title="Configuration Required" onClose={() => setGithubErrorPopup(false)}>
                     <div className="modern_popup_content error">
-                        <AlertCircle size={40} className="popup_hero_icon" color="#EF4444" />
-                        <h3>GitHub Not Connected</h3>
-                        <p>This project hasn't been linked to a GitHub environment yet.</p>
+                        <div className="icon_circle_error">
+                            <AlertCircle size={32} className="popup_hero_icon" />
+                        </div>
+                        <h3>GitHub Not Linked</h3>
+                        <p>This project is currently running in "Offline Mode". Connect GitHub to enable automated branching and PR tracking.</p>
+                        
                         <div className="popup_actions">
                             {(userDetails?.role === 'admin' || userDetails?.accessType >= 300) ? (
-                                <ButtonV1 type="primary" onClick={() => navigate('/admin/github-config', { state: { projectId: selectedTicket?.projectId } })}>
-                                    Configure Project
+                                <ButtonV1 type="primary" onClick={() => navigate('/admin/github-config', { state: { projectId: selectedTicket?.projectId } })} style={{ width: '100%' }}>
+                                    Link Repository Now
                                 </ButtonV1>
                             ) : (
-                                <p className="admin_hint">Please ask your administrator to link GitHub.</p>
+                                <div className="admin_notice">
+                                    <Lock size={14} />
+                                    <span>Administrator access required to link GitHub environments.</span>
+                                </div>
                             )}
-                            <ButtonV1 type="secondary" onClick={() => setGithubErrorPopup(false)}>Dismiss</ButtonV1>
+                            <ButtonV1 type="secondary" onClick={() => setGithubErrorPopup(false)} style={{ width: '100%' }}>
+                                Continue without GitHub
+                            </ButtonV1>
                         </div>
                     </div>
                 </PopupV1>
             )}
+
+            {/* Branch Side Panel */}
+          
+
+            <SidePanel 
+    isOpen={showBranchPanel} 
+    onClose={() => setShowBranchPanel(false)}
+    width="450px"
+>
+    <div className="repo-panel">
+        <div className="repo-panel__header">
+            <div className="repo-panel__title">
+                <GitBranch size={22} />
+                <div className="title-text">
+                    <h3>Ticket Branches Details</h3>
+                    <span className="subtitle">GitHub Integration</span>
+                </div>
+            </div>
+            <button 
+                className="repo-panel__close" 
+                onClick={() => setShowBranchPanel(false)}
+                aria-label="Close panel"
+            >
+                <ChevronRight size={20} />
+            </button>
+        </div>
+
+        <div className="repo-panel__body">
+            {selectedTicket?.githubBranches?.length > 0 ? (
+                <>
+                    {/* Repository Info Summary */}
+                    <div className="repo-summary">
+                        <div className="repo-summary__stat">
+                            <GitBranch size={16} />
+                            <span className="stat-value">{selectedTicket.githubBranches.length}</span>
+                            <span className="stat-label">Branches</span>
+                        </div>
+                        <div className="repo-summary__stat">
+                            <GitPullRequest size={16} />
+                            <span className="stat-value">
+                                {selectedTicket.githubBranches.filter(b => b.status === 'merged').length}
+                            </span>
+                            <span className="stat-label">Merged</span>
+                        </div>
+                        <div className="repo-summary__stat">
+                            <Activity size={16} />
+                            <span className="stat-value">
+                                {selectedTicket.githubBranches.filter(b => b.status === 'active').length}
+                            </span>
+                            <span className="stat-label">Active</span>
+                        </div>
+                    </div>
+
+                    {/* Branch List */}
+                    <div className="branch-list">
+                        <div className="branch-list__header">
+                            <h4>Branches</h4>
+                            <button className="btn-create-branch" onClick={handleCreateBranchClick}>
+                                <Plus size={16} />
+                                New Branch
+                            </button>
+                        </div>
+
+                        {selectedTicket.githubBranches.map((branch, idx) => (
+                            <div key={idx} className="branch-card">
+                                <div className="branch-card__header">
+                                    <div className="branch-name-wrapper">
+                                        <GitBranch size={16} className="branch-icon" />
+                                        <span className="branch-name" title={branch.name}>
+                                            {branch.name}
+                                        </span>
+                                    </div>
+                                    <span className={`branch-status branch-status--${branch.status?.toLowerCase()}`}>
+                                        {branch.status === 'merged' && <GitMerge size={12} />}
+                                        {branch.status === 'active' && <Circle size={12} />}
+                                        {branch.status === 'closed' && <XCircle size={12} />}
+                                        {branch.status}
+                                    </span>
+                                </div>
+
+                                <div className="branch-card__meta">
+                                    <div className="meta-item">
+                                        <User size={12} />
+                                        <span>{branch.createdBy || 'System'}</span>
+                                    </div>
+                                    <div className="meta-divider">•</div>
+                                    <div className="meta-item">
+                                        <Clock size={12} />
+                                        <span>{new Date(branch.createdAt).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+
+                                {branch.commits && (
+                                    <div className="branch-card__commits">
+                                        <GitCommit size={12} />
+                                        <span>{branch.commits} commits</span>
+                                    </div>
+                                )}
+
+                                <div className="branch-card__actions">
+                                    <a 
+                                        href={branch.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="btn-github"
+                                    >
+                                        <ExternalLink size={14} />
+                                        View on GitHub
+                                    </a>
+                                    {/* {branch.status === 'active' && (
+                                        <button className="btn-pr" onClick={() => handleCreatePR(branch)}>
+                                            <GitPullRequest size={14} />
+                                            Create PR
+                                        </button>
+                                    )} */}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <div className="repo-empty-state">
+                    <div className="empty-state-icon">
+                        <GitBranch size={48} />
+                    </div>
+                    <h4 className="empty-state-title">No Repository Connected</h4>
+                    <p className="empty-state-description">
+                        Connect this task to a GitHub repository to track branches, commits, and pull requests.
+                    </p>
+                    <div className="empty-state-actions">
+                        <ButtonV1 
+                            type="primary" 
+                            onClick={() => { 
+                                setShowBranchPanel(false); 
+                                handleCreateBranchClick(); 
+                            }}
+                        >
+                            <PlusIcon size={16} />
+                            Create First Branch
+                        </ButtonV1>
+                        {/* <ButtonV1 
+                            type="secondary" 
+                            onClick={handleLinkRepository}
+                        >
+                            <Link size={16} />
+                            Link Repository
+                        </ButtonV1> */}
+                    </div>
+                </div>
+            )}
+        </div>
+    </div>
+</SidePanel>
         </div>
     );
 };

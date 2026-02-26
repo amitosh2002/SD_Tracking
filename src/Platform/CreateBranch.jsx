@@ -1,9 +1,9 @@
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useReducer, useEffect, useState, useCallback, useMemo } from "react";
 import "./styles/createBranch.scss";
-import copyIcon from "../assets/platformIcons/TaskPlat/copyIcon.svg";
+// import copyIcon from "../assets/platformIcons/TaskPlat/copyIcon.svg";
 import { ButtonV1 } from "../customFiles/customComponent/CustomButtons";
 import { useDispatch as useReduxDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import apiClient from "../utils/axiosConfig";
 import { SHOW_SNACKBAR } from "../Redux/Constants/PlatformConstatnt/platformConstant";
 import { 
@@ -17,6 +17,7 @@ import {
     ChevronRight,
     Lock
 } from "lucide-react";
+import { CustomDropDownV3 } from "../customFiles/customComponent/DropDown";
 
 const initialState = {
     repos: [],
@@ -27,6 +28,7 @@ const initialState = {
     createdBranchUrl: '',
     isLoading: false,
     isFetchingBranches: false,
+    repositories:[],
 };
 
 function reducer(state, action) {
@@ -47,6 +49,8 @@ function reducer(state, action) {
             return { ...state, isLoading: action.payload };
         case 'START_FETCHING_BRANCHES':
             return { ...state, isFetchingBranches: true };
+        case 'SET_REPOSITORIES':
+            return { ...state, repositories: action.payload };
         default:
             return state;
     }
@@ -54,9 +58,29 @@ function reducer(state, action) {
 
 const CreateBranch = () => {
     const location = useLocation();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const reduxDispatch = useReduxDispatch();
-    const { ticketId, ticketTitle, ticketKey, projectId } = location.state || {};
+    
+    // Support both state and query params
+    const getParams = useCallback(() => {
+        console.log("DEBUG: getParams called. location.state:", location.state, "location.search:", location.search);
+        if (location.state && Object.keys(location.state).length > 0) {
+            return location.state;
+        }
+        const searchParams = new URLSearchParams(location.search);
+        const params = {
+            ticketId: searchParams.get('ticketId'),
+            ticketTitle: searchParams.get('ticketTitle'),
+            ticketKey: searchParams.get('ticketKey'),
+            projectId: searchParams.get('projectId')
+        };
+        console.log("DEBUG: Extracted search params:", params);
+        return params;
+    }, [location]);
+
+    const params = getParams();
+    const { ticketId, ticketKey, projectId } = params;
+    const [hasCreated, setHasCreated] = useState(false);
 
     const [state, dispatch] = useReducer(reducer, {
         ...initialState,
@@ -64,58 +88,101 @@ const CreateBranch = () => {
     });
 
     const [focusedField, setFocusedField] = useState('welcome');
-    const { repos, branches, selectedRepo, baseBranch, newBranchName, createdBranchUrl, isLoading, isFetchingBranches } = state;
+    const { branches, selectedRepo, baseBranch, newBranchName, createdBranchUrl, isLoading, isFetchingBranches } = state;
 
-    useEffect(() => {
-        if (projectId) {
-            fetchConfig(projectId);
-        } else {
-            reduxDispatch({ type: SHOW_SNACKBAR, payload: { message: "No project context found", type: "error" } });
-            navigate(-1);
-        }
-    }, [projectId]);
-
-    const fetchConfig = async (pid) => {
+    const fetchRepos = useCallback(async (pid) => {
+        console.log("DEBUG: fetchRepos triggered for pid:", pid);
         try {
-            const res = await apiClient.get(`/api/gihub-repo/config/${pid}`);
-            if (res.data.success) {
-                fetchRepos(pid);
-            }
-        } catch (err) {
-            reduxDispatch({ type: SHOW_SNACKBAR, payload: { message: "GitHub not configured for this project", type: "error" } });
-            navigate(-1);
-        }
-    };
-
-    const fetchRepos = async (pid) => {
-        try {
-            const res = await apiClient.get(`/api/gihub-repo/repos?projectId=${pid}`);
+            console.log("DEBUG: Making request to /api/auth/github/repos");
+            const res = await apiClient.get(`/api/auth/github/repos?projectId=${pid}`);
+            console.log("DEBUG: fetchRepos API response:", res.data);
+            // dispatch({ type: 'SET_REPOS', payload: res.data.repos });
             if (res.data.success) {
                 dispatch({ type: 'SET_REPOS', payload: res.data.repos });
             }
         } catch (err) {
-            console.error("Error fetching repos", err);
+            console.error("DEBUG: fetchRepos error:", err);
+            reduxDispatch({ type: SHOW_SNACKBAR, payload: { message: "Failed to fetch repositories", type: "error" } });
         }
-    };
+    }, [reduxDispatch]);
+    const getProjectRepositories = useMemo(() => {
+        return Array.isArray(state.repos) ? state.repos.map((repo) => ({
+            value: repo.fullName || repo.full_name, // Backend use fullName, github API uses full_name
+            label: repo.name
+        })) : [];
+    }, [state.repos]);
 
-    const fetchBranches = async (repoFullName) => {
-        if (!repoFullName) return;
-        dispatch({ type: 'START_FETCHING_BRANCHES' });
-        const [owner, repo] = repoFullName.split('/');
+    const getProjectBranches = useMemo(() => {
+        return Array.isArray(branches) ? branches.map((branch) => ({
+            value: branch.name,
+            label: branch.name
+        })) : [];
+    }, [branches]);
+
+    const fetchConfig = useCallback(async (pid) => {
         try {
-            const res = await apiClient.get(`/api/gihub-repo/repos/${owner}/${repo}/branches?projectId=${projectId}`);
-            dispatch({ type: 'SET_BRANCHES', payload: Array.isArray(res.data) ? res.data : [] });
+            console.log("DEBUG: fetchConfig started for pid:", pid);
+            const res = await apiClient.get(`/api/platform/v1/projects/${pid}`);
+            console.log("DEBUG: projects API raw response:", res.data);
+            
+            // The backend getProjectById returns an array [projectObj]
+            const projectArray = Array.isArray(res.data) ? res.data : [];
+            const projectData = projectArray.length > 0 ? projectArray[0] : null;
+            
+            console.log("DEBUG: Extracted projectData:", projectData);
+
+            if (projectData && projectData.isGithubConnected) {
+                console.log("DEBUG: isGithubConnected is TRUE. Calling fetchRepos...");
+                fetchRepos(pid);
+            } else {
+                console.warn("DEBUG: GitHub connection blocked. isGithubConnected:", projectData?.isGithubConnected);
+                reduxDispatch({ 
+                    type: SHOW_SNACKBAR, 
+                    payload: { message: "GitHub not connected for this project according to DB", type: "error" } 
+                });
+            }
         } catch (err) {
-            console.error("Error fetching branches", err);
-            dispatch({ type: 'SET_BRANCHES', payload: [] });
+            console.error("DEBUG: fetchConfig CATCH error:", err);
+            reduxDispatch({ type: SHOW_SNACKBAR, payload: { message: "Failed to verify project configuration", type: "error" } });
         }
-    };
+    }, [fetchRepos, reduxDispatch]);
+
+    const fetchBranches = useCallback(async (repoName) => {
+        console.log("DEBUG: fetchBranches called with:", { projectId, repoName });
+        if (!projectId || !repoName) {
+            console.warn("DEBUG: Missing projectId or repoName", { projectId, repoName });
+            return;
+        }
+        dispatch({ type: 'START_FETCHING_BRANCHES' });
+        try {
+            console.log("DEBUG: Making API call to fetch branches for:", repoName);
+            const res = await apiClient.get(`/api/auth/github/branches?projectId=${projectId}&repoName=${repoName}`);
+            console.log("DEBUG: Branches API response:", res.data);
+            dispatch({ type: 'SET_BRANCHES', payload: Array.isArray(res.data.branches) ? res.data.branches : [] });
+        } catch (err) {
+            console.error("DEBUG: Fetch branches error:", err);
+            dispatch({ type: 'SET_BRANCHES', payload: [] });
+            reduxDispatch({ type: SHOW_SNACKBAR, payload: { message: "Failed to fetch branches", type: "error" } });
+        }
+    }, [projectId, reduxDispatch]);
 
     useEffect(() => {
+        console.log("DEBUG: Config Effect running. projectId:", projectId);
+        if (projectId) {
+            fetchConfig(projectId);
+        } else {
+            console.error("DEBUG: No projectId found in params");
+            reduxDispatch({ type: SHOW_SNACKBAR, payload: { message: "No project context found", type: "error" } });
+            // navigate(-1);
+        }
+    }, [projectId, fetchConfig, reduxDispatch]);
+
+    useEffect(() => {
+        console.log("DEBUG: Branch fetch effect triggered. selectedRepo:", selectedRepo);
         if (selectedRepo) {
             fetchBranches(selectedRepo);
         }
-    }, [selectedRepo]);
+    }, [selectedRepo, fetchBranches]);
 
     const handleCreateBranch = async () => {
         if (!selectedRepo || !baseBranch || !newBranchName) {
@@ -124,17 +191,18 @@ const CreateBranch = () => {
         }
 
         dispatch({ type: 'SET_LOADING', payload: true });
-        const [owner, repo] = selectedRepo.split('/');
         try {
-            const res = await apiClient.post(`/api/gihub-repo/repos/${owner}/${repo}/branches`, {
-                newBranchName,
-                fromBranch: baseBranch,
+            const res = await apiClient.post(`/api/auth/github/create-branch`, {
+                newBranch: newBranchName, 
+                baseBranch,
                 projectId,
+                repo: selectedRepo, // Added repo full name
                 ticketId
             });
 
             if (res.data.success) {
-                dispatch({ type: 'SET_CREATED_URL', payload: res.data.branchUrl });
+                dispatch({ type: 'SET_CREATED_URL', payload: res.data.data.branchUrl });
+                setHasCreated(true);
                 reduxDispatch({ 
                     type: SHOW_SNACKBAR, 
                     payload: { message: `Branch created successfully!`, type: "success" } 
@@ -200,18 +268,14 @@ const CreateBranch = () => {
                             onFocus={() => setFocusedField('repo')}
                         >
                             <label className="field_label">Destination Repository</label>
-                            <div className="input_container">
-                                <Globe className="field_icon" size={20} />
-                                <select 
-                                    className="modern_input_tag"
-                                    onChange={e => dispatch({ type: 'SET_SELECTED_REPO', payload: e.target.value })} 
+                            <div className="input_container_custom">
+                                <CustomDropDownV3
+                                    options={getProjectRepositories}
                                     value={selectedRepo}
-                                >
-                                    <option value="">Select a repository</option>
-                                    {repos.map(r => (
-                                        <option key={r.id} value={r.full_name}>{r.full_name}</option>
-                                    ))}
-                                </select>
+                                    onChange={(val) => dispatch({ type: 'SET_SELECTED_REPO', payload: val })}
+                                    placeholder="Select a repository"
+                                    className="modern_dropdown_v3"
+                                />
                             </div>
                         </div>
 
@@ -220,19 +284,15 @@ const CreateBranch = () => {
                             onFocus={() => setFocusedField('base')}
                         >
                             <label className="field_label">Inherit from Base</label>
-                            <div className="input_container">
-                                <GitBranch className="field_icon" size={20} />
-                                <select 
-                                    className="modern_input_tag"
-                                    onChange={e => dispatch({ type: 'SET_BASE_BRANCH', payload: e.target.value })} 
+                            <div className="input_container_custom">
+                                <CustomDropDownV3
+                                    options={getProjectBranches}
                                     value={baseBranch}
+                                    onChange={(val) => dispatch({ type: 'SET_BASE_BRANCH', payload: val })}
+                                    placeholder={isFetchingBranches ? "Scanning branches..." : "Select base branch"}
                                     disabled={!selectedRepo || isFetchingBranches}
-                                >
-                                    <option value="">{isFetchingBranches ? 'Scanning branches...' : 'Select base'}</option>
-                                    {branches.map(b => (
-                                        <option key={b.name} value={b.name}>{b.name}</option>
-                                    ))}
-                                </select>
+                                    className="modern_dropdown_v3"
+                                />
                             </div>
                         </div>
 
@@ -256,10 +316,10 @@ const CreateBranch = () => {
                         <div className="button_row">
                             <ButtonV1 
                                 onClick={handleCreateBranch}
-                                text={isLoading ? "Generating..." : "Synchronize Repository"}
+                                text={hasCreated ? "Branch Created" : (isLoading ? "Generating..." : "Synchronize Repository")}
                                 type="primary"
                                 style={{ width: '100%', height: '54px', borderRadius: '16px', fontSize: '1.1rem' }}
-                                disabled={isLoading}
+                                disabled={isLoading || hasCreated}
                             />
                         </div>
                          {focusedField === 'success' && createdBranchUrl && (

@@ -66,7 +66,8 @@ const Layoutv1 = () => {
       "/admin",
       "/create-branch",
       "/auth/google/callback",
-      "/api/auth/github/github/setup"
+      "/api/auth/github/github/setup",
+      "/api/auth/github/github/auth"
     ];
 
     setHideNavbar(hideNavbarRoutes.includes(location.pathname));
