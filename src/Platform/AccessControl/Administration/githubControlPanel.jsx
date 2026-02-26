@@ -1,141 +1,66 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { 
   Github, Key, CheckCircle, AlertCircle, Loader, RefreshCw, 
   GitBranch, GitPullRequest, Users, Settings, Info, ExternalLink, 
   Play, Shield, Database, Zap, X, Copy, Terminal, Monitor, Code,
-  ChevronRight, Search, Globe, Lock
+  ChevronRight, Search, Globe, Lock, Clock, FolderKanban, Activity
 } from 'lucide-react';
 import { getAllProjects } from '../../../Redux/Actions/PlatformActions.js/projectsActions';
 import { SHOW_SNACKBAR } from '../../../Redux/Constants/PlatformConstatnt/platformConstant';
 import './styles/GitHubAdminPanel.scss';
 import apiClient from '../../../utils/axiosConfig';
 
-const GitHubAdminPanel = ({projectId}) => {
+const GitHubAdminPanel = () => {
   const dispatch = useDispatch();
-  const { projects } = useSelector((state) => state.projects);
+  const { projectId } = useParams();
   const { userDetails } = useSelector((state) => state.user);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-  const [showTokenModal, setShowTokenModal] = useState(false);
-  const [tokenInput, setTokenInput] = useState('');
-  const [targetProjectId, setTargetProjectId] = useState('');
-  const [sourceProjectId, setSourceProjectId] = useState('');
-  const [isCopyMode, setIsCopyMode] = useState(false);
-  const [projectConfigs, setProjectConfigs] = useState([]);
+  const [projectInstallations, setProjectInstallations] = useState([]);
   const [repoStats, setRepoStats] = useState({
-    totalRepos: 12,
-    totalBranches: 48,
-    openPRs: 7,
-    totalCommits: 1243
+    totalProjects: 0,
+    totalRepos: 0,
+    totalBranches: 0,
+    openPRs: 0,
+    totalCommits: 0
   });
 
   useEffect(() => {
     if (userDetails?.id) {
       dispatch(getAllProjects(userDetails.id));
     }
-    fetchProjectConfigs();
-  }, [userDetails, dispatch]);
+    fetchInstallations(projectId);
+    fetchSystemStats(projectId);
+  }, [userDetails, dispatch, projectId]);
 
-  const fetchProjectConfigs = async () => {
+  const fetchInstallations = async (pid = '') => {
     try {
-      const res = await apiClient.get('/api/gihub-repo/config/all');
+      const url = pid ? `/api/auth/github/installations?projectId=${pid}` : '/api/auth/github/installations';
+      const res = await apiClient.get(url);
       if (res.data.success) {
-        setProjectConfigs(res.data.configs || []);
+        setProjectInstallations(res.data.installations || []);
       }
     } catch (err) {
-      console.error("Failed to fetch configs", err);
+      console.error("Failed to fetch installations", err);
     }
   };
 
-  const handleConnect = async () => {
-    if (!tokenInput || !targetProjectId) {
-      dispatch({ 
-        type: SHOW_SNACKBAR, 
-        payload: { message: "Project and Token are required", type: "error" } 
-      });
-      return;
-    }
-    
-    setIsLoading(true);
+  const fetchSystemStats = async (pid = '') => {
     try {
-      const res = await apiClient.post('/api/gihub-repo/config', {
-        projectId: targetProjectId,
-        githubSecretCode: tokenInput
-      });
-
+      const url = pid ? `/api/auth/github/stats?projectId=${pid}` : '/api/auth/github/stats';
+      const res = await apiClient.get(url);
       if (res.data.success) {
-        dispatch({ 
-          type: SHOW_SNACKBAR, 
-          payload: { message: "GitHub connected to project!", type: "success" } 
-        });
-        setTokenInput('');
-        setShowTokenModal(false);
-        fetchProjectConfigs();
+        setRepoStats(res.data.stats);
       }
     } catch (err) {
-      dispatch({ 
-        type: SHOW_SNACKBAR, 
-        payload: { message: err.response?.data?.message || "Connection failed", type: "error" } 
-      });
-    } finally {
-      setIsLoading(false);
+      console.error("Failed to fetch system stats", err);
     }
   };
 
-  const handleCopyConfig = async () => {
-    if (!sourceProjectId || !targetProjectId) {
-      dispatch({ 
-        type: SHOW_SNACKBAR, 
-        payload: { message: "Select source and target projects", type: "error" } 
-      });
-      return;
-    }
 
-    setIsLoading(true);
-    try {
-      const res = await apiClient.post('/api/gihub-repo/config/copy', {
-        sourceProjectId,
-        targetProjectId
-      });
 
-      if (res.data.success) {
-        dispatch({ 
-          type: SHOW_SNACKBAR, 
-          payload: { message: "Configuration copied successfully!", type: "success" } 
-        });
-        setShowTokenModal(false);
-        fetchProjectConfigs();
-      }
-    } catch (err) {
-      dispatch({ 
-        type: SHOW_SNACKBAR, 
-        payload: { message: "Copy failed", type: "error" } 
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const projectConnList = useMemo(() => {
-    return projects?.map(p => {
-      const config = projectConfigs.find(c => c.projectId === p._id);
-      return {
-        ...p,
-        isConnected: !!config,
-        updatedAt: config?.updatedAt
-      };
-    }) || [];
-  }, [projects, projectConfigs]);
-
-  const stats = useMemo(() => {
-    const connectedCount = projectConnList.filter(p => p.isConnected).length;
-    return {
-      connectedCount,
-      totalCount: projectConnList.length
-    };
-  }, [projectConnList]);
 
   return (
     <div className="github-admin-panel">
@@ -154,26 +79,45 @@ const GitHubAdminPanel = ({projectId}) => {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <button
-                className="connect-button"
-                onClick={() => {
-                  setIsCopyMode(false);
-                  setShowTokenModal(true);
-                }}
-              >
-                <Key size={20} />
-                Connect New Project
-              </button>
+              {projectInstallations.length > 0 ? (
+                <div className="status-badge-header">
+                  <CheckCircle size={20} color="#10b981" />
+                  <span style={{ fontWeight: 600, color: '#111827' }}>Installed</span>
+                </div>
+              ) : (
+                <button
+                  className="connect-button"
+                  onClick={() => {
+                    window.location.href = `https://github.com/apps/themysticsquadapp/installations/new?state=${projectId}`;
+                  }}
+                >
+                  <Zap size={20} />
+                  Install App
+                </button>
+              )}
             </div>
           </div>
+        </div>
+
+
+
+        <div className="section-title-simple">
+          <Activity size={20} />
+          <h2>Project GitHub Statistics</h2>
         </div>
 
         {/* Stats Grid */}
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-icon"><Database size={24} /></div>
-            <div className="stat-value">{stats.connectedCount}/{stats.totalCount}</div>
+            <div className="stat-value">{repoStats.totalProjects}</div>
             <div className="stat-label">Projects Connected</div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon"><Monitor size={24} /></div>
+            <div className="stat-value">{repoStats.totalRepos}</div>
+            <div className="stat-label">Tracked Repositories</div>
           </div>
 
           <div className="stat-card">
@@ -228,69 +172,58 @@ const GitHubAdminPanel = ({projectId}) => {
           {activeTab === 'overview' && (
             <div className="connectivity-section">
               <div className="section-header">
-                <Globe size={24} />
-                <h3>Project Connectivity</h3>
-                <div className="header-actions">
-                    <button className="text-btn" onClick={() => {
-                        setIsCopyMode(true);
-                        setShowTokenModal(true);
-                    }}>
-                        <Copy size={16} /> Copy Configuration
-                    </button>
-                </div>
+                <Shield size={24} />
+                <h3>Active Installations</h3>
               </div>
 
-              <div className="project-list">
-                {projectConnList.map((project) => (
-                  <div key={project._id} className="project-item">
-                    <div className="project-info">
-                      <div className="project-avatar">
-                        {project.projectName?.charAt(0)}
-                      </div>
-                      <div>
-                        <h4>{project.projectName}</h4>
-                        <p className="project-id">ID: {project._id}</p>
-                      </div>
-                    </div>
-
-                    <div className="connection-tag-group">
-                      {project.isConnected ? (
-                        <div className="status-badge connected">
-                          <CheckCircle size={14} /> Connected
+              <div className="installations-list">
+                {projectInstallations.length > 0 ? (
+                  projectInstallations.map((inst) => (
+                    <div key={inst._id} className="installation-item">
+                      <div className="inst-main-info">
+                        <div className="inst-avatar">
+                          <Github size={24} />
                         </div>
-                      ) : (
-                        <div className="status-badge disconnected">
-                          <AlertCircle size={14} /> Not Linked
+                        <div className="inst-details">
+                          <div className="inst-title-row">
+                            <h4>Installation #{inst.installationId}</h4>
+                            <span className={`status-tag ${inst.suspended ? 'suspended' : 'active'}`}>
+                              {inst.suspended ? 'Suspended' : 'Active'}
+                            </span>
+                          </div>
+                          <div className="inst-meta">
+                            <span><Database size={14} /> {inst.repositoryCount || 0} Repositories</span>
+                            <span><Monitor size={14} /> {inst.projectName}</span>
+                            <span><Clock size={14} /> {new Date(inst.installedAt || inst.createdAt).toLocaleDateString()}</span>
+                          </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
 
-                    <div className="project-actions">
-                      <button 
-                        className="icon-btn" 
-                        title="Configure GitHub"
-                        onClick={() => {
-                            setTargetProjectId(project._id);
-                            setIsCopyMode(false);
-                            setShowTokenModal(true);
-                        }}
-                      >
-                        <Settings size={18} />
-                      </button>
-                      <button 
-                         className="icon-btn" 
-                         title="Copy Config to this project"
-                         onClick={() => {
-                             setTargetProjectId(project._id);
-                             setIsCopyMode(true);
-                             setShowTokenModal(true);
-                         }}
-                      >
-                        <Copy size={18} />
-                      </button>
+                      <div className="inst-actions">
+                        <button 
+                          className="action-btn-outline" 
+                          onClick={() => window.open(`https://github.com/settings/installations/${inst.installationId}`, '_blank')}
+                        >
+                          <ExternalLink size={16} /> Manage on GitHub
+                        </button>
+                        <button 
+                          className="action-btn-primary"
+                          onClick={() => {
+                            window.location.href = `https://github.com/apps/themysticsquadapp/installations/new?state=${inst.projectId}`;
+                          }}
+                        >
+                          <Settings size={16} /> Configure
+                        </button>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="empty-state">
+                    <div className="empty-icon"><Github size={48} /></div>
+                    <h4>No Installations Found</h4>
+                    <p>Connect your GitHub account to start tracking repositories and automated branching.</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           )}
@@ -303,51 +236,26 @@ const GitHubAdminPanel = ({projectId}) => {
               </div>
               
               <div className="setup-methods-grid">
-                <div className="setup-method-card featured">
-                  <div className="badge">Scaling</div>
+                <div className="setup-method-card featured" style={{ gridColumn: 'span 2' }}>
+                  <div className="badge">Recommended</div>
                   <div className="method-icon"><Zap size={32} /></div>
                   <h4>GitHub App Connection</h4>
                   <p className="description">
-                    Organization-wide connection. Install once and manage access for all repositories. 
-                    Recommended for large teams.
+                    Organization-wide connection. Install the Hora GitHub App to enable automated branching, 
+                    PR tracking, and developer velocity metrics across all your repositories.
                   </p>
                   <div className=" "  style={{zIndex:"9999",width:"100%"}}  >
                    <button
                         type="button"
                         className="action-button primary"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          try {
-                            window.location.href = `https://github.com/apps/themysticsquadapp/installations/new?state=${projectId}`;
-                          } catch (error) {
-                            console.error("Redirect failed:", error);
-                            // Fallback: open in new tab
-                            window.open("https://github.com/apps/themysticsquadapp/installations/new", "_blank");
-                          }
+                        onClick={() => {
+                          window.location.href = `https://github.com/apps/themysticsquadapp/installations/new`;
                         }}
                       >
-                        Install Provider App
+                        <Github size={20} />
+                        Install GitHub App
                       </button>
                   </div>
-                </div>
-                <div className="setup-method-card">
-                  <div className="method-icon"><Shield size={32} /></div>
-                  <h4>PAT (User Control)</h4>
-                  <p className="description">
-                    Link individual projects using Personal Access Tokens. 
-                    Best for granular permissions and private repos.
-                  </p>
-                  <button 
-                    className="action-button secondary"
-                    onClick={() => {
-                        setIsCopyMode(false);
-                        setShowTokenModal(true);
-                        
-                    }}
-                  >
-                    Connect with Token
-                  </button>
                 </div>
               </div>
             </div>
@@ -479,86 +387,6 @@ const GitHubAdminPanel = ({projectId}) => {
         </div>
       </div>
 
-      {/* Unified Connection / Copy Modal */}
-      {showTokenModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <div className="modal-header-icon">
-                {isCopyMode ? <Copy size={28} /> : <Key size={28} />}
-              </div>
-              <h2>{isCopyMode ? 'Copy Configuration' : 'Connect GitHub Token'}</h2>
-              <button className="close-btn" onClick={() => setShowTokenModal(false)}>
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="form-group">
-                <label className="form-label">Target Project</label>
-                <select 
-                  className="form-input"
-                  value={targetProjectId}
-                  onChange={(e) => setTargetProjectId(e.target.value)}
-                >
-                  <option value="">-- Select Project --</option>
-                  {projects?.map(p => (
-                    <option key={p._id} value={p._id}>{p.projectName}</option>
-                  ))}
-                </select>
-              </div>
-
-              {isCopyMode ? (
-                <div className="form-group">
-                  <label className="form-label">Source Configuration</label>
-                  <select 
-                    className="form-input"
-                    value={sourceProjectId}
-                    onChange={(e) => setSourceProjectId(e.target.value)}
-                  >
-                    <option value="">-- Select Source Project --</option>
-                    {projectConfigs.map(c => (
-                      <option key={c.projectId} value={c.projectId}>
-                        {projects.find(p => p._id === c.projectId)?.projectName || 'Unknown Project'}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="form-hint">
-                    <Info size={14} />
-                    <span>Copying will apply the same GitHub token and settings to the target project.</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="form-group">
-                  <label className="form-label">Personal Access Token</label>
-                  <input 
-                    type="password" 
-                    className="form-input" 
-                    placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                    value={tokenInput}
-                    onChange={(e) => setTokenInput(e.target.value)}
-                  />
-                  <div className="form-hint">
-                    <Info size={14} />
-                    <span>Ensure token has 'repo' scopes for proper sync.</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={() => setShowTokenModal(false)}>Cancel</button>
-              <button 
-                className="btn btn-primary"
-                onClick={isCopyMode ? handleCopyConfig : handleConnect}
-                disabled={isLoading}
-              >
-                {isLoading ? <Loader className="spin" size={20} /> : (isCopyMode ? 'Copy Config' : 'Save Connection')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

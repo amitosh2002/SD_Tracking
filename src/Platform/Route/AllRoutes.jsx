@@ -42,6 +42,7 @@ import SprintTaskList from "../TaskManagement/SprintTaskList";
 import ProjectCreationPage from "../GenerailForms/projectCreationFlow";
 import GitHubConnect from "../Github/GithubConnect";
 import ProjectInsight from "../Components/projectInsight";
+import GitHubAuthPage from "../Github/Github0Auth";
 
 // import { useSelector } from "react-redux";
 
@@ -56,7 +57,7 @@ const AllRoutes = () => {
         // <BrowserRouter>
             <Routes>
                 <Route path="/create-branch" element={<CreateBranch />} />
-                <Route path="/admin/github-config" element={<GithubAdminConfig />} />
+                <Route path="/admin/github-config" element={<GitHubAdminPanel />} />
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 <Route path="/create" element={<TaskGenerator />} />
                 <Route path="/all-work" element={<TaskManager />} />
@@ -106,6 +107,7 @@ const AllRoutes = () => {
 
 
                 <Route path="/api/auth/github/github/setup" element={<GitHubConnect />} />
+                <Route path="/api/auth/github/github/auth" element={<GitHubAuthPage />} />
 
 
                 {/* <Route path="/register" element={<HoraRegisration />} /> */}
