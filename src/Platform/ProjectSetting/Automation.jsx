@@ -36,7 +36,7 @@ function Automations({projectId}) {
       <div className="jobs-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {allHoraService && allHoraService.length > 0 ? (
           allHoraService.map((service) => (
-            <div key={service.serviceId} className="job-card professional-card">
+            <div key={service.serviceId} className="job-card professional-card-member ">
               <div className="job-info">
                 <div className={`job-icon-container ${service.status === 'ACTIVE' ? 'active' : ''}`}>
                   <Zap size={20} />

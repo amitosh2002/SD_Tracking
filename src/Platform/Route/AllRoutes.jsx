@@ -57,7 +57,7 @@ const AllRoutes = () => {
         // <BrowserRouter>
             <Routes>
                 <Route path="/create-branch" element={<CreateBranch />} />
-                <Route path="/admin/github-config" element={<GithubAdminConfig />} />
+                <Route path="/admin/github-config" element={<GitHubAdminPanel />} />
                 {/* <Route path="/" element={<LoginPage />} /> */}
                 <Route path="/create" element={<TaskGenerator />} />
                 <Route path="/all-work" element={<TaskManager />} />
