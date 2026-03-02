@@ -152,10 +152,15 @@ const IssueDetails = ({ task }) => {
         if (!projectMembers || projectMembers.length === 0) return [];
         return projectMembers
             .filter(m => m.userId) // Only accepted users can be assigned tasks
-            .map(m => ({
-                label: m.username || m.name || "Unknown",
-                value: m.userId
-            }));
+            .map(m => {
+                const label = m.username || m.name || "Unknown";
+                return {
+                    label: label,
+                    value: m.userId,
+                    image: m.profile?.avatar,
+                    initials: label.charAt(0).toUpperCase()
+                };
+            });
     }, [projectMembers]);
 
     // Handlers
@@ -415,7 +420,13 @@ const IssueDetails = ({ task }) => {
                             <span className="small_label">Reporter</span>
                             <div className="person_row">
                                 <div className="user_badge">
-                                    <div className="avatar_circle secondary">{selectedTicket?.reporter?.[0] || 'R'}</div>
+                                    <div className="avatar_circle secondary">
+                                        {selectedTicket?.reporterImage ? (
+                                            <img src={selectedTicket.reporterImage} alt={selectedTicket.reporter} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                                        ) : (
+                                            selectedTicket?.reporter?.[0] || 'R'
+                                        )}
+                                    </div>
                                     <span className="username_text">{selectedTicket?.reporter || 'Reporter'}</span>
                                 </div>
                             </div>

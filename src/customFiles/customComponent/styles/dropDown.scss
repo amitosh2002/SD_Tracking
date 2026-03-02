@@ -913,4 +913,34 @@ $tablet: 768px;
       }
     }
   }
+// Avatar Styles
+.avatar-img-sm {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid $border-color;
+}
+
+.initial-avatar-sm {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: $primary-light;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.trigger-avatar,
+.option-avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 }

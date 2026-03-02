@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { 
   UserPlus, 
   Shield, 
@@ -12,7 +11,7 @@ import {
   Check,
   Aperture
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {  AnimatePresence } from 'framer-motion';
 import { handleUsersInProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 
 const ROLES = [
@@ -85,7 +84,11 @@ function UserAccess({projectId}) {
             <div key={member.id} className={`member-card professional-card-member ${member.status?.toLowerCase()}`}>
               <div className="member-info">
                 <div className="avatar">
-                  {member.name?.charAt(0) || <Shield size={18} />}
+                  {member.profile?.avatar ? (
+                    <img src={member.profile.avatar} alt={member.name} className="avatar-img" />
+                  ) : (
+                    member.name?.charAt(0).toUpperCase() || <Shield size={18} />
+                  )}
                 </div>
                 <div className="details">
                   <span className="name">{member.name || member.email}</span>

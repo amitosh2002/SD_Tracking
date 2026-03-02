@@ -944,8 +944,18 @@ export const SimpleDivDropDown = ({
       <div 
         className={`trigger-div ${disabled ? "disabled" : ""} ${triggerClassName}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
       >
-        {displayText}
+        {selectedOption && (selectedOption.image || selectedOption.initials) && (
+          <div className="trigger-avatar">
+            {selectedOption.image ? (
+              <img src={selectedOption.image} alt="" className="avatar-img-sm" />
+            ) : (
+              <span className="initial-avatar-sm">{selectedOption.initials}</span>
+            )}
+          </div>
+        )}
+        <span className="trigger-text">{displayText}</span>
       </div>
 
       {isOpen && (
@@ -974,8 +984,18 @@ export const SimpleDivDropDown = ({
                     setIsOpen(false);
                     setSearchTerm("");
                   }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
                 >
-                  {opt.label}
+                  {(opt.image || opt.initials) && (
+                    <div className="option-avatar">
+                      {opt.image ? (
+                        <img src={opt.image} alt="" className="avatar-img-sm" />
+                      ) : (
+                        <span className="initial-avatar-sm">{opt.initials}</span>
+                      )}
+                    </div>
+                  )}
+                  <span style={{ flex: 1 }}>{opt.label}</span>
                   {opt.value === value && <Check size={14} />}
                 </div>
               ))
