@@ -49,6 +49,12 @@ const Layoutv1 = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+  useEffect(() => {
+    const shrinkSidebarRoutes = ["/all-work", "/tasks", "/workspace","profile"];
+    const shouldShrink = shrinkSidebarRoutes.some(route => location.pathname.includes(route));
+    setIsCollapsed(shouldShrink);
+  }, [location.pathname]);
+
 
   // 1️⃣ INITIALIZE AUTH ONCE
   useEffect(() => {

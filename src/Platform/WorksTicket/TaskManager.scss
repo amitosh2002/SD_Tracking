@@ -139,6 +139,29 @@
 // }
 
 @use "../../customFiles/customDesign/customColor.scss" as *;
+.task-page-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; // Responsive fallback
+  justify-content: space-between;
+  padding: 12px 24px 8px 24px;
+  background: $white;
+  border-bottom: 1px solid $gray-100;
+
+  .ticket-breadcrumb-header {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+    flex-shrink: 0;
+  }
+
+  .hora_filter_bar {
+    border: none;
+    margin: 0;
+    margin-left: auto; // Pushes filters to the right
+    background: transparent; // Clean look in header row
+  }
+}
 .task-manager-row {
   display: flex; // Forces row layout
   flex-direction: row;

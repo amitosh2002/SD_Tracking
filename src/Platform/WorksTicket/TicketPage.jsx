@@ -6,6 +6,7 @@ import TaskDetails from './TaskDetails';
 import { useEffect } from 'react';
 import HoraLoader from '../../customFiles/customComponent/Loader/loaderV1';
 import CircularLoader from '../../customFiles/customComponent/Loader/circularLoader';
+import TicketHeader from './Components/TicketHeader';
 
 const TicketPage = () => {
   const taskId=useParams().id;
@@ -28,6 +29,7 @@ const TicketPage = () => {
 
   return (
     <div style={{ padding: '16px' }}>
+      <TicketHeader task={selectedTicket} />
       <TaskDetails task={selectedTicket} />
       {/* <CircularLoader/> */}
     </div>
