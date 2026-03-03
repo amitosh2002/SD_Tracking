@@ -89,6 +89,10 @@ const TaskItem = ({ task, isSelected, onClick, isShrunk, onToggleShrink }) => {
             <div className="user-avatar-placeholder unassigned">
               <User size={16} />
             </div>
+          ) : task.assigneeImage ? (
+            <div className="user-avatar-image">
+              <img src={task.assigneeImage} alt={task.assignee} className="avatar-img-sm" />
+            </div>
           ) : (
             <div className="user-avatar-placeholder">
               {task.assignee.charAt(0).toUpperCase()}

@@ -1,0 +1,79 @@
+// Variables (adjust to match your design system)
+$text-muted: #64748b;
+$text-main: #1e293b;
+$primary-blue: #3b82f6;
+
+.ticket-breadcrumb-header {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 1rem;
+
+  .breadcrumb-path {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem; // ~13px
+    color: $text-muted;
+
+    .project-node {
+      font-weight: 600;
+      color: $text-muted;
+      cursor: pointer;
+      transition: color 0.2s;
+      white-space: nowrap;
+
+      &:hover {
+        color: $primary-blue;
+      }
+    }
+
+    .breadcrumb-separator {
+      color: #94a3b8;
+    }
+
+    .parent-node {
+      display: flex;
+      align-items: center;
+      min-width: 80px;
+
+      // Targeting CustomDropDownV3 override
+      .ct-custom-select {
+        .ct-custom-select__trigger {
+          padding: 2px 8px;
+          border: none;
+          background: transparent;
+          min-height: auto;
+          font-size: inherit;
+          font-weight: 500;
+          color: $primary-blue;
+          border-radius: 4px;
+
+          &:hover {
+            background: rgba($primary-blue, 0.05);
+          }
+
+          .ct-custom-select__text {
+            color: $primary-blue;
+          }
+
+          .ct-custom-select__arrow {
+            display: none; // Hide the arrow for breadcrumb style? Or keep?
+          }
+        }
+
+        &.ct-custom-select--open {
+          .ct-custom-select__trigger {
+            background: rgba($primary-blue, 0.1);
+          }
+        }
+      }
+    }
+
+    .current-ticket-node {
+      font-weight: 700;
+      color: $text-main;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+  }
+}
