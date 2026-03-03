@@ -47,8 +47,13 @@ export default function ProjectInsight() {
       try {
         setLoading(true);
         const response = await apiClient.post(projectInsightApi, { projectId });
-        if (response.data.success) {
-          setInsightData(response.data.data);
+        if (response.data.success && response.data.data) {
+          setInsightData({
+            projectBoard: response.data.data.projectBoard || [],
+            taskStatusOverview: response.data.data.taskStatusOverview || {},
+            users: response.data.data.users || [],
+            project: response.data.data.project || null
+          });
         }
       } catch (error) {
         console.error('Error fetching project insights:', error);
@@ -71,36 +76,36 @@ export default function ProjectInsight() {
   const stats = [
     { 
       label: 'Total Tasks', 
-      value: Object.values(insightData.taskStatusOverview).reduce((a, b) => a + b, 0), 
+      value: Object.values(insightData.taskStatusOverview || {}).reduce((a, b) => (a || 0) + (b || 0), 0), 
       change: '', trend: 'up', from: 'across all statuses' 
     },
  
     { 
       label: 'Unique Statuses', 
-      value: Object.keys(insightData.taskStatusOverview).length, 
+      value: Object.keys(insightData.taskStatusOverview || {}).length, 
       change: '', trend: 'up', from: 'in the board' 
     },
        { 
       label: 'Team Members', 
-      value: insightData.users.length, 
+      value: (insightData.users || []).length, 
       change: '', trend: 'up', from: 'active members' 
     },
   ];
 
   const getColorByStatus = (status) => {
-    const s = status?.toUpperCase();
+    const s = (status || "").toUpperCase();
     if (s.includes('DONE') || s.includes('CLOSED') || s.includes('COMPLETED')) return '#10b981';
     if (s.includes('PROGRESS')) return '#f59e0b';
     if (s.includes('REVIEW')) return '#6366f1';
     return '#6b7280';
   };
 
-  const totalTasks = Object.values(insightData.taskStatusOverview).reduce((a, b) => a + b, 0);
-  const statusBreakdown = Object.entries(insightData.taskStatusOverview).map(([status, count]) => ({
+  const totalTasks = Object.values(insightData.taskStatusOverview || {}).reduce((a, b) => (a || 0) + (b || 0), 0);
+  const statusBreakdown = Object.entries(insightData.taskStatusOverview || {}).map(([status, count]) => ({
     status,
     color: getColorByStatus(status),
-    percentage: totalTasks > 0 ? Math.round((count / totalTasks) * 100) : 0,
-    tasks: count
+    percentage: totalTasks > 0 ? Math.round(((count || 0) / totalTasks) * 100) : 0,
+    tasks: count || 0
   }));
 
   const getPriorityFlag = (priority, color) => {
@@ -113,18 +118,18 @@ export default function ProjectInsight() {
     );
   };
 
-  const kanbanColumns = insightData.projectBoard.map((col, index) => ({
+  const kanbanColumns = (insightData.projectBoard || []).map((col, index) => ({
     id: col.columnId || `col-${index}`,
     title: col.name,
-    count: col.tickets.length,
+    count: (col.tickets || []).length,
     color: col.color || getColorByStatus(col.name),
-    tasks: col.tickets.map(ticket => ({
+    tasks: (col.tickets || []).map(ticket => ({
       id: ticket.ticketKey,
       title: ticket.title,
-      project: ticket.ticketKey.split('-')[0], // Extract prefix as project name fallback
+      project: (ticket.ticketKey || "").split('-')[0], // Extract prefix as project name fallback
       dueDate: ticket.eta ? new Date(ticket.eta).toLocaleDateString() : 'No date',
-      progress: (ticket.status.toUpperCase().includes('DONE') || ticket.status.toUpperCase().includes('CLOSED')) ? 100 : 
-                 (ticket.status.toUpperCase().includes('PROGRESS') ? 50 : 0),
+      progress: (ticket.status?.toUpperCase()?.includes('DONE') || ticket.status?.toUpperCase()?.includes('CLOSED')) ? 100 : 
+                 (ticket.status?.toUpperCase()?.includes('PROGRESS') ? 50 : 0),
       attachments: 0,
       comments: 0,
       priority: ticket.priority,
