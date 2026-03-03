@@ -110,3 +110,9 @@
     border-radius: 0.75rem;
   }
 }
+.task-details-page{
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+}

@@ -2541,3 +2541,51 @@ $sidebar-error: #ef4444;
     flex-direction: column;
   }
 }
+.more_option_dropdown {
+  position: absolute;
+  top: 4;
+  margin-top: 1.6rem !important;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+  box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.1);
+  transition: all 0.2s ease;
+
+  .option_item {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+  }
+}
+
+
+// Sidebar Parent Dropdown Styling (v3 with SimpleDivDropDown)
+.sidebar-parent-dropdown-v3 {
+  flex: 1;
+
+  .trigger-div {
+    color: #2563eb !important; // Blue link color
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 0 !important;
+    background: transparent !important;
+
+    &:hover {
+      text-decoration: underline;
+      background: transparent !important; // No grey background on hover for this link look
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS, GET_ACTIVITY_LOGS_REQUEST, GET_ACTIVITY_LOGS_SUCCESS, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS, GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS, GET_CURRENT_PROJECT_SPRINT_WORK_REQUEST } from "../Constants/ticketReducerConstants";
+import { CREATE_TICKET, DELETE_TICKET, GET_ALL_TICKETS, GET_TICKET_BY_ID, OPEN_CREATE_TICKET_POPUP, UPDATE_TICKET, UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_TICKET_UPDATED_DETAILS, GET_ACTIVITY_LOGS_REQUEST, GET_ACTIVITY_LOGS_SUCCESS, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS, GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS, GET_CURRENT_PROJECT_SPRINT_WORK_REQUEST, CLONE_TICKET_REQUEST, CLONE_TICKET_SUCCESS, CLONE_TICKET_FAIL } from "../Constants/ticketReducerConstants";
 
 const initialState = {
   tickets: { items: [], total: 0 },
@@ -192,6 +192,20 @@ export const ticketReducer = createReducer(initialState,(builder=>{
         })
         .addCase(GET_CURRENT_PROJECT_SPRINT_WORK_REQUEST,(state)=>{
             state.loading=true;
+        })
+        .addCase(CLONE_TICKET_REQUEST, (state) => {
+            state.loading = true;
+        })
+        .addCase(CLONE_TICKET_SUCCESS, (state, action) => {
+            state.loading = false;
+            if (action.payload) {
+                if (!state.tickets.items) state.tickets.items = [];
+                state.tickets.items.push(action.payload);
+                state.tickets.total += 1;
+            }
+        })
+        .addCase(CLONE_TICKET_FAIL, (state) => {
+            state.loading = false;
         })
 
 }))

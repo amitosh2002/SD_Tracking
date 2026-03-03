@@ -14,6 +14,7 @@ export const ticketSortKeyValues =`${import.meta.env.VITE_BACKEND_URL}/api/platf
 export const addLabelToTicket = (id) => `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/${id}/labels/add`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const addPriorityToTicket = (id) => `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/${id}/priority`;// if using axiosClient do not use import from env it already imported into axiosclient
 export const getCurrentProjectSprintWork =`${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/sprint/work`;// if using axiosClient do not use import from env it already imported into axiosclient
+export const cloneTicket = (ticketId) => `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/tickets/${ticketId}/clone`;// if using axiosClient do not use import from env it already imported into axiosclient
 
 
 /*

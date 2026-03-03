@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { 
   UserPlus, 
   Shield, 
@@ -12,7 +11,7 @@ import {
   Check,
   Aperture
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {  AnimatePresence } from 'framer-motion';
 import { handleUsersInProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 
 const ROLES = [
@@ -82,21 +81,30 @@ function UserAccess({projectId}) {
           <div className="loading-state">Loading members...</div>
         ) : (
           (projectMembers || []).map((member) => (
-            <div key={member.userId} className="member-card professional-card-member">
+            <div key={member.id} className={`member-card professional-card-member ${member.status?.toLowerCase()}`}>
               <div className="member-info">
                 <div className="avatar">
-                  {member.details?.userName?.charAt(0) || <Shield size={18} />}
+                  {member.profile?.avatar ? (
+                    <img src={member.profile.avatar} alt={member.name} className="avatar-img" />
+                  ) : (
+                    member.name?.charAt(0).toUpperCase() || <Shield size={18} />
+                  )}
                 </div>
                 <div className="details">
-                  <span className="name">{member.details?.profile.firstName + " "+ member.details?.profile?.lastName || member.email}</span>
+                  <span className="name">{member.name || member.email}</span>
                   <div className="email-row">
                     <Mail size={12} />
-                    <span>{member?.details?.email}</span>
+                    <span>{member.email}</span>
                   </div>
-                  <div className="email-row">
-                    <Aperture size={12} />
-                    <span>{member?.details?.username}</span>
-                  </div>
+                  {member.username && (
+                    <div className="email-row">
+                      <Aperture size={12} />
+                      <span>{member.username}</span>
+                    </div>
+                  )}
+                  {member.status === 'pending' && (
+                    <div className="status-badge pending">Pending Invite</div>
+                  )}
                 </div>
               </div>
 
@@ -112,6 +120,7 @@ function UserAccess({projectId}) {
                   className="icon-button" 
                   title="Update Access" 
                   onClick={() => openEditModal(member)}
+                  disabled={member.status !== 'accepted' && !member.userId} // Cannot update role for un-accepted users easily
                 >
                   <Shield size={16} />
                 </button>
