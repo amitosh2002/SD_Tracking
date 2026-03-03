@@ -47,13 +47,8 @@ export default function ProjectInsight() {
       try {
         setLoading(true);
         const response = await apiClient.post(projectInsightApi, { projectId });
-        if (response.data.success && response.data.data) {
-          setInsightData({
-            projectBoard: response.data.data.projectBoard || [],
-            taskStatusOverview: response.data.data.taskStatusOverview || {},
-            users: response.data.data.users || [],
-            project: response.data.data.project || null
-          });
+        if (response?.data?.success) {
+          setInsightData(response?.data?.data);
         }
       } catch (error) {
         console.error('Error fetching project insights:', error);
