@@ -1313,7 +1313,8 @@ $sidebar-error: #ef4444;
 
 .modern_sidebar_container {
   width: 380px;
-  height: 100vh;
+  // height: 100vh;
+  height: auto;
   background: $sidebar-bg;
   border-left: 1px solid $sidebar-border;
   display: flex;
@@ -1871,119 +1872,113 @@ $sidebar-error: #ef4444;
   }
 }
 .modern_popup_content {
-  
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: 1rem 0;
   text-align: center;
-  gap: 1.25rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  // max-width: 400px;
+  gap: 1.5rem;
   width: 100%;
-  animation: fadeIn 0.3s ease-out;
+.icon_circle,
+  .icon_circle_error {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+  }
 
-  .popup_hero_icon {
-    margin-bottom: 0.75rem;
-    font-size: 2.5rem;
+  .icon_circle {
+    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+    color: #fff;
+  }
+
+  .icon_circle_error {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: #fff;
+  }
+
+                                                                                                                                .popup_hero_icon {
     animation: sidebar_float 3s ease-in-out infinite;
   }
 
   h3 {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
+      color: #0f172a;
     margin: 0;
+    letter-spacing: -0.025em;
   }
 
   p {
     margin: 0;
     line-height: 1.6;
-    font-size: 0.95rem;
+    font-size: 1rem;
+      color: #64748b;
 
-    &.admin_hint {
-      font-size: 0.8125rem;
-      font-style: italic;
-      margin-top: 0.25rem;
-    }
-  }
-
-  .popup_actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-    margin-top: 1rem;
-
-    button {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      font-weight: 600;
-      border-radius: 8px;
-      transition: all 0.2s ease-in-out;
-      cursor: pointer;
-
-      &.primary {
-        color: #fff;
-        border: none;
-      }
-
-      &.secondary {
-        border: 1px solid;
+    strong {
+        color: #0f172a;
       }
     }
-  }
+        .feature_list_mini {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          width: 100%;
+      background: #f8fafc;
+        padding: 1.25rem;
+        border-radius: 16px;
+        text-align: left;
+      .feature_item_mini {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 0.875rem;
+          font-weight: 600;
+        color: #475569;
+        svg {
+            color: #6366f1;
+          }
+        }
+        }
+        .admin_notice {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0.75rem 1rem;
+          background: #fff1f2;
+          color: #be123c;
+          border-radius: 12px;
+          font-size: 0.8125rem;
+          font-weight: 500;
+          border: 1px solid #fecdd3;
+          margin: 0.5rem 0;
+                      svg {
+                          flex-shrink: 0;
+                        }
+                      }
 
-  /* ==============================
-     STATE STYLES
-     ============================== */
-
-  &.error {
-    background-color: #FFF5F5;
-    border: 1px solid #F87171;
-    color: #7F1D1D;
-
-    .popup_hero_icon { color: #EF4444; }
-    h3 { color: #B91C1C; }
-    p, .admin_hint { color: #7F1D1D; }
-
-    .popup_actions {
-      button.primary { background-color: #EF4444; &:hover { background-color: #B91C1C; } }
-      button.secondary { background-color: #FEE2E2; color: #B91C1C; border-color: #F87171; &:hover { background-color: #FECACA; } }
-    }
-  }
-
-  &.success {
-    background-color: #ECFDF5;
-    border: 1px solid #34D399;
-    color: #065F46;
-
-    .popup_hero_icon { color: #10B981; }
-    h3 { color: #047857; }
-    p { color: #065F46; }
-
-    .popup_actions {
-      button.primary { background-color: #10B981; &:hover { background-color: #047857; } }
-      button.secondary { background-color: #D1FAE5; color: #065F46; border-color: #34D399; &:hover { background-color: #A7F3D0; } }
-    }
-  }
-
-  &.info {
-    background-color: #EFF6FF;
-    border: 1px solid #3B82F6;
-    color: #1E3A8A;
-
-    .popup_hero_icon { color: #3B82F6; }
-    h3 { color: #1D4ED8; }
-    p { color: #1E40AF; }
-
-    .popup_actions {
-      button.primary { background-color: #3B82F6; &:hover { background-color: #1D4ED8; } }
-      button.secondary { background-color: #DBEAFE; color: #1E3A8A; border-color: #3B82F6; &:hover { background-color: #BFDBFE; } }
-    }
-  }
-}
-
+                                .popup_actions {
+                  display: flex;
+                    flex-direction: column;
+                    gap: 0.75rem;
+                    width: 100%;
+                    margin-top: 0.5rem;
+                  }
+                    /* State nuances */
+                    &.error {
+                      h3 {
+                        color: #991b1b;
+            
+                        p {
+                          color: #b91c1c;
+                          opacity: 0.8;
+                        }
+                        }
+                        }
 /* ==============================
    ANIMATIONS
    ============================== */
@@ -1995,4 +1990,602 @@ $sidebar-error: #ef4444;
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+
+// --- Branch Panel Content (Fits inside SidePanel) ---
+.panel_content_wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  color: #0f172a;
+
+  .panel_header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .header_title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      svg {
+        color: #6366f1;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+      }
+    }
+
+    .close_btn {
+      background: #f8fafc;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .panel_body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+
+    .branch_list_v2 {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .branch_card_v2 {
+      padding: 1.25rem;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        border-color: #6366f1;
+        box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.15);
+        transform: translateY(-2px);
+      }
+
+      .branch_info_v2 {
+        .branch_main {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 6px;
+
+          .branch_icon {
+            color: #6366f1;
+          }
+
+          .branch_name {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            word-break: break-all;
+            color: #1e293b;
+          }
+        }
+
+        .branch_meta_v2 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.75rem;
+          color: #64748b;
+
+          .dot {
+            color: #cbd5e1;
+          }
+        }
+      }
+
+      .branch_actions_v2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f1f5f9;
+
+        .status_badge {
+          font-size: 0.625rem;
+          font-weight: 700;
+          padding: 3px 8px;
+          border-radius: 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+
+          &.created {
+            background: #eef2ff;
+            color: #4f46e5;
+          }
+
+          &.merged {
+            background: #ecfdf5;
+            color: #059669;
+          }
+
+          &.deleted {
+            background: #fef2f2;
+            color: #dc2626;
+          }
+        }
+
+        .view_link {
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: #6366f1;
+          text-decoration: none;
+          padding: 6px 12px;
+          background: #f5f3ff;
+          border-radius: 8px;
+          transition: background 0.2s;
+
+          &:hover {
+            background: #ede9fe;
+          }
+        }
+      }
+    }
+
+    .empty_branches {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.5rem;
+      color: #94a3b8;
+
+      p {
+        font-size: 0.9375rem;
+        line-height: 1.5;
+        margin: 0;
+      }
+    }
+  }
+}}
+
+
+// Repo Panel
+.repo-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+
+  &__header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  }
+
+  &__title {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+
+    svg {
+      color: #667eea;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .title-text {
+      h3 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+      }
+
+      .subtitle {
+        font-size: 0.8125rem;
+        color: #6b7280;
+        font-weight: 500;
+      }
+    }
+  }
+
+  &__close {
+    padding: 0.5rem;
+    background: none;
+    border: none;
+    border-radius: 0.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 3px;
+    }
+  }
+}
+
+// Repository Summary Stats
+.repo-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+
+    svg {
+      color: #667eea;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+  }
+}
+
+// Branch List
+.branch-list {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .btn-create-branch {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.875rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #5568d3;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+// Branch Card
+.branch-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.1);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    gap: 0.75rem;
+
+    .branch-name-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 0;
+
+      .branch-icon {
+        color: #6b7280;
+        flex-shrink: 0;
+      }
+
+      .branch-name {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: #1f2937;
+        font-family: 'Monaco', 'Courier New', monospace;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .branch-status {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+      flex-shrink: 0;
+
+      &--merged {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      &--active {
+        background: #dbeafe;
+        color: #1e40af;
+
+        svg {
+          fill: #1e40af;
+        }
+      }
+
+      &--closed {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      color: #6b7280;
+
+      svg {
+        color: #9ca3af;
+      }
+    }
+
+    .meta-divider {
+      color: #d1d5db;
+    }
+  }
+
+  &__commits {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-radius: 0.375rem;
+
+    svg {
+      color: #9ca3af;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f3f4f6;
+
+    .btn-github,
+    .btn-pr {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      padding: 0.625rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-github {
+      background: #f3f4f6;
+      color: #374151;
+
+      &:hover {
+        background: #e5e7eb;
+        color: #1f2937;
+      }
+    }
+
+    .btn-pr {
+      background: #667eea;
+      color: white;
+
+      &:hover {
+        background: #5568d3;
+      }
+    }
+  }
+}
+
+// Empty State
+.repo-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+
+  .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+
+    svg {
+      color: #9ca3af;
+    }
+  }
+
+  .empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-state-description {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    max-width: 320px;
+    line-height: 1.5;
+  }
+
+  .empty-state-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 280px;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .repo-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .branch-card__actions {
+    flex-direction: column;
+  }
+}
+.more_option_dropdown {
+  position: absolute;
+  top: 4;
+  margin-top: 1.6rem !important;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+  box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.1);
+  transition: all 0.2s ease;
+
+  .option_item {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+  }
+}
+
+
+// Sidebar Parent Dropdown Styling (v3 with SimpleDivDropDown)
+.sidebar-parent-dropdown-v3 {
+  flex: 1;
+
+  .trigger-div {
+    color: #2563eb !important; // Blue link color
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 0 !important;
+    background: transparent !important;
+
+    &:hover {
+      text-decoration: underline;
+      background: transparent !important; // No grey background on hover for this link look
+    }
+  }
 }

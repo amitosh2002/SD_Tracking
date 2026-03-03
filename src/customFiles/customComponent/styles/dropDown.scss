@@ -366,7 +366,6 @@ $tablet: 768px;
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
-  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideDown {
@@ -504,11 +503,8 @@ $tablet: 768px;
 
 @keyframes checkPop {
   0% {
-    transform: scale(0.5);
+    transform: scale(0.8);
     opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
   }
   100% {
     transform: scale(1);
@@ -810,3 +806,141 @@ $tablet: 768px;
 //   }
 // }
 
+// Simple Div Dropdown Styling
+.simple-div-dropdown {
+  position: relative;
+  display: inline-block;
+  width: auto;
+
+  .trigger-div {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+
+    &:hover:not(.disabled) {
+      background: $hover-bg;
+    }
+
+    &.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  .simple-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 1100;
+    min-width: 200px;
+    width: max-content;
+    max-width: 300px;
+    overflow: hidden;
+    // animation: slideDown 0.2s ease;
+
+    .menu-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-bottom: 1px solid $border-color;
+      background: #fafafa;
+
+      svg {
+        color: $text-secondary;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 13px;
+        width: 100%;
+        color: $text-primary;
+      }
+    }
+
+    .menu-options {
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 4px;
+
+      .menu-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        color: $text-primary;
+        transition: all 0.2s;
+
+        &:hover {
+          background: $hover-bg;
+          color: $primary-color;
+        }
+
+        &.selected {
+          background: rgba($primary-color, 0.08);
+          color: $primary-color;
+          font-weight: 600;
+        }
+
+        svg {
+          flex-shrink: 0;
+          margin-left: 8px;
+        }
+      }
+
+      .no-options {
+        padding: 12px;
+        text-align: center;
+        font-size: 12px;
+        color: $text-secondary;
+      }
+    }
+  }
+// Avatar Styles
+.avatar-img-sm {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid $border-color;
+}
+
+.initial-avatar-sm {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: $primary-light;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.trigger-avatar,
+.option-avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+}

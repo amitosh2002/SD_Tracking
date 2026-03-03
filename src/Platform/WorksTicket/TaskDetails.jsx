@@ -4,6 +4,7 @@ import TextEditor from '../../Platform/Editor';
 import IssueDetails from '../LeftControll';
 import CommentActivitySection from '../CommentAndActivity/CommentAndActivity';
 import { useNavigate } from 'react-router-dom';
+// import TicketHeader from './Components/TicketHeader';
 
 const TaskDetails = ({ task }) => {
   const navigate = useNavigate();
@@ -17,16 +18,16 @@ const TaskDetails = ({ task }) => {
     );
   }
 
-
   return (
-    <>
+    <div className='task-details-page'>
    
+      {/* <TicketHeader task={task} /> */}
     <div className="task-details">
       <div className="task-details-container">
       <p className="task-id" onClick={()=>navigate(`/tickets/${task?._id}`)}>ID: {task.ticketKey}</p>
       <h2 className="task-title">{task.title}</h2>
       {/* <p className="task-description">{task.description || 'No description available.'}</p> */}
-      <TextEditor initialData={task?.description} taskId={task?._id}/>
+      <TextEditor initialData={task?.description} taskId={task?._id} autoSave={false}/>
       <CommentActivitySection task={task}/>
       
       </div>
@@ -34,7 +35,7 @@ const TaskDetails = ({ task }) => {
                     <IssueDetails task={task}/>
       
     </div>
-    </>
+    </div>
   );
 };
 

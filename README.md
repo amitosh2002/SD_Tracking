@@ -1,17 +1,35 @@
+Hora – Frontend 🚀
 
-# React + Vite
+Hora is a modern, responsive frontend application built to provide a smooth user experience for project management, analytics, and real-time notifications. The application integrates Socket.IO for instant in-app notifications and is optimized for scalability and performance.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✨ Features
 
-Currently, two official plugins are available:
+⚛️ React frontend
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🎨 Modern UI with SCSS
 
-## Expanding the ESLint configuration
+🔔 Real-time notifications using Socket.IO
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# SD_Tracking
-This Repo is made for tacking the development of project
+📊 Analytics dashboards
 
+📁 Project & ticket views
+
+🔐 Auth-based user experience
+
+⚡ Optimized state management
+
+📱 Fully responsive design
+
+🛠 Tech Stack
+
+Framework:(React)
+
+Styling: SCSS
+
+State Management: Redux / Context API
+
+Real-time: Socket.IO Client
+
+HTTP Client: Axios / Fetch
+
+Icons: Lucide React

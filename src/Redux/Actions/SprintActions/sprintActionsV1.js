@@ -30,7 +30,6 @@ export const createSprintForPartner =
                     message: "Sprint created successfully!",
                   },
                 });
-
                   dispatch(fetchProjectSprintOverview())
                 
                   }
@@ -288,6 +287,7 @@ try {
     if (res.status===200) {
     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });
       dispatch({type:SET_PROJECT_SCRUM_MAPPING_SUCCESS,payload:res.data})
+      // console.log(res.data)
     }
 
 
@@ -299,7 +299,7 @@ try {
         message:
           error?.response?.data?.message ||
           "Unable to fetch sprint overview",
-      },
+      },    
     });
     console.error('fetchProjectScrumFlow error:', error?.response || error);
     dispatch({ type: SET_PROJECT_SCRUM_MAPPING_LOADING,payload:false });

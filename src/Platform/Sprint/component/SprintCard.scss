@@ -497,7 +497,7 @@
 
 /* ================= METRICS ================= */
 
-.metrics-grid {
+.metrics-sprint-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
@@ -639,7 +639,7 @@
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 768px) {
-  .metrics-grid {
+  .metrics-sprint-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 

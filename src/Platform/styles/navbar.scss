@@ -1,4 +1,4 @@
-@import "../../customFiles/customDesign/customTexts.scss";
+@use "../../customFiles/customDesign/customTexts.scss" as *;
 
 // --- Variables ---
 $primary-color: #3B82F6;
@@ -836,5 +836,372 @@ $shadow-color: rgba(0, 0, 0, 0.1);
 
   .search-popup-content {
     width: 95%;
+  }
+}
+
+
+
+// ============================================================================
+// Notification Bell
+// ============================================================================
+
+// ── palette ─────────────────────────────────────────────────────────────────
+$primary: #6366f1;
+$red: #ef4444;
+$white: #ffffff;
+
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-600: #4b5563;
+$gray-900: #111827;
+
+// ============================================================================
+// NOTIFICATION CONTAINER
+// ============================================================================
+.notification_bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  
+
+  // Hover state
+  &:hover {
+    background: $gray-100;
+  }
+
+  // Active/Click state
+  &:active {
+    transform: scale(0.95);
+  }
+
+  // Icon styling
+  svg {
+    transition: color 150ms ease;
+  }
+
+  &:hover svg {
+    color: $gray-900 !important;
+  }
+}
+
+// ============================================================================
+// NOTIFICATION BADGE
+// ============================================================================
+.notification__badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: $red;
+  color: $white;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 9px;
+  border: 2px solid $white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  // Pulse animation
+  animation: pulse 2s infinite;
+
+  // Handle larger numbers
+  &[data-count]:after {
+    content: attr(data-count);
+  }
+
+  // Cap at 99+
+  &.notification__badge--max {
+    font-size: 9px;
+    padding: 0 3px;
+  }
+}
+
+// ============================================================================
+// ANIMATIONS
+// ============================================================================
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// New notification animation (when count increases)
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.notification__badge--new {
+  animation: popIn 300ms ease-out;
+}
+
+// ============================================================================
+// VARIANTS
+// ============================================================================
+
+// Alternative: Solid background notification button
+.notification--solid {
+  background: $gray-100;
+  
+  &:hover {
+    background: $gray-200;
+  }
+}
+
+// Alternative: Primary colored notification
+.notification--primary {
+  &:hover {
+    background: rgba($primary, 0.1);
+  }
+
+  &:hover svg {
+    color: $primary !important;
+  }
+}
+
+// Alternative: Badge with different colors
+.notification__badge--primary {
+  background: $primary;
+}
+
+.notification__badge--warning {
+  background: #f59e0b;
+}
+
+.notification__badge--success {
+  background: #10b981;
+}
+
+// ============================================================================
+// DROPDOWN MENU
+// ============================================================================
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  max-height: 480px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 1000;
+  animation: dropdownSlide 200ms ease-out;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid $gray-200;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: $gray-900;
+      margin: 0;
+    }
+  }
+
+  &__mark-read {
+    font-size: 13px;
+    font-weight: 500;
+    color: $primary;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 150ms;
+
+    &:hover {
+      background: rgba($primary, 0.1);
+    }
+  }
+
+  &__list {
+    max-height: 360px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $gray-200;
+      border-radius: 3px;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 150ms;
+    position: relative;
+
+    &:hover {
+      background: $gray-100;
+    }
+
+    &--unread {
+      background: rgba($primary, 0.03);
+    }
+  }
+
+  &__item-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $gray-100;
+    border-radius: 50%;
+    color: $gray-600;
+    flex-shrink: 0;
+  }
+
+  &__item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__item-title {
+    font-size: 14px;
+    color: $gray-900;
+    margin: 0 0 4px;
+    line-height: 1.4;
+  }
+
+  &__item-time {
+    font-size: 12px;
+    color: $gray-600;
+    margin: 0;
+  }
+
+  &__item-dot {
+    width: 8px;
+    height: 8px;
+    background: $primary;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: $gray-600;
+
+    svg {
+      color: $gray-200;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+
+  &__footer {
+    padding: 12px 20px;
+    border-top: 1px solid $gray-200;
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      color: $primary;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 150ms;
+
+      &:hover {
+        background: rgba($primary, 0.1);
+      }
+    }
+  }
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 768px) {
+  .notification_bell{
+    width: 36px;
+    height: 36px;
+  }
+
+  .notification__badge {
+    top: 2px;
+    right: 2px !important;
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+    line-height: 16px;
+  }
+
+  .notification-dropdown {
+    width: 320px;
+    right: -100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: 12px 12px 0 0;
   }
 }
