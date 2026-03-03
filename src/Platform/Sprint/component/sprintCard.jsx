@@ -284,7 +284,7 @@ const SprintCard = ({
       </div>
 
       {/* METRICS GRID */}
-      <div className="metrics-grid">
+      <div className="metrics-sprint-grid">
         <div>
           <p>Story Points</p>
           <h4>

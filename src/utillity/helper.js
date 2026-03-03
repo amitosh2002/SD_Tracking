@@ -141,7 +141,6 @@ export function formatCreatedAtDate(dateInput, locale = 'en-US') {
  */
 export function transformWeeklyAggregates(dailyAggregates) {
     // ⚠️ FIX: Check if dailyAggregates is undefined, null, or not an object
-    console.log(dailyAggregates,"from helper")
     if (!dailyAggregates || typeof dailyAggregates !== 'object') {
         // Return an empty array to prevent crashing and signal no data
         return []; 
@@ -375,9 +374,7 @@ export const getLabelsbyId = (labelsArray, labelId) => {
   if (!Array.isArray(labelsArray) || labelsArray.length === 0) {
     return null; // or return an empty object/array based on your needs
   }
-  console.log(labelsArray,labelId)
   const label =labelsArray.find(label => label.id === labelId) || null;
-  console.log(label)
   return label;
 };
 
@@ -385,8 +382,39 @@ export const getPriorityById = (prioritiesArray, priorityId) => {
   if (!Array.isArray(prioritiesArray) || prioritiesArray.length === 0) {
     return null; // or return an empty object/array based on your needs
   }
-  console.log(prioritiesArray,priorityId)
   const priority =prioritiesArray.find(priority => priority.id == priorityId) || null;
-  console.log(priority)
   return priority;
 };
+
+
+export const formatNotificationTime = (dateInput) => {
+  const date = new Date(dateInput);
+  const now = new Date();
+
+  const diffMs = now - date;
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  // Today → minutes / hours ago
+  if (diffDays === 0) {
+    if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    }
+    return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`;
+  }
+
+  // Yesterday / day before yesterday → X days ago
+  if (diffDays <= 2) {
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+  }
+
+  // Older → show date
+  return date.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+

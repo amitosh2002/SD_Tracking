@@ -1,0 +1,321 @@
+// Hora Theme Variables
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+$white: #ffffff;
+$red: #ef4444;
+$blue: #3b82f6;
+
+.analytics-container {
+  padding: 24px;
+  background: $gray-50;
+  min-height: 100vh;
+
+  .analytics-header {
+    margin-bottom: 32px;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    h2 {
+      color: $gray-900;
+      font-size: 24px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    p {
+      color: $gray-600;
+      font-size: 14px;
+      margin: 4px 0;
+
+      strong {
+        color: $gray-900;
+        font-weight: 600;
+      }
+    }
+
+    .help-button {
+      background: $white;
+      border: 1px solid $gray-200;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: $gray-600;
+
+      &:hover {
+        background: $gray-50;
+        border-color: $blue;
+        color: $blue;
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+
+    .chart-card {
+      background: $white;
+      border: 1px solid $gray-200;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      min-height: 380px;
+
+      &:hover {
+        transform: translateY(-4px);
+        border-color: $blue;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+      }
+
+      .chart-info {
+        margin-bottom: 16px;
+
+        h3 {
+          color: $gray-900;
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+
+        .report-text {
+          color: $gray-600;
+          font-size: 13px;
+          line-height: 1.6;
+          min-height: 42px;
+
+          strong {
+            color: $gray-900;
+            font-weight: 600;
+          }
+        }
+      }
+
+      // Custom styling for recharts elements
+      .recharts-wrapper {
+        .recharts-pie-label-text {
+          font-size: 12px;
+          font-weight: 500;
+          fill: $gray-700;
+        }
+
+        .recharts-legend-item-text {
+          color: $gray-600 !important;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+
+  // Education Popup Styles
+  .education-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(17, 24, 39, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .education-popup {
+    background: $white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    animation: slideUp 0.3s ease;
+
+    .education-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid $gray-200;
+      background: $gray-50;
+
+      h3 {
+        color: $gray-900;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .close-button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: $gray-500;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: $gray-200;
+          color: $gray-900;
+        }
+      }
+    }
+
+    .education-content {
+      padding: 24px;
+      overflow-y: auto;
+      max-height: calc(80vh - 80px);
+
+      .education-section {
+        margin-bottom: 20px;
+
+        h4 {
+          color: $gray-900;
+          font-size: 15px;
+          font-weight: 600;
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+
+          &:before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: $blue;
+            border-radius: 2px;
+            margin-right: 10px;
+          }
+        }
+
+        p {
+          color: $gray-600;
+          font-size: 14px;
+          line-height: 1.6;
+          margin: 0;
+        }
+      }
+
+      .education-tips {
+        margin-top: 24px;
+        padding: 16px;
+        background: $gray-50;
+        border-radius: 8px;
+        border-left: 3px solid $blue;
+
+        h4 {
+          color: $gray-900;
+          font-size: 15px;
+          font-weight: 600;
+          margin-bottom: 12px;
+        }
+
+        ul {
+          margin: 0;
+          padding-left: 20px;
+
+          li {
+            color: $gray-600;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 8px;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .analytics-container {
+    padding: 16px;
+
+    .analytics-header {
+      margin-bottom: 24px;
+
+      .header-content {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+
+    .analytics-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+
+      .chart-card {
+        padding: 16px;
+      }
+    }
+
+    .education-popup {
+      width: 95%;
+      max-height: 90vh;
+
+      .education-header {
+        padding: 16px;
+      }
+
+      .education-content {
+        padding: 16px;
+        max-height: calc(90vh - 64px);
+      }
+    }
+  }
+}

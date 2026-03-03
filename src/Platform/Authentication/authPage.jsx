@@ -1,20 +1,23 @@
+
+
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { GET_OTP } from '../../Redux/Constants/AuthConstants';
 import { getOtpAction, resendOtpRequest, verifyOtpAction } from '../../Redux/Actions/Auth/AuthActions';
 import { useNavigate } from 'react-router-dom';
 import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
 import GoogleAuthButton from './googleSSO';
 import HoraLoader from '../../customFiles/customComponent/Loader/loaderV1';
+import './LoginPage.scss';
+import HoraLogo from '../../assets/platformIcons/Hora-logo.svg';
 
 const LoginPage = () => {
-  const [step, setStep] = useState(1); // 1 for email, 2 for OTP
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const dispatch=useDispatch();
-  const navigate =useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -23,11 +26,9 @@ const LoginPage = () => {
       return;
     }
     dispatch(getOtpAction(email));
-    
     setLoading(true);
     setError('');
     
-    // Simulate API call
     setTimeout(() => {
       setLoading(false);
       setStep(2);
@@ -41,7 +42,6 @@ const LoginPage = () => {
     newOtp[index] = value;
     setOtp(newOtp);
     
-    // Auto-focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
       if (nextInput) nextInput.focus();
@@ -54,8 +54,7 @@ const LoginPage = () => {
       if (prevInput) prevInput.focus();
     }
     if (e.key === 'Enter') {
-      handleOtpSubmit(e); 
-      return;
+      handleOtpSubmit(e);
     }
   };
 
@@ -67,22 +66,17 @@ const LoginPage = () => {
       setError('Please enter the complete OTP');
       return;
     }
-    const data={email:email,otp:otpString};
-    console.log("verifying otp for",data);
-     dispatch(verifyOtpAction(data));
+    const data = { email: email, otp: otpString };
+    dispatch(verifyOtpAction(data));
     
     setLoading(true);
     setError('');
-    navigate("/")
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
+    navigate("/");
   };
-  const resendOtp = async() => {
+
+  const resendOtp = async () => {
     setLoading(true);
-    console.log("resending otp to",email);
-    if(!email) {
+    if (!email) {
       setError('Email is required to resend OTP');
       setLoading(false);
       return;
@@ -91,536 +85,192 @@ const LoginPage = () => {
     setTimeout(() => {
       setLoading(false);
     }, 1000);
-      dispatch({
-        type: SHOW_SNACKBAR,
-        payload: {
-          message: `OTP sent successfully!`,
-          type: "success"
-        }
-      });
+    dispatch({
+      type: SHOW_SNACKBAR,
+      payload: {
+        message: `OTP sent successfully!`,
+        type: "success"
+      }
+    });
   };
 
   const handlePaste = (e) => {
-  e.preventDefault();
-  const pasteData = e.clipboardData.getData('text').slice(0, otp.length); // Get first X chars
-  const pasteArray = pasteData.split('');
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData('text').slice(0, otp.length);
+    const pasteArray = pasteData.split('');
 
-  const newOtp = [...otp];
-  pasteArray.forEach((char, index) => {
-    if (index < otp.length) {
-      newOtp[index] = char;
-    }
-  });
-
-  setOtp(newOtp);
-
-  // Optional: Focus the last filled input or the next empty one
-  const nextIndex = Math.min(pasteArray.length, otp.length - 1);
-  document.getElementById(`otp-${nextIndex}`)?.focus();
-};
-
-  const styles = {
-    loginContainer: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      minHeight: '100vh',
-      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      position: 'relative',
-      overflow: 'hidden'
-    },
-
-    brandSection: {
-      background: 'rgba(0, 0, 0, 0.2)',
-      backdropFilter: 'blur(10px)',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '4rem 2rem',
-      position: 'relative',
-      overflow: 'hidden'
-    },
-
-    brandContent: {
-      textAlign: 'center',
-      zIndex: 2,
-      position: 'relative'
-    },
-
-    logo: {
-      fontSize: '4rem',
-      fontWeight: '800',
-      background: 'linear-gradient(45deg, #ffffff, #a8edea)',
-      backgroundClip: 'text',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      marginBottom: '1rem',
-      textShadow: '0 0 30px rgba(255, 255, 255, 0.3)',
-      animation: 'fadeInDown 1s ease forwards'
-    },
-
-    tagline: {
-      color: 'rgba(255, 255, 255, 0.9)',
-      fontSize: '1.5rem',
-      fontWeight: '300',
-      marginBottom: '3rem',
-      animation: 'fadeInUp 1s ease 0.5s both'
-    },
-
-    features: {
-      listStyle: 'none',
-      textAlign: 'left',
-      padding: 0
-    },
-
-    featureItem: {
-      color: 'rgba(255, 255, 255, 0.8)',
-      fontSize: '1.1rem',
-      marginBottom: '1.5rem',
-      display: 'flex',
-      alignItems: 'center',
-      animation: 'fadeInLeft 0.8s ease forwards'
-    },
-
-    featureIcon: {
-      color: '#a8edea',
-      fontSize: '1.3rem',
-      marginRight: '1rem',
-      width: '24px'
-    },
-
-    floatingElements: {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      overflow: 'hidden',
-      pointerEvents: 'none'
-    },
-
-    floatingCard: {
-      position: 'absolute',
-      width: '60px',
-      height: '60px',
-      background: 'rgba(255, 255, 255, 0.1)',
-      borderRadius: '12px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#a8edea',
-      fontSize: '1.5rem',
-      animation: 'float 6s ease-in-out infinite'
-    },
-
-    card1: {
-      top: '20%',
-      right: '20%',
-      animationDelay: '0s'
-    },
-
-    card2: {
-      top: '60%',
-      right: '10%',
-      animationDelay: '2s'
-    },
-
-    card3: {
-      top: '40%',
-      right: '5%',
-      animationDelay: '4s'
-    },
-
-    loginSection: {
-      background: 'rgba(255, 255, 255, 0.05)',
-      backdropFilter: 'blur(20px)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '2rem'
-    },
-
-    loginForm: {
-      background: 'rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur(20px)',
-      borderRadius: '24px',
-      padding: '3rem',
-      width: '100%',
-      maxWidth: '450px',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
-    },
-
-    formHeader: {
-      textAlign: 'center',
-      marginBottom: '2rem'
-    },
-
-    formTitle: {
-      color: 'white',
-      fontSize: '2rem',
-      fontWeight: '700',
-      marginBottom: '0.5rem'
-    },
-
-    formDescription: {
-      color: 'rgba(255, 255, 255, 0.7)',
-      fontSize: '1rem',
-      lineHeight: '1.5'
-    },
-
-    inputGroup: {
-      marginBottom: '1.5rem'
-    },
-
-    inputLabel: {
-      color: 'rgba(255, 255, 255, 0.9)',
-      fontSize: '0.9rem',
-      fontWeight: '600',
-      marginBottom: '0.5rem',
-      display: 'block'
-    },
-
-    inputWrapper: {
-      position: 'relative',
-      display: 'flex',
-      alignItems: 'center'
-    },
-
-    inputIcon: {
-      position: 'absolute',
-      left: '1rem',
-      color: 'rgba(255, 255, 255, 0.5)',
-      zIndex: 2
-    },
-
-    input: {
-      width: '100%',
-      padding: '1rem 1rem 1rem 3rem',
-      background: 'rgba(255, 255, 255, 0.1)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      borderRadius: '12px',
-      color: 'white',
-      fontSize: '1rem',
-      transition: 'all 0.3s ease',
-      outline: 'none'
-    },
-
-    otpInputGroup: {
-      marginBottom: '2rem'
-    },
-
-    otpInputs: {
-      display: 'flex',
-      gap: '0.5rem',
-      justifyContent: 'center',
-      marginBottom: '1rem'
-    },
-
-    otpInput: {
-      width: '50px',
-      height: '50px',
-      background: 'rgba(255, 255, 255, 0.1)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      borderRadius: '12px',
-      color: 'white',
-      fontSize: '1.2rem',
-      textAlign: 'center',
-      transition: 'all 0.3s ease',
-      outline: 'none'
-    },
-
-    otpInfo: {
-      color: 'rgba(255, 255, 255, 0.7)',
-      fontSize: '0.9rem',
-      textAlign: 'center'
-    },
-
-    errorMessage: {
-      color: '#ff6b6b',
-      fontSize: '0.9rem',
-      marginBottom: '1rem',
-      textAlign: 'center',
-      padding: '0.5rem',
-      background: 'rgba(255, 107, 107, 0.1)',
-      borderRadius: '8px',
-      border: '1px solid rgba(255, 107, 107, 0.2)'
-    },
-
-    submitBtn: {
-      width: '100%',
-      padding: '1rem',
-      background: 'linear-gradient(45deg, #667eea, #764ba2)',
-      border: 'none',
-      borderRadius: '12px',
-      color: 'white',
-      fontSize: '1rem',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '0.5rem',
-      marginBottom: '1.5rem'
-    },
-
-    formActions: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      marginBottom: '1.5rem'
-    },
-
-    linkBtn: {
-      background: 'none',
-      border: 'none',
-      color: '#a8edea',
-      fontSize: '0.9rem',
-      cursor: 'pointer',
-      textDecoration: 'underline',
-      transition: 'all 0.3s ease'
-    },
-
-    formFooter: {
-      textAlign: 'center',
-      color: 'rgba(255, 255, 255, 0.7)',
-      fontSize: '0.9rem'
-    },
-
-    signupLink: {
-      color: '#a8edea',
-      textDecoration: 'none',
-      marginLeft: '0.5rem',
-      fontWeight: '600'
-    },
-
-    // Mobile responsiveness
-    '@media (max-width: 768px)': {
-      loginContainer: {
-        gridTemplateColumns: '1fr',
-        gridTemplateCo: 'auto 1fr'
-      },
-      brandSection: {
-        padding: '2rem 1rem'
-      },
-      logo: {
-        fontSize: '2.5rem'
-      },
-      tagline: {
-        fontSize: '1.2rem'
-      },
-      loginForm: {
-        padding: '2rem',
-        margin: '1rem'
+    const newOtp = [...otp];
+    pasteArray.forEach((char, index) => {
+      if (index < otp.length) {
+        newOtp[index] = char;
       }
-    }
+    });
+
+    setOtp(newOtp);
+    const nextIndex = Math.min(pasteArray.length, otp.length - 1);
+    document.getElementById(`otp-${nextIndex}`)?.focus();
   };
 
-  // Add CSS animations
-  const cssAnimations = `
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInLeft {
-      from { opacity: 0; transform: translateX(-30px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
-    }
-  `;
-
-
-  const { ssoLoading,ssoLogin } = useSelector((state) => state.auth);
+  const { ssoLoading, ssoLogin } = useSelector((state) => state.auth);
+  
   if (!ssoLoading && ssoLogin) {
     return <div><HoraLoader /></div>;
   }
-  return (
-    <>
-      <style>{cssAnimations}</style>
-      <div style={styles.loginContainer}>
-        <div style={styles.brandSection}>
-          <div style={styles.brandContent}>
-            <h1 style={styles.logo}>HORA</h1>
-            <p style={styles.tagline}>Project Management Reimagined</p>
-            
-            <ul style={styles.features}>
-              {[
-                { icon: 'fas fa-tasks', text: 'Advanced Task Management', delay: '1s' },
-                { icon: 'fas fa-users', text: 'Team Collaboration Tools', delay: '1.2s' },
-                { icon: 'fas fa-chart-line', text: 'Real-time Analytics', delay: '1.4s' },
-                { icon: 'fas fa-rocket', text: 'Agile Project Tracking', delay: '1.6s' }
-              ].map((feature, index) => (
-                <li key={index} style={{
-                  ...styles.featureItem,
-                  animationDelay: feature.delay
-                }}>
-                  <i className={feature.icon} style={styles.featureIcon}></i>
-                  <span>{feature.text}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div style={styles.floatingElements}>
-            <div style={{...styles.floatingCard, ...styles.card1}}>
-              <i className="fas fa-project-diagram"></i>
-            </div>
-            <div style={{...styles.floatingCard, ...styles.card2}}>
-              <i className="fas fa-calendar-alt"></i>
-            </div>
-            <div style={{...styles.floatingCard, ...styles.card3}}>
-              <i className="fas fa-bell"></i>
-            </div>
-          </div>
-        </div>
-        
-        <div style={styles.loginSection}>
-          <div style={styles.loginForm}>
-            <div style={styles.formHeader}>
-              <h2 style={styles.formTitle}>Welcome Back</h2>
-              <p style={styles.formDescription}>
-                {step === 1 
-                  ? 'Enter your email to get started' 
-                  : 'Enter the verification code sent to your email'
-                }
-              </p>
-            </div>
 
-            {step === 1 ? (
-              <div className="email-form">
-                <div style={styles.inputGroup}>
-                  <GoogleAuthButton/>
-                  <label htmlFor="email" style={styles.inputLabel}>Email Address</label>
-                  <div style={styles.inputWrapper}>
-                    <i className="fas fa-envelope" style={styles.inputIcon}></i>
-                    <input
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address"
-                      style={styles.input}
-                      onFocus={(e) => e.target.style.borderColor = '#a8edea'}
-                      onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
-                    />
-                  </div>
-                </div>
-                
-                {error && <div style={styles.errorMessage}>{error}</div>}
-                
-                <button 
-                  onClick={handleEmailSubmit} 
-                  style={{
-                    ...styles.submitBtn,
-                    opacity: loading ? 0.7 : 1,
-                    cursor: loading ? 'not-allowed' : 'pointer'
-                  }}
-                  disabled={loading}
-                  onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
-                  onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)')}
-                >
-                  {loading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin"></i>
-                      <span>Sending OTP...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Continue</span>
-                      <i className="fas fa-arrow-right"></i>
-                    </>
-                  )}
-                </button>
-              </div>
-            ) : (
-              <div className="otp-form">
-                <div style={styles.otpInputGroup}>
-                  <label style={styles.inputLabel}>Verification Code</label>
-                  <div style={styles.otpInputs}>
-                    {otp.map((digit, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        id={`otp-${index}`}
-                        value={digit}
-                        onChange={(e) => handleOtpChange(index, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                        maxLength="1"
-                        style={styles.otpInput}
-                        onPaste={handlePaste}
-                        onFocus={(e) => e.target.style.borderColor = '#a8edea'}
-                        onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
-                      />
-                    ))}
-                  </div>
-                  <p style={styles.otpInfo}>
-                    Code sent to <strong>{email}</strong>
-                  </p>
-                </div>
-                
-                {error && <div style={styles.errorMessage}>{error}</div>}
-                
-                <button 
-                  onClick={handleOtpSubmit} 
-                  style={{
-                    ...styles.submitBtn,
-                    opacity: loading ? 0.7 : 1,
-                    cursor: loading ? 'not-allowed' : 'pointer'
-                  }}
-                  disabled={loading}
-                  onMouseEnter={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
-                  onMouseLeave={(e) => !loading && (e.target.style.transform = 'translateY(0)')}
-                >
-                  {loading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin"></i>
-                      <span>Verifying...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Verify & Login</span>
-                      <i className="fas fa-check"></i>
-                    </>
-                  )}
-                </button>
-                
-                <div style={styles.formActions}>
-                  <button 
-                    onClick={resendOtp} 
-                    style={styles.linkBtn}
-                    onMouseEnter={(e) => e.target.style.color = 'white'}
-                    onMouseLeave={(e) => e.target.style.color = '#a8edea'}
-                  >
-                    Resend Code
-                  </button>
-                  <button 
-                    onClick={() => setStep(1)} 
-                    style={styles.linkBtn}
-                    onMouseEnter={(e) => e.target.style.color = 'white'}
-                    onMouseLeave={(e) => e.target.style.color = '#a8edea'}
-                  >
-                    Change Email
-                  </button>
-                </div>
-              </div>
-            )}
-            
-            <div style={styles.formFooter}>
-              <p>
-                New to Hora? 
-                <a href="#" style={styles.signupLink}>Create an account</a>
-              </p>
+  return (
+    <div className="login-page">
+      {/* Left Brand Section */}
+      <div className="login-brand">
+        <div className="brand-content">
+          <div className="brand-logo">
+            {/* <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <rect width="48" height="48" rx="12" fill="#6366f1"/>
+              <path d="M16 14h6v20h-6V14zm10 8h6v12h-6V22z" fill="white"/>
+            </svg> */}
+            <img src={HoraLogo} alt="Hora" style={{width:"100px", height:"100px"}}/>
+            <span className="brand-name">Hora</span>
+          </div>
+          <h1 className="brand-title">Project Management<br />Made Simple</h1>
+          <p className="brand-description">
+            Streamline your workflow, collaborate with your team, and deliver projects on time.
+          </p>
+          
+          <div className="brand-features">
+            <div className="feature-item">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2L12.5 7.5L18 8.5L14 13L15 18.5L10 15.5L5 18.5L6 13L2 8.5L7.5 7.5L10 2Z" fill="#6366f1"/>
+              </svg>
+              <span>Task & Project Tracking</span>
+            </div>
+            <div className="feature-item">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2L12.5 7.5L18 8.5L14 13L15 18.5L10 15.5L5 18.5L6 13L2 8.5L7.5 7.5L10 2Z" fill="#6366f1"/>
+              </svg>
+              <span>Team Collaboration</span>
+            </div>
+            <div className="feature-item">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2L12.5 7.5L18 8.5L14 13L15 18.5L10 15.5L5 18.5L6 13L2 8.5L7.5 7.5L10 2Z" fill="#6366f1"/>
+              </svg>
+              <span>Real-time Analytics</span>
             </div>
           </div>
         </div>
       </div>
-    </>
+
+      {/* Right Login Section */}
+      <div className="login-form-section">
+        <div className="login-form-container">
+          <div className="login-header">
+            <h2 className="login-title">
+              {step === 1 ? 'Sign in to Hora' : 'Verify your email'}
+            </h2>
+            <p className="login-subtitle">
+              {step === 1 
+                ? 'Enter your email address to continue' 
+                : `We sent a code to ${email}`
+              }
+            </p>
+          </div>
+
+          {step === 1 ? (
+            <form onSubmit={handleEmailSubmit} className="login-form">
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">Email address</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  className="form-input"
+                  autoFocus
+                />
+              </div>
+
+              {error && <div className="error-message">{error}</div>}
+
+              <button 
+                type="submit"
+                className="btn-primary"
+                disabled={loading}
+              >
+                {loading ? 'Sending code...' : 'Continue with Email'}
+              </button>
+
+              <div className="divider">
+                <span>or</span>
+              </div>
+
+              <GoogleAuthButton />
+
+              <p className="form-footer">
+                Don't have an account? <a href="#" className="link">Sign up</a>
+              </p>
+            </form>
+          ) : (
+            <form onSubmit={handleOtpSubmit} className="login-form">
+              <div className="form-group">
+                <label className="form-label">Verification code</label>
+                <div className="otp-inputs">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      id={`otp-${index}`}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                      onPaste={handlePaste}
+                      maxLength="1"
+                      className="otp-input"
+                      autoFocus={index === 0}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {error && <div className="error-message">{error}</div>}
+
+              <button 
+                type="submit"
+                className="btn-primary"
+                disabled={loading}
+              >
+                {loading ? 'Verifying...' : 'Verify & Continue'}
+              </button>
+
+              <div className="form-actions">
+                <button 
+                  type="button"
+                  onClick={resendOtp} 
+                  className="btn-link"
+                  disabled={loading}
+                >
+                  Resend code
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setStep(1)} 
+                  className="btn-link"
+                >
+                  Change email
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        <div className="login-footer">
+          <p>&copy; {new Date().getFullYear()} Hora. All rights reserved.</p>
+          <div className="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Help</a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

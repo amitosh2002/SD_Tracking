@@ -1,8 +1,9 @@
-import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs, ticketbyKeyurl, ticketSortKeyValues, addLabelToTicket, addPriorityToTicket, } from "../../../Api/Plat/TicketsApi"
-import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS } from "../../Constants/ticketReducerConstants"
+import {createTicketV2,assignTask, ticketStatusurl, tickettimelogsurl, getAllTicketApiv1, ticketSearchQueryApi, addStoryPoints, ticketLogs, ticketbyKeyurl, ticketSortKeyValues, addLabelToTicket, addPriorityToTicket, getCurrentProjectSprintWork, cloneTicket, } from "../../../Api/Plat/TicketsApi"
+import { UPDATE_TICKET_STATUS, ADD_TICKET_TIME_LOG, ASSIGN_TICKET, CREATE_TICKET, SET_SELECTED_TICKET, SET_FILTERED_TICKETS, GET_ALL_TICKETS, GET_ACTIVITY_LOGS_SUCCESS, GET_ACTIVITY_LOGS_REQUEST, UPDATE_TICKET, APPEND_TICKETS, GET_SORT_KEY_VALUES_REQUEST, GET_SORT_KEY_VALUES_SUCCESS, GET_CURRENT_PROJECT_SPRINT_WORK_REQUEST, GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS, CLONE_TICKET_REQUEST, CLONE_TICKET_SUCCESS, CLONE_TICKET_FAIL } from "../../Constants/ticketReducerConstants"
 import apiClient from "../../../utils/axiosConfig"
 import axios from "axios";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
+import { getUserWorkDetails } from "../PlatformActions.js/userActions";
 // import { PROJECT_CONFIG_FETCH_SUCESS } from "../../Constants/projectConstant";
 
 export const getAllWorkTicket =
@@ -79,22 +80,20 @@ export const createTicket = (ticketData) => async (dispatch) => {
                 type: CREATE_TICKET,
                 payload: response.data
             });
-            console.log("Ticket created successfully:", response.data);
+            dispatch(getUserWorkDetails(ticketData?.projectId))
         }
     } catch (error) {
         console.error("Error creating ticket:", error);
     }
 };
 // api for assigning the task
-export const assignTaskApi = (taskId) => async (dispatch) => {
+export const assignTaskApi = (taskId, userId) => async (dispatch) => {
     try {
         const response = await apiClient.post(
             `${assignTask}/${taskId}/assignee`,
-          
+            { userId }
         );
 
-        console.log("Task assigned successfully:", response.data);
-        
         // Dispatch success action to update Redux state
         dispatch({
             type: ASSIGN_TICKET,
@@ -112,14 +111,12 @@ export const assignTaskApi = (taskId) => async (dispatch) => {
 
 // change the status for ticket
 export const changeTicketStatus = (ticketId, status) => async (dispatch) => {
-    console.log("Changing ticket status:", ticketId, "to:", status);
     
     try {
-        const response = await apiClient.post(`${ticketStatusurl}/${ticketId}/status`, {
+        await apiClient.post(`${ticketStatusurl}/${ticketId}/status`, {
             status
         });
 
-        console.log("Ticket status updated successfully:", response.data);
         
         // Dispatch success action to update Redux state
         dispatch({
@@ -166,7 +163,6 @@ export const updateTicket = (ticketId, data) => async (dispatch) => {
 
 //Time log adding to ticket
 export const addTimeLogForWork = (ticketId, userId, timelogged, note) => async (dispatch) => {
-    console.log("Adding time log for ticket:", ticketId, "by user:", userId);
     
     try {
         const response = await apiClient.post(`${tickettimelogsurl}`, {
@@ -233,12 +229,10 @@ export const getTicketById = (ticketId) => async (dispatch) => {
 
 export const searchTicketByQuery = (searchQuery) => async(dispatch) => {
     // if(!searchQuery) return;
-    console.log(" api callf or search")
  try {
        const res =await apiClient.get(`${ticketSearchQueryApi}`,{//this api client automatically add token
         params: { query: searchQuery }
     })
-    console.log(ticketSearchQueryApi)
 
     if(res?.data){
         dispatch({
@@ -264,7 +258,6 @@ export const searchTicketByQuery = (searchQuery) => async(dispatch) => {
 
 
 export const addStoryPointToTicket =(point,userId,ticketId)=>async(dispatch)=>{
-    console.log(point,userId,ticketId)
     try {
         const res = await apiClient.post(`${addStoryPoints}`,{
             userId,
@@ -448,5 +441,79 @@ export const ticketPriorityActions = (ticketId, priorityId) => async (dispatch) 
                 message: error.response?.data?.message || "Failed to update priority"
             }
         });
+    }
+};
+
+export const getCurrentProjectSprintWorkActions = (projectId) => async (dispatch) => {
+    try {
+      dispatch({ type: GET_CURRENT_PROJECT_SPRINT_WORK_REQUEST });
+        const response = await apiClient.get(`${getCurrentProjectSprintWork}?projectId=${projectId}`);
+        if (response.data.success) {
+          dispatch({
+            type: GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS,
+            payload: response.data
+        });
+        }else{
+          dispatch({
+            type: GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS,
+            payload: { sprintWork: [] }
+        });
+        }
+    } catch (error) {
+      dispatch({
+        type: GET_CURRENT_PROJECT_SPRINT_WORK_SUCCESS,
+        payload: { sprintWork: [] }
+      });
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: error?.response?.data?.message || "Failed to fetch the data"
+        }
+      })
+        console.error("Error fetching current project sprint work:", error);
+    }
+};
+
+export const cloneTicketActions = (ticketId, navigate) => async (dispatch) => {
+    try {
+        dispatch({ type: CLONE_TICKET_REQUEST });
+        const response = await apiClient.post(cloneTicket(ticketId));
+        if (response.data.success) {
+            dispatch({
+                type: CLONE_TICKET_SUCCESS,
+                payload: response.data.ticket
+            });
+            dispatch({
+                type: SHOW_SNACKBAR,
+                payload: {
+                    type: "success",
+                    message: "Ticket cloned successfully"
+                }
+            });
+
+            dispatch(getAllWorkTicket())
+            if (navigate && response.data.redirectUrl) {
+              navigate(response.data.redirectUrl);
+            }
+        } else {
+            dispatch({
+                type: CLONE_TICKET_FAIL,
+                payload: response.data.message || "Failed to clone ticket"
+            });
+        }
+    } catch (error) {
+        dispatch({
+            type: CLONE_TICKET_FAIL,
+            payload: error?.response?.data?.message || "Failed to clone ticket"
+        });
+        dispatch({
+            type: SHOW_SNACKBAR,
+            payload: {
+                type: "error",
+                message: error?.response?.data?.message || "Failed to clone ticket"
+            }
+        });
+        console.error("Error cloning ticket:", error);
     }
 };

@@ -3,8 +3,11 @@ $medium: #e9f908;
 $high: rgb(210, 54, 54);
 
 // Variables
-$primary-color: #3b82f6;
-$primary-hover: #2563eb;
+$primary: #6366f1;
+$primary-hover: #5558e3;
+$primary-light: #eef2ff;
+$primary-color: #10b981;
+// $primary-hover: #2563eb;
 $danger-color: #ef4444;
 $danger-hover: #dc2626;
 $success-color: #10b981;
@@ -22,12 +25,40 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 $border-radius: 8px;
 $transition: all 0.2s ease;
-$primary-color: #a855f7;
-$primary-light: #c084fc;
+$primary-color: #10b981;
+// $primary-light: #c084fc;
 $secondary-color: #06b6d4;
 $border-color: #e2e8f0;
 $text-primary: #1e293b;
 $text-secondary: #64748b;
 $hover-bg: #f8fafc;
 $animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+$white: #ffffff;
+$danger: #ef4444;
+$success: #10b981;
 
+$primary-teal: #0d9488; 
+
+
+
+// =============+GREY==========
+$gray-50: #fafafa;
+$gray-100: #f4f4f5;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+$space-10: 40px;

@@ -1,12 +1,13 @@
 .hora_filter_bar {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+    justify-content: flex-start;
+  gap: 0.5rem;
   background: #fff;
-  border: 1px solid #E5E7EB;
+  // border: 1px solid #E5E7EB;
   border-radius: 12px;
   overflow: visible;
-  height: 48px;
+  // height: 48px;
 }
 
 /* Search */

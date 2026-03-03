@@ -1,185 +1,105 @@
-// import React, {  useState } from 'react';
-// import { PopupV1 } from '../../customFiles/customComponent/popups';
-// import { DropDownV1, DropDownV2 } from '../../customFiles/customComponent/DropDown';
-// import "./styles/createTicket.scss";
-// import TextEditor from '../Editor';
-// import { ButtonV1 } from '../../customFiles/customComponent/CustomButtons';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { createTicket, getAllWorkTicket } from '../../Redux/Actions/TicketActions/ticketAction';
-// import { IIV2Icon } from '../../customFiles/customComponent/inputContainer';
-// import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
-// import { SHOW_SNACKBAR } from '../../Redux/Constants/PlatformConstatnt/platformConstant';
-
-// const CreateTicket = () => {
-//     const dispatch = useDispatch();
-//     const {userDetails}=useSelector((state)=>state.user)
-//   const [ticketData, setTicketData] = useState({
-//     title: "",
-//     type: "BUG",
-//     priority: "Medium",
-//     description: ""
-//   });
-//   const {TicketType}=useSelector((state)=>state.keyValuePair)||{}
-//   // console.log("Ticket Types from Redux:", TicketType);
-//   const handleChange = (field, value) => {
-//     setTicketData(prev => ({ ...prev, [field]: value }));
-    
-//   };
-
-//   const handeleCreateTicket =()=>{
-//     if (!ticketData.title || !ticketData.type || !ticketData.priority ) {
-//          dispatch({
-//                type: SHOW_SNACKBAR,
-//                payload: {
-//                  message: `Failed to create Ticket"`,
-//                  type: "success"
-//                }
-//              });
-//     }
-//       if (ticketData ) {
-//         dispatch(createTicket(ticketData,userDetails?.id))
-//         // console.log(ticketData,userDetails,"data sent to backend")
-//     }
-//     console.log(ticketData,"ticket data")
-//     dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false  })
-//     dispatch({
-//       type:SHOW_SNACKBAR,
-//         payload: {
-//            message: `Sucessful created ticket ${ticketData?.title}"`,
-//            type: "success"
-//          }
-//     })
-//     dispatch(getAllWorkTicket())
-//   }
-
-//   return (
-//     <PopupV1 title={"Create Ticket"} onClose={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false  })}>
-//       <div className="ticket_name_container">
-//        <div className="drop_down_container">
-//          <DropDownV2
-//           label="Type"
-//           // defaultType={ticketData}
-//           data={TicketType}
-//           onChange={val => handleChange("type", val)}
-//           className="ticket_type_dropdown"
-//         />
-//         <DropDownV1
-//           label="Priority"
-//           ticketTypes={["LOW", "MEDIUM", "HIGH", "CRITICAL"]}
-//           defaultType={ticketData.priority}
-//           onChange={val => handleChange("priority", val)}
-//           className="ticket_priority_dropdown"
-//         />
-//        </div>
-//         {/* <input
-//           type="text"
-//           className="ticket-input"
-//           value={ticketData.title}
-//           onChange={e => handleChange("title", e.target.value)}
-//           placeholder="Enter the ticket name"
-//         /> */}
-//         <label htmlFor="input-create">Ticket name</label>
-//         <IIV2Icon id="input-create" value={ticketData.title}  onChange={e => handleChange("title", e.target.value)}  placeholder="Enter the ticket name"/>
-//       </div>
-//       <div className="ticket-body">
-//         <TextEditor
-//           initialData={ticketData.description}
-//           onSave={val => handleChange("description", val)}
-//         />
-//       </div>
-//       <ButtonV1
-//         text="Create Ticket"
-//         type="primary"
-//         onClick={ handeleCreateTicket}
-//       />
-//     </PopupV1>
-//   );
-// };
-
-// export default CreateTicket;
-
-
 import React, { useState, useEffect } from "react";
-import { PopupV1 } from "../../customFiles/customComponent/popups";
-import { DropDownV1, DropDownV2 } from "../../customFiles/customComponent/DropDown";
-import "./styles/createTicket.scss";
-import TextEditor from "../Editor";
-import { ButtonV1 } from "../../customFiles/customComponent/CustomButtons";
+import { X, Plus, Calendar, ChevronDown } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { createTicket, getAllWorkTicket } from "../../Redux/Actions/TicketActions/ticketAction";
 import { getAllProjects, ticketConfiguratorActionV1 } from "../../Redux/Actions/PlatformActions.js/projectsActions";
 import { useParams } from "react-router-dom";
-import { IIV2Icon } from "../../customFiles/customComponent/inputContainer";
 import { OPEN_CREATE_TICKET_POPUP } from "../../Redux/Constants/ticketReducerConstants";
 import { SHOW_SNACKBAR } from "../../Redux/Constants/PlatformConstatnt/platformConstant";
 import { PROJECT_CONFIG_FETCH_SUCESS } from "../../Redux/Constants/projectConstant";
-
+import "./styles/createTicket.scss";
+import { CustomDropDownV3 } from "../../customFiles/customComponent/DropDown";
+import { getProjectTeamMembers } from "../../Redux/Actions/PlatformActions.js/userActions";
+import { fetchProjectScrumFlow } from "../../Redux/Actions/SprintActions/sprintActionsV1";
+import TextEditor from "../Editor";
 const CreateTicket = () => {
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.user);
-  const { TicketType } = useSelector((state) => state.keyValuePair) || {};
-  const { projects ,projectConventions,projectsPriorities} = useSelector((state) => state.projects || {});
+  const { projects, projectConventions, projectsPriorities ,projectlabels} = useSelector((state) => state.projects || {});
+  const {ticketFlowTypes} = useSelector((state) => state.sprint || {});
   const { projectId: projectIdParam } = useParams();
-  console.log(projectConventions,projectsPriorities)
-
-
-  console.log(projects)
-
+  const {projectTeamMembers} = useSelector((state) => state.user || {});
   const [ticketData, setTicketData] = useState({
     title: "",
-    type: "BUG",
-    priority: "Medium",
+    type: null,
+    priority: null,
+    status: null,
+    assignee: null,
+    storyPoints: 0,
+    dueDate: "",
+    labels: [],
     description: "",
     projectId: null,
   });
 
-  // Load projects when component mounts
-  useEffect(() => {
-  
 
+  // Load projects on mount
+  useEffect(() => {
     if (userDetails?.id) {
       dispatch(getAllProjects(userDetails.id));
     }
-   return () => {
-  const controller = new AbortController();// initilize abort controller
-    controller.abort(); // Cancels the request if component unmounts
-  };
-  }, [dispatch, userDetails?.id,]);
+    return () => {
+      const controller = new AbortController();
+      controller.abort();
+    };
+  }, [dispatch, userDetails?.id]);
 
-  // 🔹 When projects load or projectIdParam changes, auto-select if available
+  // useEffect(() => {
+  //   if (projectlabels?.length > 0 && ticketData.labels.length === 0) {
+  //     setTicketData((prev) => ({ ...prev, labels: [projectlabels[0].id] }));
+  //     console.log(projectlabels[0].id)
+  //   }
+  // }, [projectlabels, ticketData.labels]);
+
+  // Auto-select project from URL param
   useEffect(() => {
     if (projectIdParam && Array.isArray(projects) && projects.length > 0) {
       const matched = projects.find(
         (p) => String(p._id) === String(projectIdParam) || String(p.projectId) === String(projectIdParam)
       );
       if (matched) {
-        setTicketData((prev) => ({
-          ...prev,
-          // Prefer the canonical projectId (UUID) that backend expects.
-          projectId: matched.projectId || matched._id,
-        }));
+        const projectId = matched.projectId || matched._id;
+        setTicketData((prev) => ({ ...prev, projectId }));
+        dispatch(ticketConfiguratorActionV1(projectId));
       }
     }
-  }, [projectIdParam, projects]);
+  }, [projectIdParam, projects, dispatch]);
+
+  // Auto-select first priority/type when they load
+  useEffect(() => {
+    if (projectsPriorities?.length > 0 && !ticketData.priority) {
+      setTicketData((prev) => ({ ...prev, priority: projectsPriorities[0].id }));
+    }
+  }, [projectsPriorities, ticketData.priority]);
+
+  useEffect(() => {
+    if (projectConventions?.length > 0 && !ticketData.type) {
+      setTicketData((prev) => ({ ...prev, type: projectConventions[0].id }));
+    }
+  }, [projectConventions, ticketData.type]);
 
   const handleChange = (field, value) => {
-    console.log(`Setting ${field} to:`, value); // Debug log
-    console.log(  projectConventions.flatMap((convention)=>convention?.suffix),"map")
-    setTicketData((prev) => {
-      const updated = { ...prev, [field]: value };
-      console.log('Updated ticketData:', updated); // Debug log
-      return updated;
-    });
+    setTicketData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleProjectChange = (projectId) => {
+    handleChange("projectId", projectId);
+    dispatch(ticketConfiguratorActionV1(projectId));
+    dispatch(getProjectTeamMembers(projectId));
+    dispatch(fetchProjectScrumFlow(projectId));
+    // Reset dependent fields
+    setTicketData((prev) => ({ ...prev, type: null, priority: null }));
+  };
+
+
+
   const handleCreateTicket = () => {
-    if (!ticketData.title || !ticketData.type || !ticketData.priority) {
+    if (!ticketData.title || !ticketData.projectId) {
       return dispatch({
         type: SHOW_SNACKBAR,
-        payload: { message: "Failed to create ticket", type: "error" },
+        payload: { message: "Please fill in required fields", type: "error" },
       });
     }
-
     dispatch(createTicket(ticketData, userDetails?.id));
     dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false });
     dispatch({
@@ -189,105 +109,270 @@ const CreateTicket = () => {
     dispatch(getAllWorkTicket());
   };
 
-  // Debug effect to log ticket data changes
-  useEffect(() => {
-    if (ticketData.projectId) {
-      const projectFound = projects?.some(p => 
-        String(p.projectId) === String(ticketData.projectId) ||
-        String(p._id) === String(ticketData.projectId)
-      );
-      console.log('Ticket data updated:', {
-        title: ticketData.title,
-        type: ticketData.type,
-        priority: ticketData.priority,
-        projectId: ticketData.projectId,
-        projectFound,
-        availableProjects: projects?.map(p => ({ 
-          id: p.projectId || p._id,
-          name: p.name 
+  const handleClose = () => {
+    dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false });
+    dispatch({ type: PROJECT_CONFIG_FETCH_SUCESS, payload: null });
+  };
+
+  const hasProject = !!ticketData.projectId;
+
+  // Prepare dropdown options
+  const projectOptions = Array.isArray(projects)
+    ? projects.map((p) => ({
+        label: p.name || p.projectName || "Unknown Project",
+        value: p.projectId || p._id,
+      }))
+    : [];
+
+  const typeOptions = (projectConventions || []).map((c) => ({
+    label: c.suffix,
+    value: c.id,
+  }));
+
+  const priorityOptions = (projectsPriorities || []).map((p) => ({
+    label: p.name,
+    value: p.id,
+    icon: p.name === "Medium" ? "—" : null,
+    color: p.name === "Medium" ? "#f59e0b" : null,
+  }));
+  // ========================== Mapping ticketFlowTypes to statusOptions =========================
+  const statusOptions = ticketFlowTypes?.map((s) => ({
+    label: s,
+    value: s,
+  }));
+  // ========================== Mapping ticketFlowTypes to statusOptions =========================
+
+  const assigneeOptions = [
+    { label: "Unassigned", value: null },
+    ...(Array.isArray(projectTeamMembers)
+      ? projectTeamMembers.map((m) => ({
+          label: m.name || m.username || "Unknown",
+          value: m.id || m._id,
+          image: m.image || "",
+          initials: (m.name || m.username || "U")
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2),
         }))
-      });
-    }
-  }, [ticketData, projects]);
+      : []),
+  ];
 
+  const labelOptions = (projectlabels || []).map((l) => ({
+    label: l.name,
+    value: l.id,
+  }));
+  console.log(ticketFlowTypes)
   return (
-    <PopupV1
-      title="Create Ticket"
-      onClose={() => {dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: false }),
-      setTicketData(null);
-      dispatch({ type: PROJECT_CONFIG_FETCH_SUCESS ,payload:null});
-    }}
-    >
-      <div className="ticket_name_container">
-        <div className="drop_down_container">
-
-           <DropDownV2
-            label="Project"
-            data={Array.isArray(projects) ? projects.map(p => ({
-              type: p.name || p.projectName || "UNKNOWN PROJECT",  // Display name
-              icon: null,                          // Optional icon
-              projectId: p.projectId || p._id,    // Store ID for internal use
-              _id: p._id                          // Keep Mongo ID as backup
-            })) : []}
-            defaultType={projectIdParam || "SELECT PROJECT"}
-            placeholder="Select project"
-            onChange={(selectedProject) => {
-              // Extract projectId from the full project object
-              const projectId = selectedProject?.projectId || selectedProject?._id;
-              if (projectId) {
-                handleChange('projectId', projectId);
-                dispatch(ticketConfiguratorActionV1(projectId))
-              }
-            }}
-            // className="ticket_project_dropdown"
-          />
-
-
-          <DropDownV2
-            label="Type"
-            data={(projectConventions || []).map((convention) => ({
-              label: convention.name,
-              value: convention.id // Store numeric ID instead of suffix (e.g. "3" instead of "TASK")
-            }))}
-            onChange={(val) => handleChange("type", val?.value || val)}
-            placeholder="Select ticket type"
-            disabled={ projectConventions.length === 0}
-          />
-
-          <DropDownV2
-            label="Priority"
-            data={(projectsPriorities || []).map((p) => ({
-              label: p.name,
-              value: p.id
-            }))}
-            onChange={(val) => handleChange("priority", val?.value || val)}
-            placeholder="Select priority"
-            disabled={ projectsPriorities.length === 0}
-          />
-
-          {/* ✅ Project Dropdown — auto-select if from URL, else full list */}
-         
-
+    <div className="ct-overlay" onClick={handleClose}>
+      <div className="ct-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="ct-header">
+          <div className="ct-header__text">
+            <h2 className="ct-header__title">Create New Ticket</h2>
+            <p className="ct-header__subtitle">
+              Fill in the details below to create a new ticket for your project.
+            </p>
+          </div>
+          <button className="ct-header__close" onClick={handleClose}>
+            <X size={20} />
+          </button>
         </div>
 
-        <label htmlFor="input-create">Ticket name</label>
-        <IIV2Icon
-          id="input-create"
-          value={ticketData.title}
-          onChange={(e) => handleChange("title", e.target.value)}
-          placeholder="Enter the ticket name"
-        />
-      </div>
+        {/* Body */}
+        <div className="ct-body">
+          {/* Project Selector */}
+          {!hasProject && (
+            <div className="ct-helper">
+              <div className="ct-helper__icon">ℹ️</div>
+              <p className="ct-helper__text">
+                Please select a project first to configure ticket type and priority options.
+              </p>
+            </div>
+          )}
 
-      <div className="ticket-body">
-        <TextEditor
-          initialData={ticketData.description}
-          onSave={(val) => handleChange("description", val)}
-        />
-      </div>
+          <div className="ct-field">
+            <label className="ct-label">Project</label>
+            <CustomDropDownV3
+              value={ticketData.projectId}
+              onChange={handleProjectChange}
+              options={projectOptions}
+              placeholder="Select project"
+              disabled={false}
+              searchable={true}
+            />
+          </div>
 
-      <ButtonV1 text="Create Ticket" type="primary" onClick={handleCreateTicket} />
-    </PopupV1>
+          {/* Title */}
+          <div className="ct-field">
+            <label className="ct-label">
+              Title <span className="ct-required">*</span>
+            </label>
+            <input
+              type="text"
+              className="ct-input"
+              placeholder="Enter ticket title"
+              value={ticketData.title}
+              onChange={(e) => handleChange("title", e.target.value)}
+            />
+          </div>
+
+          {/* Description */}
+          <div className="ct-field">
+            <label className="ct-label">Description</label>
+            {/* <textarea
+              className="ct-textarea"
+              placeholder="Describe the ticket in detail..."
+              value={ticketData.description}
+              onChange={(e) => handleChange("description", e.target.value)}
+              rows={4}
+            /> */}
+          <TextEditor initialData={ticketData.description} onSave={(data) => handleChange("description", data)} style={{height:"130px" ,border:"0.5px solid #ccc"}}/>
+
+          </div>
+
+          {/* Type + Priority */}
+          <div className="ct-row">
+            <div className="ct-field">
+              <label className="ct-label">Type</label>
+              <CustomDropDownV3
+                value={ticketData.type}
+                onChange={(val) => handleChange("type", val)}
+                options={typeOptions}
+                placeholder="Select type"
+                disabled={!hasProject || !projectConventions?.length}
+                searchable={true}
+
+              />
+            </div>
+
+            <div className="ct-field">
+              <label className="ct-label">Priority</label>
+              <CustomDropDownV3
+                value={ticketData.priority}
+                onChange={(val) => handleChange("priority", val)}
+                options={priorityOptions}
+                placeholder="Select priority"
+                disabled={!hasProject || !projectsPriorities?.length}
+                showIcon={true}
+                searchable={true}
+
+              />
+            </div>
+          </div>
+
+          {/* Status + Assignee */}
+          <div className="ct-row">
+            <div className="ct-field">
+              <label className="ct-label">Status</label>
+              <CustomDropDownV3
+                value={ticketData.status}
+                onChange={(val) => handleChange("status", val)}
+                options={statusOptions}
+                placeholder="Select status"
+                disabled={!hasProject}
+                searchable={true}
+
+              />
+            </div>
+
+            <div className="ct-field">
+              <label className="ct-label">Assignee</label>
+              <CustomDropDownV3
+              value={ticketData.assignee}
+              onChange={(val) => handleChange("assignee", val)}
+              options={assigneeOptions}
+              placeholder="Unassigned"
+              disabled={!hasProject}
+              searchable={true}
+              showIcon={true}
+            />
+            </div>
+          </div>
+
+          {/* Story Points (full width) */}
+          <div className="ct-field">
+            <label className="ct-label">Story Points</label>
+            <input
+              type="number"
+              className="ct-input ct-input--number"
+              value={ticketData.storyPoints}
+              onChange={(e) => handleChange("storyPoints", Number(e.target.value))}
+              min="0"
+              disabled={!hasProject}
+            />
+          </div>
+
+          {/* Due Date */}
+          <div className="ct-field">
+            <label className="ct-label">Due Date</label>
+            <div className="ct-date">
+              <input
+                type="date"
+                className="ct-input"
+                value={ticketData.dueDate}
+                onChange={(e) => handleChange("dueDate", e.target.value)}
+                disabled={!hasProject}
+              />
+              <Calendar size={16} className="ct-date__icon" />
+            </div>
+          </div>
+
+          {/* Labels */}
+          <div className="ct-field">
+            <label className="ct-label">Labels</label>
+            <CustomDropDownV3
+              value={ticketData.labels}
+              onChange={(val) => handleChange("labels", val)}
+              options={labelOptions}
+              placeholder="Select labels"
+              disabled={!hasProject}
+              searchable={true}
+              showIcon={true}
+            />
+
+            {/* <div className="ct-labels">
+              <input
+                type="text"
+                className="ct-labels__input"
+                placeholder="Add a label..."
+                value={labelInput}
+                onChange={(e) => setLabelInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddLabel(labelInput);
+                  }
+                }}
+                disabled={!hasProject}
+              />
+              <button
+                className="ct-labels__add"
+                onClick={() => handleAddLabel(labelInput)}
+                disabled={!hasProject || !labelInput}
+              >
+                <Plus size={16} />
+              </button>
+            </div> */}
+
+            {/* Available label pills */}
+            
+
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="ct-footer">
+          <button className="ct-btn ct-btn--cancel" onClick={handleClose}>
+            Cancel
+          </button>
+          <button className="ct-btn ct-btn--primary" onClick={handleCreateTicket}>
+            Create Ticket
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

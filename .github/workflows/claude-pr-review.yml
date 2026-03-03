@@ -1,0 +1,29 @@
+name: Claude Code PR Review
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: "--dangerously-skip-permissions"
+          show_full_output: true
+          prompt: |
+            Review this PR for:
+            - Security issues
+            - Performance problems
+            - Code style violations
+            - Unused code
+            - Redundant code
+            - Code complexity
+            Comment your findings on the PR.

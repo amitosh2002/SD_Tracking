@@ -82,7 +82,6 @@ const authReducer = createReducer(initialState, (builder) => {
     })
     
     .addCase(REQUIRES_REGISTRATION, (state, action) => {
-      console.log("Setting requiresRegistration to", action.payload);
       state.requiresRegistration = action.payload;
       state.loading = false;
       

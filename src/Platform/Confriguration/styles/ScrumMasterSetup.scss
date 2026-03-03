@@ -1,0 +1,511 @@
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
+        .status-chip {
+          transition: all 0.2s ease;
+        }
+
+        .status-chip:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-chip.selected {
+          animation: pulse 0.3s ease;
+        }
+
+        .metric-card:hover {
+          transform: translateY(-4px);
+        }
+
+        .education-card {
+          animation: slideIn 0.4s ease;
+        }
+        container: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #f5f7fa 0%, #e8ecf4 100%)',
+    padding: '2rem',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+  },
+  header: {
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    borderRadius: '24px',
+    padding: '2.5rem',
+    marginBottom: '2rem',
+    boxShadow: '0 10px 40px rgba(102, 126, 234, 0.3)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: '1.5rem'
+  }
+  headerContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1.5rem'
+  }
+  headerIcon: {
+    width: '80px',
+    height: '80px',
+    background: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backdropFilter: 'blur(10px)'
+  },
+  title: {
+    fontSize: '2rem',
+    fontWeight: '700',
+    color: '#ffffff',
+    margin: '0 0 0.5rem 0'
+  },
+  subtitle: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    margin: 0,
+    fontSize: '1rem',
+    lineHeight: '1.6'
+  },
+  educationToggle: {
+    padding: '0.875rem 1.5rem',
+    background: 'rgba(255, 255, 255, 0.2)',
+    border: '2px solid rgba(255, 255, 255, 0.3)',
+    borderRadius: '12px',
+    color: '#ffffff',
+    fontWeight: '600',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    backdropFilter: 'blur(10px)',
+    transition: 'all 0.2s'
+  },
+  educationBanner: {
+    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
+    borderRadius: '20px',
+    padding: '2rem',
+    marginBottom: '2rem',
+    display: 'flex',
+    gap: '1.5rem',
+    border: '2px solid #60a5fa'
+  },
+  educationIcon: {
+    flexShrink: 0
+  },
+  educationContent: {
+    flex: 1
+  },
+  educationTitle: {
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: '#1e40af',
+    margin: '0 0 1rem 0'
+  },
+  educationList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem'
+  },
+  educationPoint: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.75rem',
+    color: '#1e3a8a',
+    fontSize: '0.95rem',
+    lineHeight: '1.6'
+  },
+  tabs: {
+    display: 'flex',
+    gap: '1rem',
+    marginBottom: '2rem',
+    background: '#ffffff',
+    padding: '1rem',
+    borderRadius: '20px',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
+    overflowX: 'auto'
+  },
+  tab: {
+    flex: 1,
+    padding: '1rem 1.5rem',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: '14px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.75rem',
+    fontWeight: '600',
+    color: '#64748b',
+    transition: 'all 0.2s',
+    minWidth: '200px'
+  },
+  tabActive: {
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: '#ffffff',
+    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.3)'
+  },
+  tabBadge: {
+    background: 'rgba(255, 255, 255, 0.2)',
+    padding: '0.25rem 0.625rem',
+    borderRadius: '12px',
+    fontSize: '0.875rem',
+    fontWeight: '700'
+  },
+  content: {
+    background: '#ffffff',
+    borderRadius: '24px',
+    padding: '2.5rem',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
+    marginBottom: '2rem'
+  },
+  section: {
+    animation: 'slideIn 0.4s ease'
+  },
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '2rem',
+    paddingBottom: '1.5rem',
+    borderBottom: '2px solid #f1f5f9'
+  },
+  sectionHeaderLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem'
+  },
+  sectionTitle: {
+    fontSize: '1.75rem',
+    fontWeight: '700',
+    color: '#1e293b',
+    margin: '0 0 0.5rem 0'
+  },
+  sectionSubtitle: {
+    color: '#64748b',
+    margin: 0,
+    fontSize: '0.95rem'
+  },
+  mappingGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gap: '1.5rem'
+  },
+  categoryCard: {
+    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+    borderRadius: '16px',
+    padding: '1.5rem',
+    border: '2px solid #e2e8f0',
+    transition: 'all 0.3s'
+  },
+  categoryHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+    marginBottom: '1.5rem',
+    flexWrap: 'wrap'
+  },
+  categoryIcon: {
+    width: '56px',
+    height: '56px',
+    borderRadius: '14px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0
+  },
+  categoryTitle: {
+    fontSize: '1.125rem',
+    fontWeight: '700',
+    color: '#1e293b',
+    margin: 0
+  },
+  categoryDesc: {
+    fontSize: '0.875rem',
+    color: '#64748b',
+    margin: 0
+  },
+  selectedCount: {
+    marginLeft: 'auto',
+    padding: '0.375rem 0.875rem',
+    background: '#667eea',
+    color: '#ffffff',
+    borderRadius: '12px',
+    fontSize: '0.875rem',
+    fontWeight: '700'
+  },
+  statusGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem'
+  },
+  statusChip: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    padding: '0.875rem 1.125rem',
+    background: '#ffffff',
+    border: '2px solid #e2e8f0',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    fontSize: '0.95rem',
+    fontWeight: '500',
+    color: '#334155'
+  },
+  statusChipSelected: {
+    background: '#f0fdf4',
+    borderColor: '#86efac',
+    color: '#166534',
+    fontWeight: '600'
+  },
+  statusIcon: {
+    fontSize: '1.25rem'
+  },
+  metricsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '1.5rem',
+    marginBottom: '2rem'
+  },
+  metricCard: {
+    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+    borderRadius: '16px',
+    padding: '2rem',
+    border: '2px solid #e2e8f0',
+    cursor: 'pointer',
+    transition: 'all 0.3s',
+    position: 'relative',
+    textAlign: 'center'
+  },
+  metricCardSelected: {
+    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+    borderColor: '#86efac',
+    transform: 'translateY(-4px)',
+    boxShadow: '0 12px 32px rgba(16, 185, 129, 0.2)'
+  },
+  recommendedBadge: {
+    position: 'absolute',
+    top: '1rem',
+    right: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.375rem',
+    padding: '0.375rem 0.75rem',
+    background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+    color: '#ffffff',
+    borderRadius: '12px',
+    fontSize: '0.75rem',
+    fontWeight: '700'
+  },
+  metricIcon: {
+    marginBottom: '1rem',
+    color: '#667eea'
+  },
+  metricTitle: {
+    fontSize: '1.125rem',
+    fontWeight: '700',
+    color: '#1e293b',
+    margin: '0 0 0.75rem 0'
+  },
+  metricDescription: {
+    color: '#64748b',
+    fontSize: '0.9rem',
+    lineHeight: '1.6',
+    margin: 0
+  },
+  selectedIndicator: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem',
+    marginTop: '1rem',
+    padding: '0.75rem',
+    background: 'rgba(16, 185, 129, 0.1)',
+    borderRadius: '10px',
+    color: '#166534',
+    fontWeight: '600',
+    fontSize: '0.9rem'
+  },
+  optionsCard: {
+    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+    borderRadius: '16px',
+    padding: '2rem',
+    border: '2px solid #e2e8f0'
+  },
+  optionsTitle: {
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: '#1e293b',
+    margin: '0 0 1.5rem 0'
+  },
+  optionsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.25rem'
+  },
+  optionItem: {
+    display: 'flex',
+    gap: '1rem',
+    alignItems: 'flex-start',
+    cursor: 'pointer',
+    padding: '1rem',
+    background: '#ffffff',
+    borderRadius: '12px',
+    border: '2px solid transparent',
+    transition: 'all 0.2s'
+  },
+  checkbox: {
+    width: '20px',
+    height: '20px',
+    cursor: 'pointer',
+    accentColor: '#667eea',
+    marginTop: '0.125rem'
+  },
+  optionLabel: {
+    fontSize: '1rem',
+    fontWeight: '600',
+    color: '#1e293b',
+    display: 'block',
+    marginBottom: '0.25rem'
+  },
+  optionDesc: {
+    fontSize: '0.875rem',
+    color: '#64748b',
+    margin: 0,
+    lineHeight: '1.5'
+  },
+  doraGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr auto 1fr',
+    gap: '2rem',
+    alignItems: 'center',
+    marginBottom: '2rem'
+  },
+  doraCard: {
+    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+    borderRadius: '16px',
+    padding: '2rem',
+    border: '2px solid #e2e8f0',
+    textAlign: 'center'
+  },
+  doraArrow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  doraIcon: {
+    marginBottom: '1.5rem'
+  },
+  doraTitle: {
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: '#1e293b',
+    margin: '0 0 0.75rem 0'
+  },
+  doraDesc: {
+    color: '#64748b',
+    fontSize: '0.9rem',
+    marginBottom: '1.5rem'
+  },
+  doraSelect: {
+    width: '100%',
+    padding: '0.875rem 1.125rem',
+    border: '2px solid #e2e8f0',
+    borderRadius: '12px',
+    fontSize: '1rem',
+    color: '#1e293b',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    background: '#ffffff'
+  },
+  doraHint: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    marginTop: '1rem',
+    padding: '0.75rem',
+    background: '#dbeafe',
+    borderRadius: '10px',
+    fontSize: '0.875rem',
+    color: '#1e40af'
+  },
+  doraInfoGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '1.5rem'
+  },
+  doraInfoCard: {
+    padding: '1.5rem',
+    background: '#ffffff',
+    border: '2px solid #e2e8f0',
+    borderRadius: '14px',
+    textAlign: 'center'
+  },
+  doraInfoTitle: {
+    fontSize: '1rem',
+    fontWeight: '700',
+    color: '#1e293b',
+    margin: '1rem 0 0.5rem 0'
+  },
+  doraInfoText: {
+    fontSize: '0.875rem',
+    color: '#64748b',
+    lineHeight: '1.6',
+    margin: 0
+  },
+  footer: {
+    background: '#ffffff',
+    borderRadius: '24px',
+    padding: '2rem',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)'
+  },
+  footerContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: '2rem',
+    flexWrap: 'wrap'
+  },
+  footerInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    color: '#64748b',
+    fontSize: '0.9rem'
+  },
+  saveButton: {
+    padding: '1.125rem 2.5rem',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '14px',
+    fontSize: '1.125rem',
+    fontWeight: '700',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.4)',
+    transition: 'all 0.3s'
+  }

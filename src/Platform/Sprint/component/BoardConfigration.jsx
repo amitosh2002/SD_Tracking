@@ -13,18 +13,20 @@ const ColumnStatusManager = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
   
+  // Helper to normalize keys for comparison (remove spaces and underscores, then uppercase)
+  const normalizeKey = (k) => (k || "").toString().toUpperCase().replace(/[\s_]/g, '');
+
   const [activeTab, setActiveTab] = useState('status');
   const [hasChanges, setHasChanges] = useState(false);
+  const initializedRef = React.useRef(null);
   
   // Redux State
   const {
     scrumLoading,
-    boardId,
     boardColumn,
-    flowId,
-    statusWorkFlow
+    statusWorkFlow,
+    source
   } = useSelector((state) => state.sprint);
-  console.log(statusWorkFlow)
   
   // Status Flow State
   const [localStatuses, setLocalStatuses] = useState([]);
@@ -61,31 +63,44 @@ const ColumnStatusManager = () => {
     { name: 'Indigo', bg: '#e0e7ff', text: '#3730a3', border: '#4f46e5' }
   ];
 
+  // Sync Board Columns from Redux when they change (Only once per project, but prioritizing BOARD source)
+  useEffect(() => {
+    if (!projectId) return;
 
+    // If project changed, reset initialization
+    if (initializedRef.current && initializedRef.current.projectId !== projectId) {
+      initializedRef.current = null;
+    }
 
+    const currentSource = initializedRef.current?.source;
+    const hasColumns = boardColumn && boardColumn.length > 0;
 
-const normalizedFlowColumns = useMemo(() => {
-  if (!statusWorkFlow?.statuses || !statusWorkFlow?.workflow) return [];
+    // We initialize if:
+    // 1. Not initialized yet
+    // 2. OR the current local state is from "FLOW" and the new Redux data is from "BOARD"
+    const shouldInitialize = !initializedRef.current || (currentSource === 'FLOW' && source === 'BOARD');
 
-  return statusWorkFlow.statuses.map((status, index) => ({
-    id: `flow_${status.key}`,
-    name: status.label,
-    statusKeys: [
-      status.key,                    // ✅ self
-      ...(statusWorkFlow.workflow[status.key] || []) // ✅ allowed transitions
-    ],
-    color: status.color?.border || '#6366f1',
-    wipLimit: null,
-    order: index
-  }));
-}, [statusWorkFlow]);
-
-
-useEffect(() => {
-  if (normalizedFlowColumns.length) {
-    setLocalColumns(JSON.parse(JSON.stringify(normalizedFlowColumns)));
-  }
-}, [normalizedFlowColumns]);
+    if (shouldInitialize) {
+      if (hasColumns) {
+        console.log(`[BoardConfigration] Initializing columns from Redux (${source}):`, boardColumn);
+        setLocalColumns(JSON.parse(JSON.stringify(boardColumn)));
+        initializedRef.current = { projectId, source };
+      } 
+      else if (statusWorkFlow?.statuses && localColumns.length === 0) {
+        console.log("[BoardConfigration] No board columns found, deriving from flow statuses");
+        const derived = statusWorkFlow.statuses.map((status, index) => ({
+          id: `flow_${status.key}`,
+          name: status.label,
+          statusKeys: [status.key],
+          color: status.color?.border || '#6366f1',
+          wipLimit: null,
+          order: index
+        }));
+        setLocalColumns(derived);
+        // Do NOT set initializedRef here to allow boardColumn to catch up
+      }
+    }
+  }, [boardColumn, statusWorkFlow, projectId, localColumns.length, source]);
 
   // Fetch data on mount
   useEffect(() => {
@@ -163,34 +178,31 @@ const handleSaveAll = () => {
   if (!hasChanges) return;
 
   try {
-
-
-   
-
     // ======== BOARD COLUMNS PAYLOAD ========
-        const boardPayload = {
-          columns: localColumns.map((col, i) => ({
-            columnId: col.id,  // e.g., 'col_1', 'col_2'
-            name: col.name,
-            description: col.description || '',
-            color: col.color,
-            wipLimit: col.wipLimit || null,
-            statusKeys: Array.from(new Set(col.statusKeys)), // deduplicate
-            order: i
-          }))
-        };
+    const boardPayload = {
+      columns: localColumns.map((col, i) => ({
+        columnId: col.id || col.columnId, 
+        name: col.name,
+        description: col.description || '',
+        color: col.color,
+        wipLimit: col.wipLimit || null,
+        statusKeys: Array.isArray(col.statusKeys) ? Array.from(new Set(col.statusKeys)) : [],
+        order: i
+      }))
+    };
 
+    console.log('[BoardConfigration] Final Save Payload:', boardPayload);
 
-    console.log('Board Payload:', boardPayload);
-
-     dispatch(updateProjectScrumBoard(projectId, boardPayload));
+    dispatch(updateProjectScrumBoard(projectId, boardPayload));
 
     alert('Changes saved successfully!');
     setHasChanges(false);
 
-    // Refresh data after save
-    dispatch(fetchProjectScrumFlow(projectId));
-    dispatch(fetchProjectScrumBoard(projectId));
+    // Refresh data after a short delay to allow DB sync
+    setTimeout(() => {
+      dispatch(fetchProjectScrumFlow(projectId));
+      dispatch(fetchProjectScrumBoard(projectId));
+    }, 800);
 
   } catch (error) {
     console.error('Error saving changes:', error);
@@ -342,30 +354,46 @@ const handleSaveAll = () => {
   // ========== MAPPING HANDLERS ==========
 // ========== MAPPING HANDLER ==========
 const toggleStatusInColumn = (columnId, statusKey) => {
-  setLocalColumns(prev =>
-    prev.map(col => {
-      if (col.id !== columnId) return col; // Only modify the clicked column
+  console.log('[BoardConfigration] Toggling status:', statusKey, 'in column:', columnId);
+  
+  const targetNormalized = normalizeKey(statusKey);
 
-      const exists = col.statusKeys.includes(statusKey);
+  setLocalColumns(prev => {
+    const next = prev.map(col => {
+      const isMatch = (col.id === columnId || col.columnId === columnId);
+      if (!isMatch) return col; 
+
+      const currentKeys = Array.isArray(col.statusKeys) ? col.statusKeys : [];
+      const exists = currentKeys.some(key => normalizeKey(key) === targetNormalized);
+      
+      let newKeys;
+      if (exists) {
+        // Remove ALL variants that match this normalized key
+        newKeys = currentKeys.filter(key => normalizeKey(key) !== targetNormalized);
+        console.log(`[BoardConfigration] Unmapping normalized "${targetNormalized}" from column "${col.name}". Remaining keys:`, newKeys);
+      } else {
+        // Add the statusKey as provided
+        newKeys = [...currentKeys, statusKey];
+        console.log(`[BoardConfigration] Mapping "${statusKey}" to column "${col.name}". New keys:`, newKeys);
+      }
 
       return {
         ...col,
-        statusKeys: exists
-          ? col.statusKeys.filter(key => key !== statusKey) // remove
-          : [...col.statusKeys, statusKey] // add
+        statusKeys: newKeys
       };
-    })
-  );
+    });
+    
+    console.log('[BoardConfigration] Local state updated (columns):', next);
+    return next;
+  });
 };
 
 
 
 const getUnassignedStatuses = useMemo(() => {
-  const assigned = new Set(localColumns.flatMap(col => col.statusKeys || []));
-  return localStatuses.filter(status => !assigned.has(status.key));
+  const assigned = new Set(localColumns.flatMap(col => (col.statusKeys || []).map(normalizeKey)));
+  return localStatuses.filter(status => !assigned.has(normalizeKey(status.key)));
 }, [localStatuses, localColumns]);
-
-
 
   if (scrumLoading) {
     return (
@@ -567,25 +595,29 @@ const getUnassignedStatuses = useMemo(() => {
                   </div>
 
                   <div className="cs-status-grid">
-                    {localStatuses.map((status) => (
-                      <label key={status.key} className={`cs-status-checkbox ${column.statusKeys.includes(status.key) ? 'checked' : ''}`}>
-                        <input
-                          type="checkbox"
-                          checked={column.statusKeys.includes(status.key)}
-                          onChange={() => toggleStatusInColumn(column.id, status.key)}
-                        />
-                        <div
-                          className="cs-status-chip"
-                          style={{
-                            backgroundColor: status.color.bg,
-                            color: status.color.text,
-                            borderColor: status.color.border
-                          }}
-                        >
-                          {status.label}
-                        </div>
-                      </label>
-                    ))}
+                    {localStatuses.map((status) => {
+                      const nk = normalizeKey(status.key);
+                      const isChecked = (column.statusKeys || []).some(k => normalizeKey(k) === nk);
+                      return (
+                        <label key={status.key} className={`cs-status-checkbox ${isChecked ? 'checked' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleStatusInColumn(column.id, status.key)}
+                          />
+                          <div
+                            className="cs-status-chip"
+                            style={{
+                              backgroundColor: status.color.bg,
+                              color: status.color.text,
+                              borderColor: status.color.border
+                            }}
+                          >
+                            {status.label}
+                          </div>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               ))}

@@ -1,205 +1,536 @@
-// Variables
-$low: #09eb7a;
-$medium: #e9f908;
-$high: rgb(210, 54, 54);
-$primary-color: #a855f7;
-$primary-light: #c084fc;
-$primary-hover: #9333ea; // Used for interactive states
-$secondary-color: #06b6d4;
-$border-color: #e2e8f0;
-$text-primary: #1e293b;
-$text-secondary: #64748b;
-$bg-light: #f9fafb;
-$bg-white: #ffffff;
-$hover-bg: #f8fafc;
-$animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+// // Variables
+// $low: #09eb7a;
+// $medium: #e9f908;
+// $high: rgb(210, 54, 54);
+// $primary-color: #a855f7;
+// $primary-light: #c084fc;
+// $primary-hover: #9333ea; // Used for interactive states
+// $secondary-color: #06b6d4;
+// $border-color: #e2e8f0;
+// $text-primary: #1e293b;
+// $text-secondary: #64748b;
+// $bg-light: #f9fafb;
+// $bg-white: #ffffff;
+// $hover-bg: #f8fafc;
+// $animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
-.team-container {
-  padding: 2.5rem 1.5rem;
-  background-color: $bg-light;
-  min-height: 100vh;
+// .team-container {
+//   padding: 2.5rem 1.5rem;
+//   background-color: $bg-light;
+//   min-height: 100vh;
 
-  .team-header {
-    max-width: 1400px;
-    margin: 0 auto 2.5rem;
-    .header-text {
-      h1 {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: $text-primary;
-        font-size: 1.8rem;
-        font-weight: 800;
-        svg { color: $primary-color; }
-      }
-      p { color: $text-secondary; margin-left: 44px; margin-top: 4px; }
+//   .team-header {
+//     max-width: 1400px;
+//     margin: 0 auto 2.5rem;
+//     .header-text {
+//       h1 {
+//         display: flex;
+//         align-items: center;
+//         gap: 12px;
+//         color: $text-primary;
+//         font-size: 1.8rem;
+//         font-weight: 800;
+//         svg { color: $primary-color; }
+//       }
+//       p { color: $text-secondary; margin-left: 44px; margin-top: 4px; }
+//     }
+//   }
+// }
+
+// .projects-flex-wrapper {
+//   display: flex;
+//   flex-wrap: wrap; 
+//   gap: 24px;
+//   max-width: 1400px;
+//   margin: 0 auto;
+// }
+
+// .project-group-card {
+//   background: $bg-white;
+//   border: 1px solid $border-color;
+//   border-radius: 14px;
+//   flex: 1 1 380px; 
+//   display: flex;
+//   flex-direction: column;
+//   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+//   animation: $animation;
+//   transition: all 0.2s ease;
+
+//   &:hover {
+//     transform: translateY(-4px);
+//     border-color: $primary-light;
+//     box-shadow: 0 12px 20px -8px rgba($primary-color, 0.15);
+//   }
+
+//   .project-card-header {
+//     padding: 1.25rem;
+//     border-bottom: 1px solid $border-color;
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+
+//     .title-box {
+//       display: flex;
+//       align-items: center;
+//       gap: 12px;
+//       .icon-wrap {
+//         background: rgba($primary-color, 0.08);
+//         color: $primary-color;
+//         padding: 8px;
+//         border-radius: 10px;
+//       }
+//       h3 { font-size: 1.05rem; font-weight: 700; color: $text-primary; margin: 0; }
+//     }
+
+//     .header-right {
+//       display: flex;
+//       align-items: center;
+//       gap: 8px;
+//       .member-pill {
+//         font-size: 0.7rem;
+//         font-weight: 700;
+//         background: rgba($secondary-color, 0.1);
+//         color: $secondary-color;
+//         padding: 4px 10px;
+//         border-radius: 20px;
+//       }
+//       .menu-btn {
+//         background: none; border: none; color: $text-secondary; cursor: pointer;
+//         &:hover { color: $text-primary; }
+//       }
+//     }
+//   }
+
+//   .members-flex-list {
+//     padding: 1.25rem;
+//     display: flex;
+//     flex-direction: column;
+//     gap: 12px;
+//     flex-grow: 1;
+
+//     .member-flex-item {
+//       display: flex;
+//       align-items: center;
+//       padding: 10px;
+//       border-radius: 12px;
+//       gap: 14px;
+//       transition: background 0.2s;
+
+//       &:hover {
+//         background: $hover-bg;
+//         .verify-btn { color: $low; }
+//       }
+
+//       .avatar-section {
+//         position: relative;
+//         width: 44px;
+//         height: 44px;
+//         flex-shrink: 0;
+
+//         img, .initials {
+//           width: 100%; height: 100%;
+//           border-radius: 12px; object-fit: cover;
+//         }
+//         .initials {
+//           background: $primary-light;
+//           color: $bg-white;
+//           display: flex; align-items: center; justify-content: center;
+//           font-weight: 700;
+//         }
+//         .online-indicator {
+//           position: absolute; bottom: -2px; right: -2px;
+//           width: 12px; height: 12px; background: $low;
+//           border: 2px solid $bg-white; border-radius: 50%;
+//         }
+//       }
+
+//       .info-section {
+//         flex: 1;
+//         .name { font-size: 0.9rem; font-weight: 600; color: $text-primary; margin: 0; }
+//         .email { font-size: 0.75rem; color: $text-secondary; margin: 0; }
+//       }
+
+//       .verify-btn {
+//         background: none; border: none; color: $border-color; cursor: pointer;
+//         padding: 6px; transition: color 0.2s;
+//       }
+//     }
+//   }
+
+//   .project-card-footer {
+//     padding: 1rem;
+//     border-top: 1px solid $border-color;
+    
+//     .footer-action-btn {
+//       width: 100%;
+//       background: $primary-color;
+//       color: $bg-white;
+//       border: none;
+//       padding: 10px;
+//       border-radius: 8px;
+//       font-size: 0.85rem;
+//       font-weight: 600;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       gap: 8px;
+//       cursor: pointer;
+//       transition: background 0.2s;
+
+//       &:hover {
+//         background: $primary-hover; // Using primary-hover color
+//       }
+//     }
+//   }
+// }
+
+// // Tablet and Mobile responsiveness
+// @media (max-width: 900px) {
+//   .project-group-card {
+//     flex: 1 1 calc(50% - 24px);
+//   }
+// }
+
+// @media (max-width: 600px) {
+//   .project-group-card {
+//     flex: 1 1 100%;
+//   }
+//   .team-header p { margin-left: 0; text-align: center; }
+//   .team-header h1 { justify-content: center; }
+// }
+
+// @keyframes modalFadeIn {
+//   from { opacity: 0; transform: scale(0.98); }
+//   to { opacity: 1; transform: scale(1); }
+// }
+
+// ============================================================================
+// Team Directory
+// ============================================================================
+
+// ── palette ─────────────────────────────────────────────────────────────────
+$gray-50:  #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$white: #ffffff;
+$primary: #6366f1;
+
+// ============================================================================
+// TEAM DIRECTORY
+// ============================================================================
+.team-directory {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $gray-300;
+    border-radius: 3px;
+
+    &:hover {
+      background: $gray-400;
     }
   }
 }
 
-.projects-flex-wrapper {
-  display: flex;
-  flex-wrap: wrap; 
-  gap: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.project-group-card {
-  background: $bg-white;
-  border: 1px solid $border-color;
-  border-radius: 14px;
-  flex: 1 1 380px; 
+// ============================================================================
+// TEAM SECTION
+// ============================================================================
+.team-section {
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  animation: $animation;
-  transition: all 0.2s ease;
+  gap: 20px;
 
-  &:hover {
-    transform: translateY(-4px);
-    border-color: $primary-light;
-    box-shadow: 0 12px 20px -8px rgba($primary-color, 0.15);
-  }
-
-  .project-card-header {
-    padding: 1.25rem;
-    border-bottom: 1px solid $border-color;
+  &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    .title-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      .icon-wrap {
-        background: rgba($primary-color, 0.08);
-        color: $primary-color;
-        padding: 8px;
-        border-radius: 10px;
-      }
-      h3 { font-size: 1.05rem; font-weight: 700; color: $text-primary; margin: 0; }
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      .member-pill {
-        font-size: 0.7rem;
-        font-weight: 700;
-        background: rgba($secondary-color, 0.1);
-        color: $secondary-color;
-        padding: 4px 10px;
-        border-radius: 20px;
-      }
-      .menu-btn {
-        background: none; border: none; color: $text-secondary; cursor: pointer;
-        &:hover { color: $text-primary; }
-      }
-    }
+    cursor: pointer;
+    user-select: none;
+    padding-bottom: 12px;
+    border-bottom: 1px solid $gray-200;
   }
 
-  .members-flex-list {
-    padding: 1.25rem;
+  &__title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: $gray-400;
+  }
+
+  &__toggle {
+    width: 32px;
+    height: 32px;
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: $gray-400;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 150ms;
 
-    .member-flex-item {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-radius: 12px;
-      gap: 14px;
-      transition: background 0.2s;
-
-      &:hover {
-        background: $hover-bg;
-        .verify-btn { color: $low; }
-      }
-
-      .avatar-section {
-        position: relative;
-        width: 44px;
-        height: 44px;
-        flex-shrink: 0;
-
-        img, .initials {
-          width: 100%; height: 100%;
-          border-radius: 12px; object-fit: cover;
-        }
-        .initials {
-          background: $primary-light;
-          color: $bg-white;
-          display: flex; align-items: center; justify-content: center;
-          font-weight: 700;
-        }
-        .online-indicator {
-          position: absolute; bottom: -2px; right: -2px;
-          width: 12px; height: 12px; background: $low;
-          border: 2px solid $bg-white; border-radius: 50%;
-        }
-      }
-
-      .info-section {
-        flex: 1;
-        .name { font-size: 0.9rem; font-weight: 600; color: $text-primary; margin: 0; }
-        .email { font-size: 0.75rem; color: $text-secondary; margin: 0; }
-      }
-
-      .verify-btn {
-        background: none; border: none; color: $border-color; cursor: pointer;
-        padding: 6px; transition: color 0.2s;
-      }
+    &:hover {
+      background: $gray-100;
+      color: $gray-600;
     }
   }
+}
 
-  .project-card-footer {
-    padding: 1rem;
-    border-top: 1px solid $border-color;
-    
-    .footer-action-btn {
-      width: 100%;
-      background: $primary-color;
-      color: $bg-white;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
+// ============================================================================
+// TEAM GRID
+// ============================================================================
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+// ============================================================================
+// MEMBER CARD
+// ============================================================================
+.member-card {
+  position: relative;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: 12px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 200ms;
+
+  &:hover {
+    border-color: $gray-300;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  // ── Collaborators (top-left small avatars) ────────────────────────────────
+  &__collabs {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    gap: 4px;
+  }
+
+  .collab-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid $white;
+    object-fit: cover;
+    position: relative;
+
+    &--initials {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: background 0.2s;
+      font-size: 10px;
+      font-weight: 700;
+      color: $white;
+    }
 
-      &:hover {
-        background: $primary-hover; // Using primary-hover color
+    &:not(:first-child) {
+      margin-left: -12px;
+    }
+  }
+
+  // ── Action buttons (top-right) ────────────────────────────────────────────
+  &__actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    gap: 4px;
+  }
+
+  &__action {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: $gray-100;
+    color: $gray-500;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 150ms;
+
+    &:hover {
+      background: $gray-200;
+      color: $gray-700;
+    }
+  }
+
+  // ── Avatar (large center circle) ──────────────────────────────────────────
+  &__avatar-wrapper {
+    margin-bottom: 16px;
+  }
+
+  &__avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid $primary;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &--initials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 700;
+      color: $white;
+    }
+  }
+
+  // ── Info (name + role) ────────────────────────────────────────────────────
+  &__info {
+    text-align: center;
+    width: 100%;
+  }
+
+  &__name {
+    font-size: 17px;
+    font-weight: 600;
+    color: $gray-900;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__role {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: $gray-500;
+    margin: 0;
+    text-transform: uppercase;
+  }
+}
+
+// ============================================================================
+// RESPONSIVE
+// ============================================================================
+@media (max-width: 1024px) {
+  .team-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .member-card__avatar {
+    width: 100px;
+    height: 100px;
+
+    &--initials {
+      font-size: 34px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .team-directory {
+    max-height: calc(100vh - 320px);
+  }
+
+  .team-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .member-card {
+    padding: 20px 16px;
+
+    &__avatar {
+      width: 80px;
+      height: 80px;
+      border-width: 3px;
+
+      &--initials {
+        font-size: 28px;
+      }
+    }
+
+    &__name {
+      font-size: 15px;
+    }
+
+    &__role {
+      font-size: 11px;
+    }
+
+    .collab-avatar {
+      width: 24px;
+      height: 24px;
+
+      &--initials {
+        font-size: 9px;
+      }
+    }
+
+    &__action {
+      width: 28px;
+      height: 28px;
+
+      svg {
+        width: 14px;
+        height: 14px;
       }
     }
   }
 }
 
-// Tablet and Mobile responsiveness
-@media (max-width: 900px) {
-  .project-group-card {
-    flex: 1 1 calc(50% - 24px);
+@media (max-width: 480px) {
+  .team-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
-}
 
-@media (max-width: 600px) {
-  .project-group-card {
-    flex: 1 1 100%;
+  .member-card {
+    padding: 16px 12px;
+
+    &__avatar {
+      width: 70px;
+      height: 70px;
+
+      &--initials {
+        font-size: 24px;
+      }
+    }
+
+    &__collabs {
+      top: 12px;
+      left: 12px;
+    }
+
+    &__actions {
+      top: 12px;
+      right: 12px;
+      flex-direction: column;
+    }
   }
-  .team-header p { margin-left: 0; text-align: center; }
-  .team-header h1 { justify-content: center; }
-}
-
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
 }

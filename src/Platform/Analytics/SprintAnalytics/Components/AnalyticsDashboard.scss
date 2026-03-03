@@ -1,0 +1,595 @@
+// ============================================================================
+// Analytics Dashboard - Professional Style (Reference-based)
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// Colors (matching reference design)
+// ----------------------------------------------------------------------------
+$primary: #3b82f6;
+$primary-light: #93c5fd;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #ef4444;
+$info: #06b6d4;
+
+$gray-50: #fafafa;
+$gray-100: #f4f4f5;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$white: #ffffff;
+
+// ----------------------------------------------------------------------------
+// Spacing
+// ----------------------------------------------------------------------------
+$space-2: 8px;
+$space-1: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-8: 32px;
+
+// ============================================================================
+// Base
+// ============================================================================
+.analytics-dashboard {
+  padding: $space-6;
+  background: $gray-50;
+  min-height: 100vh;
+}
+
+// ============================================================================
+// Dashboard Header
+// ============================================================================
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $space-6;
+  gap: $space-4;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 $space-2;
+}
+
+.dashboard-subtitle {
+  font-size: 14px;
+  color: $gray-600;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 800px;
+}
+
+.header-right {
+  flex-shrink: 0;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border: 1px solid;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================================
+// Warnings
+// ============================================================================
+.warnings-container {
+  display: grid;
+  gap: $space-3;
+  margin-bottom: $space-6;
+}
+
+.warning-card {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-4;
+  background: $white;
+  border: 1px solid;
+  border-left-width: 3px;
+
+  &.warning-critical {
+    border-color: $danger;
+    background: rgba($danger, 0.03);
+  }
+
+  &.warning-warning {
+    border-color: $warning;
+    background: rgba($warning, 0.03);
+  }
+
+  &.warning-info {
+    border-color: $info;
+    background: rgba($info, 0.03);
+  }
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-code {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: $gray-600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $space-1;
+}
+
+.warning-message {
+  font-size: 14px;
+  color: $gray-700;
+  line-height: 1.5;
+  margin: 0;
+}
+
+// ============================================================================
+// Metrics Grid
+// ============================================================================
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-6;
+}
+
+.metric-card {
+  background: $white;
+  border: 1px solid $gray-200;
+  padding: $space-5;
+  transition: all 150ms;
+
+  &:hover {
+    border-color: $gray-300;
+    box-shadow: 0 4px 12px rgba($gray-900, 0.08);
+  }
+
+  &--primary {
+    border-top: 3px solid $primary;
+  }
+
+  &--success {
+    border-top: 3px solid $success;
+  }
+
+  &--warning {
+    border-top: 3px solid $warning;
+  }
+
+  &--info {
+    border-top: 3px solid $info;
+  }
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-4;
+}
+
+.metric-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $gray-100;
+  color: $gray-700;
+
+  .metric-card--primary & {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+
+  .metric-card--success & {
+    background: rgba($success, 0.1);
+    color: $success;
+  }
+
+  .metric-card--warning & {
+    background: rgba($warning, 0.1);
+    color: $warning;
+  }
+
+  .metric-card--info & {
+    background: rgba($info, 0.1);
+    color: $info;
+  }
+}
+
+.metric-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray-600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.metric-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: $gray-900;
+  line-height: 1;
+  margin-bottom: $space-3;
+}
+
+.metric-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metric-subtitle {
+  font-size: 13px;
+  color: $gray-500;
+}
+
+.metric-trend {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: 12px;
+  font-weight: 600;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================================
+// Charts Grid
+// ============================================================================
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-6;
+}
+
+.chart-card {
+  background: $white;
+  border: 1px solid $gray-200;
+  padding: $space-5;
+
+  &--large {
+    grid-column: span 2;
+
+    @media (max-width: 1024px) {
+      grid-column: span 1;
+    }
+  }
+
+  &--highlight {
+    border: 2px solid $primary;
+    background: linear-gradient(135deg, rgba($primary, 0.05) 0%, $white 100%);
+  }
+}
+
+.chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $space-5;
+  gap: $space-4;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 $space-1;
+}
+
+.chart-subtitle {
+  font-size: 13px;
+  color: $gray-500;
+  margin: 0;
+}
+
+.chart-action {
+  padding: $space-1 $space-3;
+  background: transparent;
+  border: 1px solid $gray-200;
+  color: $gray-600;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms;
+  white-space: nowrap;
+
+  &:hover {
+    background: $gray-50;
+    border-color: $gray-300;
+    color: $gray-900;
+  }
+}
+
+.chart-body {
+  &--center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &--forecast {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+  }
+}
+
+.chart-stats {
+  display: flex;
+  gap: $space-6;
+  margin-bottom: $space-4;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: $gray-500;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: $gray-900;
+}
+
+// ============================================================================
+// Pie Chart Legend
+// ============================================================================
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  margin-top: $space-4;
+  width: 100%;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 13px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  flex: 1;
+  color: $gray-700;
+  font-weight: 500;
+}
+
+.legend-value {
+  color: $gray-900;
+  font-weight: 600;
+}
+
+// ============================================================================
+// Forecast Section
+// ============================================================================
+.forecast-main {
+  text-align: center;
+  padding: $space-5 0;
+  border-bottom: 1px solid $gray-200;
+}
+
+.forecast-value {
+  font-size: 56px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+  margin-bottom: $space-2;
+}
+
+.forecast-label {
+  font-size: 14px;
+  color: $gray-600;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.forecast-confidence {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.confidence-badge {
+  padding: $space-2 $space-3;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  border: 1px solid;
+
+  &.confidence-very_low {
+    background: rgba($danger, 0.1);
+    color: $danger;
+    border-color: $danger;
+  }
+
+  &.confidence-low {
+    background: rgba($warning, 0.1);
+    color: $warning;
+    border-color: $warning;
+  }
+
+  &.confidence-medium {
+    background: rgba($info, 0.1);
+    color: $info;
+    border-color: $info;
+  }
+
+  &.confidence-high {
+    background: rgba($success, 0.1);
+    color: $success;
+    border-color: $success;
+  }
+}
+
+.forecast-text {
+  font-size: 13px;
+  color: $gray-600;
+  line-height: 1.5;
+  margin: 0;
+}
+
+// ============================================================================
+// Insights Section
+// ============================================================================
+.insights-section {
+  margin-top: $space-8;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 $space-4;
+}
+
+.insights-grid {
+  display: grid;
+  gap: $space-3;
+}
+
+.insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-4;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-left: 3px solid $primary;
+}
+
+.insight-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($primary, 0.1);
+  color: $primary;
+  flex-shrink: 0;
+}
+
+.insight-text {
+  font-size: 14px;
+  color: $gray-700;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ============================================================================
+// Loading State
+// ============================================================================
+.analytics-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 16px;
+  color: $gray-500;
+}
+
+// ============================================================================
+// Responsive
+// ============================================================================
+@media (max-width: 1024px) {
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-dashboard {
+    padding: $space-4;
+  }
+
+  .dashboard-title {
+    font-size: 24px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chart-action {
+    align-self: flex-start;
+  }
+
+  .chart-stats {
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  .metric-value {
+    font-size: 32px;
+  }
+
+  .forecast-value {
+    font-size: 48px;
+  }
+}

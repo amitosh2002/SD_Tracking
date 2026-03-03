@@ -178,14 +178,14 @@ const Demo = () => {
           fontSize: '0.875rem',
           lineHeight: '1.6'
         }}>
-{`<AnimatedEmptyState
-  icon="📭"
-  title="No Messages"
-  message="Your inbox is empty. You're all caught up!"
-  action={() => console.log('Action clicked')}
-  actionLabel="Compose"
-  variant="default" // default | minimal | illustration | floating
-/>`}
+            {`<AnimatedEmptyState
+              icon="📭"
+              title="No Messages"
+              message="Your inbox is empty. You're all caught up!"
+              action={() => console.log('Action clicked')}
+              actionLabel="Compose"
+              variant="default" // default | minimal | illustration | floating
+            />`}
         </pre>
       </div>
     </div>
