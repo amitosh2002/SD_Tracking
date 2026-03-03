@@ -254,6 +254,18 @@
         border: 1px dashed $gray-300;
       }
     }
+.user-avatar-image {
+  width: 34px;
+  height: 34px;
+
+  .avatar-img-sm {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+}
   }
 
   .content-wrapper {

@@ -894,3 +894,117 @@ export const CustomDropDownV3 = ({ value, onChange, options, placeholder, disabl
     </div>
   );
 };
+
+// ============================================================================
+// SIMPLE DIV DROPDOWN (Looks like a div, opens a searchable menu)
+// ============================================================================
+export const SimpleDivDropDown = ({ 
+  value, 
+  onChange, 
+  options = [], 
+  placeholder = "Select...", 
+  disabled = false, 
+  className = "",
+  searchable = true,
+  triggerClassName = ""
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dropdownRef = useRef(null);
+  const searchInputRef = useRef(null);
+
+  const selectedOption = options?.find((opt) => opt.value === value);
+  const displayText = selectedOption?.label || placeholder;
+
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm) return options;
+    return options.filter((opt) =>
+      opt.label?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, options]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen && searchable && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isOpen, searchable]);
+
+  return (
+    <div className={`simple-div-dropdown ${className}`} ref={dropdownRef}>
+      <div 
+        className={`trigger-div ${disabled ? "disabled" : ""} ${triggerClassName}`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+      >
+        {selectedOption && (selectedOption.image || selectedOption.initials) && (
+          <div className="trigger-avatar">
+            {selectedOption.image ? (
+              <img src={selectedOption.image} alt="" className="avatar-img-sm" />
+            ) : (
+              <span className="initial-avatar-sm">{selectedOption.initials}</span>
+            )}
+          </div>
+        )}
+        <span className="trigger-text">{displayText}</span>
+      </div>
+
+      {isOpen && (
+        <div className="simple-dropdown-menu">
+          {searchable && (
+            <div className="menu-search">
+              <Search size={14} />
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
+          <div className="menu-options">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((opt) => (
+                <div
+                  key={opt.value}
+                  className={`menu-option ${opt.value === value ? "selected" : ""}`}
+                  onClick={() => {
+                    onChange(opt.value);
+                    setIsOpen(false);
+                    setSearchTerm("");
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  {(opt.image || opt.initials) && (
+                    <div className="option-avatar">
+                      {opt.image ? (
+                        <img src={opt.image} alt="" className="avatar-img-sm" />
+                      ) : (
+                        <span className="initial-avatar-sm">{opt.initials}</span>
+                      )}
+                    </div>
+                  )}
+                  <span style={{ flex: 1 }}>{opt.label}</span>
+                  {opt.value === value && <Check size={14} />}
+                </div>
+              ))
+            ) : (
+              <div className="no-options">No results</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

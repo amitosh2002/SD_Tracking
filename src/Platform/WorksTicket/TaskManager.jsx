@@ -212,6 +212,7 @@ import TaskItem from './TaskItem';
 import TaskDetails from './TaskDetails';
 import FilterBar from './Components/filterBar';
 import './TaskManager.scss';
+import TicketHeader from './Components/TicketHeader';
 
 const TaskManager = () => {
   const dispatch = useDispatch();
@@ -272,18 +273,19 @@ const TaskManager = () => {
   return (
     <div className="task-page-main">
       <FilterBar
-        search={search}
-        onSearchChange={setSearch}
-        filters={filters}
-        onFilterChange={(k, v) => setFilters(p => ({ ...p, [k]: v }))}
-        statusOptions={status}
-        sprintOptions={sprints}
-        assigneeOptions={users}
-        projectOptions={projects}
-        labelsOptions={labels}
-        priorityOptions={priority}
-        ticketConventionOptions={ticketConvention}
-      />
+          search={search}
+          onSearchChange={setSearch}
+          filters={filters}
+          onFilterChange={(k, v) => setFilters(p => ({ ...p, [k]: v }))}
+          statusOptions={status}
+          sprintOptions={sprints}
+          assigneeOptions={users}
+          projectOptions={projects}
+          labelsOptions={labels}
+          priorityOptions={priority}
+          ticketConventionOptions={ticketConvention}
+        />
+        {/* {selectedTask && <TicketHeader task={selectedTask} />} */}
 
       <div className={`task-manager-row ${isShrunk ? 'is-shrunk' : ''}`}>
         {/* Task List Panel (Left) */}

@@ -109,9 +109,20 @@ const UserDashboard = () => {
     }
   }, [selectedProjectId, dispatch]);
 
-  const safeData = useMemo(() => data || {}, [data]);
+  const safeData = useMemo(() => data || [], [data]);
   
   const columns = useMemo(() => {
+    // 1️⃣ Priority: New Array Structure from Backend
+    if (Array.isArray(safeData)) {
+      return safeData.map(col => ({
+        id: col.columnId || col.id,
+        label: col.name || col.Name || "Unknown",
+        color: col.color || "#94a3b8",
+        tickets: col.tickets || []
+      }));
+    }
+
+    // 2️⃣ Fallback: If data is still an object (keyed by status) but we have separate workColumns
     if (workColumns && workColumns.length > 0) {
       return workColumns.map(col => ({
         id: col.id,
@@ -121,23 +132,27 @@ const UserDashboard = () => {
       }));
     }
 
-    // Default Fallback
+    // 3️⃣ Legacy Fallback
+    const legacyData = typeof safeData === 'object' ? safeData : {};
     return [
-      { id: "todo",       label: "To Do",      color: "#94a3b8", tickets: safeData["To Do"] || safeData["OPEN"] || [] },
-      { id: "inProgress", label: "In Progress", color: "#3b82f6", tickets: safeData["In Progress"] || safeData["IN_PROGRESS"] || [] },
-      { id: "inReview",   label: "In Review",   color: "#8b5cf6", tickets: safeData["In Review"] || safeData["IN_REVIEW"] || [] },
-      { id: "done",       label: "Done",        color: "#10b981", tickets: safeData["Done"] || safeData["CLOSED"] || [] }
+      { id: "todo",       label: "To Do",      color: "#94a3b8", tickets: legacyData["To Do"] || legacyData["OPEN"] || [] },
+      { id: "inProgress", label: "In Progress", color: "#3b82f6", tickets: legacyData["In Progress"] || legacyData["IN_PROGRESS"] || [] },
+      { id: "inReview",   label: "In Review",   color: "#8b5cf6", tickets: legacyData["In Review"] || legacyData["IN_REVIEW"] || [] },
+      { id: "done",       label: "Done",        color: "#10b981", tickets: legacyData["Done"] || legacyData["CLOSED"] || [] }
     ];
   }, [workColumns, safeData]);
 
   const allTickets = useMemo(() => {
-    return Object.values(safeData).flat();
+    if (Array.isArray(safeData)) {
+      return safeData.flatMap(col => col.tickets || []);
+    }
+    return Object.values(safeData || {}).flat().filter(Boolean);
   }, [safeData]);
 
   const totalTasks   = allTickets.length;
-  const inProgress   = columns.find(c => c.label === "In Progress")?.tickets?.length || 0;
+  const inProgress   = columns.find(c => ["In Progress", "IN PROGRESS"].includes(c.label.toUpperCase()))?.tickets?.length || 0;
   const critical     = allTickets.filter(t => ["Critical", "High", "Urgent"].includes(t.priority)).length;
-  const completed    = columns.find(c => c.label === "Done")?.tickets?.length || 0;
+  const completed    = columns.find(c => ["Done", "DONE", "COMPLETED"].includes(c.label.toUpperCase()))?.tickets?.length || 0;
 
   return (
     <div className="sb-page">

@@ -20,7 +20,8 @@ import {
   Ticket,
   ArrowLeft,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  CircuitBoard
 } from 'lucide-react';
 import './styles/ProjectInsight.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
@@ -87,7 +88,7 @@ export default function ProjectInsight() {
   ];
 
   const getColorByStatus = (status) => {
-    const s = status.toUpperCase();
+    const s = status?.toUpperCase();
     if (s.includes('DONE') || s.includes('CLOSED') || s.includes('COMPLETED')) return '#10b981';
     if (s.includes('PROGRESS')) return '#f59e0b';
     if (s.includes('REVIEW')) return '#6366f1';
@@ -113,10 +114,10 @@ export default function ProjectInsight() {
   };
 
   const kanbanColumns = insightData.projectBoard.map((col, index) => ({
-    id: `col-${index}`,
-    title: col.Name,
+    id: col.columnId || `col-${index}`,
+    title: col.name,
     count: col.tickets.length,
-    color: getColorByStatus(col.Name),
+    color: col.color || getColorByStatus(col.name),
     tasks: col.tickets.map(ticket => ({
       id: ticket.ticketKey,
       title: ticket.title,
@@ -158,7 +159,7 @@ export default function ProjectInsight() {
         date: weekDay.display,
         dateIndex: currentWeek.indexOf(weekDay),
         title: ticket.title,
-        color: getColorByStatus(ticket.status)
+        color: col.color || getColorByStatus(ticket.status)
       };
     }).filter(Boolean)
   );
@@ -191,6 +192,10 @@ export default function ProjectInsight() {
 
 
         <div className="dashboard-header__right">
+          <button className="btn btn--secondary" onClick={()=>navigate(`/projects/${projectId}/tasks`)}>
+            <CircuitBoard size={18} />
+            Board
+          </button>
           <button className="btn btn--secondary" onClick={()=>navigate(`/projects/${projectId}/tasks`)}>
             <Ticket size={18} />
             All Tasks
