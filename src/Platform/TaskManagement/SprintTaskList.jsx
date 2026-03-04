@@ -1,18 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import {
   Search,
-  SlidersHorizontal,
   LayoutList,
   LayoutGrid,
   Calendar as CalendarIcon,
   Plus,
-  ChevronUp,
-  ChevronDown,
-  ArrowUpDown,
-  MoreHorizontal,
-  ExternalLink,
-  Edit,
-  Trash2,
   Filter,
   X,
   Zap
@@ -25,12 +17,15 @@ import { getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsA
 import FilterDropdown from '../WorksTicket/Components/FilterDropdown';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useNavigate } from 'react-router-dom';
+import KanbanBoard from '../../customFiles/customComponent/sprintComponents/KanbanBoard';
+import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
+
 
 const SprintTaskList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('list'); // list, kanban
   const [collapsedGroups, setCollapsedGroups] = useState({});
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [sortConfig] = useState({ key: null, direction: 'asc' });
   const [projectId, setProjectId] = useState('');
   const navigate = useNavigate();
   // Filter state
@@ -295,26 +290,6 @@ if (sortConfig.key) {
     }));
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const getPriorityClass = (priority) => {
-    return `priority-${priority.toLowerCase()}`;
-  };
-
-  const getAvatarColor = (initials) => {
-    const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#3b82f6', '#ec4899'];
-    let hash = 0;
-    for (let i = 0; i < initials.length; i++) {
-      hash = initials.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
-  };
 
   const clearFilters = () => {
     setActiveFilters({
@@ -485,217 +460,33 @@ if (sortConfig.key) {
 
       {/* Task Content */}
       {viewMode === 'list' ? (
-        <div className="task-groups">
-          {statusGroups.map((group) => {
-            const tasks = groupedTasks[group.key] || [];
-            const isCollapsed = collapsedGroups[group.key];
-
-            return (
-              <div key={group.key} className="task-group">
-                {/* Group Header */}
-                <div className="task-group__header" onClick={() => toggleGroup(group.key)}>
-                  <div className="task-group__title">
-                    <div
-                      className="task-group__indicator"
-                      style={{ backgroundColor: group.color }}
-                    />
-                    <span className="task-group__label">{group.label}</span>
-                    <span className="task-group__count">{group.count}</span>
-                    <button className="task-group__toggle">
-                      {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Table */}
-                {!isCollapsed && tasks.length > 0 && (
-                  <div className="task-table">
-                    {/* Table Header */}
-                    <div className="task-table__header">
-                      <div className="task-table__col task-table__col--id">
-                        <span>Task ID</span>
-                        <button onClick={() => handleSort('id')} className={sortConfig.key === 'id' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--name">
-                        <span>Task Name</span>
-                        <button onClick={() => handleSort('name')} className={sortConfig.key === 'name' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--assignee">
-                        <span>Assignee</span>
-                        <button onClick={() => handleSort('assignee')} className={sortConfig.key === 'assignee' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--project">
-                        <span>Story Points</span>
-                        <button onClick={() => handleSort('project')} className={sortConfig.key === 'project' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--progress">
-                        <span>Labels</span>
-                      </div>
-                      <div className="task-table__col task-table__col--deadline">
-                        <span>Deadline</span>
-                        <button onClick={() => handleSort('deadline')} className={sortConfig.key === 'deadline' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--priority">
-                        <span>Priority</span>
-                        <button onClick={() => handleSort('priority')} className={sortConfig.key === 'priority' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--action">
-                        <span>Action</span>
-                      </div>
-                    </div>
-
-                    {/* Table Body */}
-                    <div className="task-table__body">
-                      {tasks.map((task) => (
-                        <div key={task.id} className="task-row" onClick={()=>navigate(`/tickets/${task.ticketId}`)}>
-                          <div className="task-row__col task-row__col--id">
-                            {task.id}
-                          </div>
-                          <div className="task-row__col task-row__col--name">
-                            {task.name}
-                          </div>
-                          <div className="task-row__col task-row__col--assignee">
-                            <div className="assignee">
-                              <div
-                                className="assignee__avatar"
-                                style={{ backgroundColor: getAvatarColor(task.assignee.initials) }}
-                              >
-                                {task.assignee.initials}
-                              </div>
-                              <span className="assignee__name">{task.assignee.name}</span>
-                            </div>
-                          </div>
-                          <div className="task-row__col task-row__col--project story_point_text">
-                            {task.storyPoint}
-                          </div>
-                          <div className="task-row__col task-row__col--progress labels-container">
-                            {task.labels && task.labels.length > 0 ? (
-                              task.labels.map((label, idx) => (
-                                <span key={idx} className="label-tag">{label}</span>
-                              ))
-                            ) : (
-                              <span className="no-labels">-</span>
-                            )}
-                          </div>
-                          <div className="task-row__col task-row__col--deadline">
-                            {task.deadline ? new Date(task.deadline).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            }) : '-'}
-                          </div>
-                          <div className="task-row__col task-row__col--priority">
-                            <span className={`priority-badge ${getPriorityClass(task.priority)}`}>
-                              {task.priority}
-                            </span>
-                          </div>
-                          <div className="task-row__col task-row__col--action">
-                            <button className="action-menu-btn">
-                              <MoreHorizontal size={18} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {!isCollapsed && tasks.length === 0 && (
-                  <div className="empty-group-state">
-                    No tasks found matching your filters.
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
+          {statusGroups.map((group) => (
+            <ExpandableTaskList
+              key={group.key}
+              title={group.label}
+              tasks={groupedTasks[group.key] || []}
+              isCollapsed={collapsedGroups[group.key]}
+              onToggle={() => toggleGroup(group.key)}
+              onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+              bugCount={(groupedTasks[group.key] || []).filter(t => 
+                (t.labels || []).some(l => (typeof l === 'string' ? l : l.name).toLowerCase().includes('bug'))
+              ).length}
+            />
+          ))}
         </div>
       ) : (
-        <div className="kanban-board">
-          {statusGroups.map((group) => {
-            const tasks = groupedTasks[group.key] || [];
-            return (
-              <div key={group.key} className="kanban-column">
-                <div className="kanban-column__header">
-                  <div className="kanban-column__title-area">
-                    <span className="kanban-column__dot" style={{ backgroundColor: group.color }} />
-                    <span className="kanban-column__name">{group.label}</span>
-                    <span className="kanban-column__count">{tasks.length}</span>
-                  </div>
-                  <button className="icon-btn">
-                    <MoreHorizontal size={16} />
-                  </button>
-                </div>
+        <KanbanBoard 
+          columns={statusGroups.map(group => ({
+            id: group.key,
+            name: group.label,
+            color: group.color,
+            tasks: groupedTasks[group.key] || []
+          }))}
+          onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+          onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
+        />
 
-                <div className="kanban-column__body">
-                  {tasks.length > 0 ? (
-                    tasks.map((task) => (
-                      <div key={task.id} className="kanban-card" onClick={() => navigate(`/tickets/${task.ticketId}`)}>
-                        <div className="kanban-card__header">
-                          <span className="kanban-card__id">{task.id}</span>
-                          <span className={`kanban-card__priority ${task.priority.toLowerCase()}`}>
-                            {task.priority}
-                          </span>
-                        </div>
-                        <h4 className="kanban-card__title">{task.name}</h4>
-                        
-                        {(task.labels && task.labels.length > 0) && (
-                          <div className="kanban-card__tags">
-                            {task.labels.slice(0, 2).map((label, idx) => (
-                              <span key={idx} className="kanban-card__tag">{label}</span>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="kanban-card__footer">
-                          <div className="kanban-card__meta">
-                            <div className="kanban-card__meta-item kanban-card__meta-item--points">
-                              {task.storyPoint} pts
-                            </div>
-                            {task.deadline && (
-                              <div className="kanban-card__meta-item">
-                                <CalendarIcon size={12} />
-                                {new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                              </div>
-                            )}
-                          </div>
-                          <div className="kanban-card__assignee">
-                            <div 
-                              className="avatar" 
-                              style={{ backgroundColor: getAvatarColor(task.assignee?.initials || 'UN') }}
-                              title={task.assignee?.name}
-                            >
-                              {task.assignee?.initials}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="kanban-empty">No tasks</div>
-                  )}
-                </div>
-
-                <div className="kanban-column__footer">
-                  <button className="add-task-btn" onClick={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}>
-                    <Plus size={14} />
-                    <span>Add Task</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       )}
     </div>
   );

@@ -43,6 +43,7 @@ import ProjectCreationPage from "../GenerailForms/projectCreationFlow";
 import GitHubConnect from "../Github/GithubConnect";
 import ProjectInsight from "../Components/projectInsight";
 import GitHubAuthPage from "../Github/Github0Auth";
+import ProjectBoardPage from "../Components/projectBoardPage";
 
 // import { useSelector } from "react-redux";
 
@@ -101,6 +102,7 @@ const AllRoutes = () => {
                 <Route path="/workspace/:projectId/setting" element={<ProjectSettings />} />
                 <Route path="/workspace/:projectId/analytics" element={<AnalyticsDashBoardV2 />} />
                 <Route path="/workspace/:projectId/insight" element={<ProjectInsight />} />
+                <Route path="/workspace/:projectId/board" element={<ProjectBoardPage />} />
                 <Route path="/service" element={<HoraServiceManagement />} />
 
                 {/* // letter it turn down into popup */}

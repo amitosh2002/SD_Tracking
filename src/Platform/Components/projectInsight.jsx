@@ -26,6 +26,9 @@ import {
 import './styles/ProjectInsight.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useDispatch } from 'react-redux';
+import KanbanBoard from '../../customFiles/customComponent/sprintComponents/KanbanBoard';
+import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
+
 
 export default function ProjectInsight() {
   const { projectId } = useParams();
@@ -108,15 +111,6 @@ export default function ProjectInsight() {
     tasks: count || 0
   }));
 
-  const getPriorityFlag = (priority, color) => {
-    return (
-      <div 
-        className="priority-indicator" 
-        style={{ backgroundColor: color || '#6b7280' }}
-        title={priority}
-      />
-    );
-  };
 
   const kanbanColumns = (insightData.projectBoard || []).map((col, index) => ({
     id: col.columnId || `col-${index}`,
@@ -139,7 +133,9 @@ export default function ProjectInsight() {
         name: ticket.assignee ? ticket.assignee.split(' ').map(n => n[0]).join('') : 'UN', 
         image: ticket.assigneeImage || null 
       },
-      fullAssignee: ticket.assignee
+      fullAssignee: ticket.assignee,
+      ticketId: ticket.id || ticket._id,
+      status: ticket.status || col.name
     }))
   }));
 
@@ -197,7 +193,7 @@ export default function ProjectInsight() {
 
 
         <div className="dashboard-header__right">
-          <button className="btn btn--secondary" onClick={()=>navigate(`/projects/${projectId}/tasks`)}>
+          <button className="btn btn--secondary" onClick={()=>navigate(`/workspace/${projectId}/board`)}>
             <CircuitBoard size={18} />
             Board
           </button>
@@ -405,171 +401,26 @@ export default function ProjectInsight() {
       {/* Kanban Board */}
       {/* Task Content */}
       {viewMode === 'kanban' ? (
-        <div className="kanban-board">
-          {kanbanColumns.map((column) => (
-            <div key={column.id} className="kanban-column">
-              <div className="column-header">
-                <div className="column-title">
-                  <div className="column-indicator" style={{ backgroundColor: column.color }}></div>
-                  <span className="column-count">{column.count}</span>
-                  <span className="column-name">{column.title}</span>
-                </div>
-                <button className="btn-icon">
-                  <Plus size={18} />
-                </button>
-              </div>
-
-              <div className="column-tasks">
-                {column.tasks.map((task) => (
-                  <div key={task.id} className="task-card">
-                    <div className="task-card__header">
-                      <Clock size={14} />
-                      <span className="task-due">Due: {task.dueDate}</span>
-                      <button className="btn-icon">
-                        <MoreHorizontal size={16} />
-                      </button>
-                    </div>
-
-                    <h4 className="task-title">
-                      <span className="task-flag">{getPriorityFlag(task.priority, task.priorityColor)}</span>
-                      {task.id}
-                    </h4>
-                    <div className="task-info">
-                      <p className="task-project">
-                      {task.title}
-                        
-                        </p>
-                      {task.labels && task.labels.length > 0 && (
-                        <div className="task-labels">
-                          {task.labels.map((label, i) => (
-                            <span 
-                              key={i} 
-                              className="label-badge" 
-                              style={{ backgroundColor: `${label.color}20`, color: label.color, borderColor: label.color }}
-                            >
-                              {label.name}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {task.progress > 0 && (
-                      <div className="task-progress">
-                        <div className="progress-label">
-                          <span>Progress</span>
-                          <span>{task.progress}%</span>
-                        </div>
-                        <div className="progress-bar">
-                          <div 
-                            className="progress-fill" 
-                            style={{ width: `${task.progress}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="task-card__footer">
-                      <div className="task-assignee">
-                        <div className="avatar">
-                          {task.assignee.image ? (
-                            <img src={task.assignee.image} alt={task.fullAssignee || 'Unassigned'} />
-                          ) : (
-                            task.assignee.name || 'UN'
-                          )}
-                        </div>
-                        <span className="assignee-name">{task.fullAssignee || 'Unassigned'}</span>
-                      </div>
-                      <div className="task-meta">
-                        {task.attachments > 0 && (
-                          <span className="meta-item">
-                            <Paperclip size={14} />
-                            {task.attachments}
-                          </span>
-                        )}
-                        {task.comments > 0 && (
-                          <span className="meta-item">
-                            <MessageSquare size={14} />
-                            {task.comments}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <KanbanBoard 
+          columns={kanbanColumns}
+          onTaskClick={(task) => navigate(`/tickets/${task.ticketId || task.id}`)}
+          onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
+        />
       ) : viewMode === 'table' ? (
-        <div className="table-view">
-          <div className="task-list">
-            <div className="task-header">
-              <div className="header-cell th-toggle"></div>
-              <div className="header-cell th-id">Task ID</div>
-              <div className="header-cell th-title">Title</div>
-              <div className="header-cell th-status">Status</div>
-              <div className="header-cell th-assignee">Assignee</div>
-              <div className="header-cell th-priority">Priority</div>
-              <div className="header-cell th-date">Due Date</div>
-            </div>
-
-            {kanbanColumns.map((column) => (
-              <div key={column.id} className={`task-group ${collapsedGroups[column.title] ? 'collapsed' : ''}`}>
-                <div 
-                  className="group-header" 
-                  onClick={() => toggleGroup(column.title)}
-                  style={{ borderLeft: `4px solid ${column.color}` }}
-                >
-                  <div className="task-cell th-toggle">
-                    {collapsedGroups[column.title] ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-                  </div>
-                  <div className="group-info-cell">
-                    <span className="group-name">{column.title}</span>
-                    <span className="group-count">{column.count} tasks</span>
-                  </div>
-                </div>
-
-                {!collapsedGroups[column.title] && column.tasks.map((task) => (
-                  <div key={task.id} className="task-row">
-                    <div className="task-cell th-toggle"></div>
-                    <div className="task-cell task-key-cell">
-                      <span className="key-badge">{task.id}</span>
-                    </div>
-                    <div className="task-cell task-title-cell">
-                      <div className="title-wrapper">
-                        {getPriorityFlag(task.priority, task.priorityColor)}
-                        <span className="task-title-text">{task.title}</span>
-                      </div>
-                    </div>
-                    <div className="task-cell task-status-cell">
-                      <div className="status-cell-wrapper">
-                        <div className="dot" style={{ backgroundColor: column.color }}></div>
-                        {column.title}
-                      </div>
-                    </div>
-                    <div className="task-cell task-assignee-cell">
-                      <div className="assignee-cell-wrapper">
-                        <div className="mini-avatar">
-                          {task.assignee.image ? <img src={task.assignee.image} alt="" /> : task.assignee.name}
-                        </div>
-                        <span className="assignee-name">{task.fullAssignee || 'Unassigned'}</span>
-                      </div>
-                    </div>
-                    <div className="task-cell task-priority-cell">
-                      <span 
-                        className="priority-tag" 
-                        style={{ color: task.priorityColor, backgroundColor: `${task.priorityColor}15` }}
-                      >
-                        {task.priority || 'Medium'}
-                      </span>
-                    </div>
-                    <div className="task-cell task-date-cell">{task.dueDate}</div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+        <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
+          {kanbanColumns.map((column) => (
+            <ExpandableTaskList
+              key={column.id}
+              title={column.title}
+              tasks={column.tasks}
+              isCollapsed={collapsedGroups[column.title]}
+              onToggle={() => toggleGroup(column.title)}
+              onTaskClick={(task) => navigate(`/tickets/${task.ticketId || task.id}`)}
+              bugCount={column.tasks.filter(t => 
+                (t.labels || []).some(l => (typeof l === 'string' ? l : l.name).toLowerCase().includes('bug'))
+              ).length}
+            />
+          ))}
         </div>
       ) : (
         <div className="timeline-empty">Timeline view coming soon...</div>
