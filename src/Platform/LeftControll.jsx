@@ -37,7 +37,9 @@ import {
     ExternalLink,
     Activity,
     ArrowLeft,
-    Bookmark
+    Bookmark,
+    ChevronsRight,
+    Minimize2
 } from 'lucide-react';
 import { ticketConfiguratorActionV1, handleUsersInProjects } from '../Redux/Actions/PlatformActions.js/projectsActions';
 import SidePanel from '../customFiles/customComponent/utilityComponenet/sidePanel';
@@ -164,21 +166,21 @@ const IssueDetails = ({ task }) => {
     }, [projectMembers]);
 
     // Handlers
-    const handleAssigneeChange = (userId) => {
+    const handleAssigneeChange = async (userId) => {
         if (!selectedTicket?._id) return;
-        dispatch(assignTaskApi(selectedTicket._id, userId));
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        await dispatch(assignTaskApi(selectedTicket._id, userId));
+        // No need to dispatch GET_TICKET_UPDATED_DETAILS as Redux state is updated locally by the action
     };
-    const handleStatusChange = useCallback((statusData) => {
+    const handleStatusChange = useCallback(async (statusData) => {
         if (!selectedTicket?._id) return;
-        dispatch(changeTicketStatus(selectedTicket._id, statusData?.newStatus));
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        await dispatch(changeTicketStatus(selectedTicket._id, statusData?.newStatus));
+        // No need to dispatch GET_TICKET_UPDATED_DETAILS for status as action already updates Redux locally
     }, [selectedTicket?._id, dispatch]);
 
-    const handleAssignToMe = () => {
+    const handleAssignToMe = async () => {
         if (!selectedTicket?._id || !userDetails?.id) return;
-        dispatch(assignTaskApi(selectedTicket._id, userDetails.id));
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        await dispatch(assignTaskApi(selectedTicket._id, userDetails.id));
+        // Redux state updated locally
     };
 
     const handleSprintChange = async (e) => {
@@ -224,15 +226,15 @@ const IssueDetails = ({ task }) => {
         }
     };
 
-    const handleTimeLogSubmit = (e) => {
+    const handleTimeLogSubmit = async (e) => {
         e.preventDefault();
         let totalSeconds = convertInputToSeconds(timeLogged);
         if (!selectedTicket?._id || !userDetails?.id) return;
 
-        dispatch(addTimeLogForWork(selectedTicket._id, userDetails.id, totalSeconds, ""));
+        await dispatch(addTimeLogForWork(selectedTicket._id, userDetails.id, totalSeconds, ""));
         setTimeLogPopup(false);
         setTimeLogged("");
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        dispatch({ type: GET_TICKET_UPDATED_DETAILS }); // keep refresh for time logs to update totalLoggedTime
         dispatch({ type: SHOW_SNACKBAR, payload: { message: "Time logged successfully", type: "success" } });
     };
 
@@ -274,7 +276,7 @@ const IssueDetails = ({ task }) => {
         return (
             <div className="sidebar_collapsed_strip" onClick={() => setIsCollapsed(false)}>
                 <div className="expand_trigger">
-                    <ChevronRight size={20} />
+                    <ChevronsRight size={20} />
                 </div>
                 <div className="mini_stats">
                     <div className="stat_icon"><CheckCircle2 size={18} /></div>
@@ -326,9 +328,9 @@ const IssueDetails = ({ task }) => {
         <div className="modern_sidebar_container">
             {/* Header / Top Bar */}
             <div className="sidebar_header">
-                <button className="collapse_toggle" onClick={() => setIsCollapsed(!isCollapsed)}>
-                    {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-                </button>
+                <div className="collapse_trigger" onClick={() => setIsCollapsed(!isCollapsed)}>
+                    {isCollapsed ? <ChevronRight size={20} /> : <Minimize2 size={20} />}
+                </div>
                 <div className="header_actions">
                     <DropDownForTicketStatus
                         ticketTypes={ticketStatus.map(s => s.key || s.label || s)}
