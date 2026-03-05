@@ -13,14 +13,33 @@ import {
   User as UserIcon,
   ArrowLeft,
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  MeasuringStrategy,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
+import {
+  updateTicket,
+  getCurrentProjectSprintWorkActions,
+  changeTicketStatus
+} from '../../Redux/Actions/TicketActions/ticketAction';
+import { getProjectBacklogAction } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 import './styles/ProjectBoard.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useDispatch, useSelector } from 'react-redux';
 import KanbanBoard from '../../customFiles/customComponent/sprintComponents/KanbanBoard';
-import { getCurrentProjectSprintWorkActions, changeTicketStatus } from '../../Redux/Actions/TicketActions/ticketAction';
 
 import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
-import { getProjectBacklogAction } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const getInitials = (name) => {
@@ -61,18 +80,20 @@ const PRIORITY_FILTERS = ['All', 'Critical', 'High', 'Medium', 'Low'];
 const ProjectBoardPage = () => {
   const { projectId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'Backlog';
-
-  const [searchTerm, setSearchTerm]         = useState('');
+  const activeTab = searchParams.get('tab') || 'Sprint Board';
+  const [searchTerm, setSearchTerm] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('All');
-  const [collapsed, setCollapsed]           = useState({ 'Default Backlog': false });
+  const [collapsed, setCollapsed] = useState({});
+  const [statusSelectionModal, setStatusSelectionModal] = useState(null);
 
   const dispatch  = useDispatch();
   const navigate  = useNavigate();
 
   const {
     projectBoard = [],
+    sprintColumns = [],
     currentProjectSprintName,
+    currentProjectSprintId,
     loading: sprintLoading,
   } = useSelector((state) => state.worksTicket);
 
@@ -211,6 +232,52 @@ const ProjectBoardPage = () => {
   }, [transformedTasks, searchTerm, priorityFilter]);
 
   // ── Stats ─────────────────────────────────────────────────────────────────
+  // ── Unified Backlog & Sprint Sections ──────────────────────────────────
+  const [internalBacklogSections, setInternalBacklogSections] = useState([]);
+
+  const rawCombinedBacklogSections = useMemo(() => {
+    const filterFn = (t) => {
+      const matchesSearch = !searchTerm || 
+        t.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (t.id || t.ticketKey || '').toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesPriority = priorityFilter === 'All' || t.priority === priorityFilter;
+      return matchesSearch && matchesPriority;
+    };
+
+    // 1. Active Sprint Section
+    const sprintSection = {
+      id: 'active-sprint',
+      title: currentProjectSprintName || 'Active Sprint',
+      tickets: (filteredTasks || []).map(t => ({ ...t, parentSectionId: 'active-sprint' })),
+      isSprint: true,
+      bugCount: (filteredTasks || []).filter(t => t.type === "1" || String(t.type) === "1").length
+    };
+
+    // 2. Custom Backlog Sections
+    const backlogs = (backlogSections || []).map(section => {
+      const sectionTickets = (section.tickets || []).map(t => ({
+        ...t,
+        id: t.id || t._id, // Ensure id
+        parentSectionId: section.id
+      })).filter(filterFn);
+
+      return {
+        id: section.id,
+        title: section.title,
+        tickets: sectionTickets,
+        isSprint: false,
+        bugCount: sectionTickets.filter(t => t.type === "1" || String(t.type) === "1").length
+      };
+    });
+
+    return [sprintSection, ...backlogs];
+  }, [filteredTasks, currentProjectSprintName, backlogSections, searchTerm, priorityFilter]);
+
+  // Sync internal state with Redux source
+  useEffect(() => {
+    setInternalBacklogSections(rawCombinedBacklogSections);
+  }, [rawCombinedBacklogSections]);
+
   const stats = useMemo(() => [
     { label: 'Total Issues',  value: transformedTasks.length,                                              color: 'blue'  },
     { label: 'Story Points',  value: transformedTasks.reduce((a, t) => a + (t.storyPoint || 0), 0),       color: 'teal'  },
@@ -240,11 +307,150 @@ const ProjectBoardPage = () => {
     }
   };
 
-  const openCreate = () => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true });
+  // ── Backlog DND Handlers ────────────────────────────────────────────────
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
-  const bugCount = filteredTasks.filter((t) =>
-    t.labels.some((l) => l.toLowerCase().includes('bug'))
-  ).length;
+  const [activeBacklogTask, setActiveBacklogTask] = useState(null);
+
+  const findContainerId = (id) => {
+    const sId = String(id);
+    if (sId === 'active-sprint' || internalBacklogSections.some(s => String(s.id) === sId)) return sId;
+    const section = internalBacklogSections.find(s => 
+      s.tickets.some(t => String(t.id || t._id) === sId)
+    );
+    return section ? section.id : null;
+  };
+
+  const handleDragStart = (event) => {
+    const { active } = event;
+    setActiveBacklogTask(active.data.current.task);
+  };
+
+  const handleDragOver = (event) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainerId(activeId);
+    const overContainer = findContainerId(overId);
+
+    if (!activeContainer || !overContainer || activeContainer === overContainer) return;
+
+    setInternalBacklogSections((prev) => {
+      const activeSection = prev.find(s => s.id === activeContainer);
+      const overSection = prev.find(s => s.id === overContainer);
+
+      if (!activeSection || !overSection) return prev;
+
+      const activeIndex = activeSection.tickets.findIndex(t => String(t.id || t._id) === activeId);
+      const task = activeSection.tickets[activeIndex];
+      
+      const newActiveTickets = activeSection.tickets.filter(t => String(t.id || t._id) !== activeId);
+      
+      let newOverTickets = [...overSection.tickets];
+      const isOverContainer = overContainer === overId;
+      
+      if (isOverContainer) {
+        newOverTickets.push(task);
+      } else {
+        const overIndex = overSection.tickets.findIndex(t => String(t.id || t._id) === overId);
+        newOverTickets.splice(overIndex >= 0 ? overIndex : newOverTickets.length, 0, task);
+      }
+
+      return prev.map(s => {
+        if (s.id === activeContainer) return { ...s, tickets: newActiveTickets };
+        if (s.id === overContainer) return { ...s, tickets: newOverTickets };
+        return s;
+      });
+    });
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveBacklogTask(null);
+
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainerId(activeId);
+    const overContainer = findContainerId(overId);
+
+    if (!activeContainer || !overContainer) return;
+
+    // Handle same container reorder
+    if (activeContainer === overContainer) {
+      if (activeId !== overId) {
+        setInternalBacklogSections((prev) => {
+          const section = prev.find(s => s.id === activeContainer);
+          const oldIndex = section.tickets.findIndex(t => String(t.id || t._id) === activeId);
+          const newIndex = section.tickets.findIndex(t => String(t.id || t._id) === overId);
+          
+          const newTickets = arrayMove(section.tickets, oldIndex, newIndex);
+          return prev.map(s => (s.id === activeContainer ? { ...s, tickets: newTickets } : s));
+        });
+      }
+      return;
+    }
+
+    // Cross container move
+    const isMovingToSprint = overContainer === 'active-sprint';
+    const updatePayload = isMovingToSprint 
+      ? { sprint: currentProjectSprintId, backlogId: null }
+      : { sprint: null, backlogId: overContainer };
+
+    console.log(`Finalizing move for task ${activeId} to ${overContainer}`, updatePayload);
+
+    if (isMovingToSprint) {
+      const firstCol = sprintColumns?.[0]; 
+      const statusKeys = firstCol?.statusKeys || [];
+
+      if (statusKeys.length > 1) {
+        setStatusSelectionModal({
+          taskId: activeId,
+          payload: updatePayload,
+          statusKeys
+        });
+        return;
+      } else {
+        const selectedStatus = statusKeys[0] || 'To Do';
+        dispatch(updateTicket(activeId, { ...updatePayload, status: selectedStatus })).then(() => {
+          dispatch(getCurrentProjectSprintWorkActions(projectId));
+          dispatch(getProjectBacklogAction(projectId));
+        });
+        return;
+      }
+    }
+
+    dispatch(updateTicket(activeId, updatePayload)).then(() => {
+      dispatch(getCurrentProjectSprintWorkActions(projectId));
+      dispatch(getProjectBacklogAction(projectId));
+    });
+  };
+
+  const handleStatusSelect = (status) => {
+    if (statusSelectionModal) {
+      const { taskId, payload } = statusSelectionModal;
+      console.log(`Finalizing move for task ${taskId} with status ${status}`);
+      dispatch(updateTicket(taskId, { ...payload, status })).then(() => {
+        dispatch(getCurrentProjectSprintWorkActions(projectId));
+        dispatch(getProjectBacklogAction(projectId));
+      });
+      setStatusSelectionModal(null);
+    }
+  };
+
+  const measuringConfig = {
+    droppable: { strategy: MeasuringStrategy.Always },
+  };
+
+  const openCreate = () => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true });
 
   // ── Loading ───────────────────────────────────────────────────────────────
   if (sprintLoading && projectBoard.length === 0) {
@@ -360,28 +566,47 @@ const ProjectBoardPage = () => {
             ))}
           </div>
 
-          {/* Backlog group */}
-          <ExpandableTaskList
-            title={`${currentProjectSprintName || 'Default'}`}
-            tasks={filteredTasks}
-            isCollapsed={collapsed['Default Backlog']}
-            onToggle={() => toggleGroup('Default Backlog')}
-            onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
-            onAddClick={openCreate}
-            bugCount={bugCount}
-          />
-              {backlogSections.map((backlog) => (
-      <ExpandableTaskList
-        key={backlog.id}
-        title={`${backlog.title} (${backlog.tickets.length})`}
-        tasks={backlog.tickets}
-        isCollapsed={collapsed[backlog.id]}
-        onToggle={() => toggleGroup(backlog.id)}
-        onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
-        onAddClick={openCreate}
-        bugCount={backlog.tickets.filter(t => t.type === "1").length}
-      />
-    ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            measuring={measuringConfig}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            {internalBacklogSections.map((section) => (
+              <ExpandableTaskList
+                key={section.id}
+                id={section.id}
+                title={section.title}
+                tasks={section.tickets}
+                isCollapsed={collapsed[section.id]}
+                onToggle={() => toggleGroup(section.id)}
+                onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+                onAddClick={openCreate}
+                bugCount={section.bugCount}
+              />
+            ))}
+
+            <DragOverlay>
+              {activeBacklogTask ? (
+                <div 
+                  className="pb-backlog-item-overlay" 
+                  style={{ 
+                    padding: '8px 12px', 
+                    background: 'white', 
+                    border: '1px solid #ddd', 
+                    borderRadius: '4px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    width: '300px'
+                  }}
+                >
+                  <div style={{ fontWeight: '600', fontSize: '12px', color: '#666' }}>{activeBacklogTask.ticketKey}</div>
+                  <div style={{ fontSize: '14px', marginTop: '4px' }}>{activeBacklogTask.title}</div>
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         </div>
         
       )}
@@ -409,6 +634,35 @@ const ProjectBoardPage = () => {
             Powerful insights are coming soon — velocity charts, burndown diagrams,
             and member performance metrics.
           </p>
+        </div>
+      )}
+
+      {/* Status Selection Modal for Backlog -> Sprint moves */}
+      {statusSelectionModal && (
+        <div className="status-selection-overlay" onClick={() => setStatusSelectionModal(null)}>
+          <div className="status-selection-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="status-selection-modal__header">
+              <h3>Select Sprint Status</h3>
+              <p>Moving to sprint requires a starting status:</p>
+            </div>
+            <div className="status-selection-modal__options">
+              {statusSelectionModal.statusKeys.map((status) => (
+                <button
+                  key={status}
+                  className="status-option-btn"
+                  onClick={() => handleStatusSelect(status)}
+                >
+                  <span className="status-dot" />
+                  {status.replace(/_/g, ' ')}
+                </button>
+              ))}
+            </div>
+            <div className="status-selection-modal__footer">
+              <button className="cancel-btn" onClick={() => setStatusSelectionModal(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

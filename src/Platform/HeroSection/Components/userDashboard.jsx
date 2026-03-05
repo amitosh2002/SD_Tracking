@@ -11,6 +11,19 @@ import "./styles/userdashboard.scss";
 import { DropDownV1 } from "../../../customFiles/customComponent/DropDown";
 import { OPEN_CREATE_TICKET_POPUP } from "../../../Redux/Constants/ticketReducerConstants";
 import { useNavigate } from "react-router-dom";
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  MeasuringStrategy,
+} from '@dnd-kit/core';
+import {
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
 import ExpandableTaskList from "../../../customFiles/customComponent/sprintComponents/ExpandableTaskList";
 import KanbanBoard from "../../../customFiles/customComponent/sprintComponents/KanbanBoard";
 import { changeTicketStatus } from "../../../Redux/Actions/TicketActions/ticketAction";
@@ -61,6 +74,8 @@ const UserDashboard = () => {
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [viewMode, setViewMode] = useState("kanban"); // kanban, list
   const [collapsedSections, setCollapsedSections] = useState({});
+  const [statusSelectionModal, setStatusSelectionModal] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
 
   const toggleSection = (sectionId) => {
     setCollapsedSections(prev => ({
@@ -130,19 +145,62 @@ const UserDashboard = () => {
   const critical     = allTickets.filter(t => ["Critical", "High", "Urgent"].includes(t.priority)).length;
   const completed    = columns.find(c => ["Done", "DONE", "COMPLETED"].includes(c.label.toUpperCase()))?.tickets?.length || 0;
 
-  const handleTaskMove = ({ destinationColumnId, active }) => {
-    const taskData = active.data.current?.task;
-    const realTicketId = taskData?._id || taskData?.id;
-    
-    const targetColumn = columns.find(col => col.id === destinationColumnId);
-    if (!targetColumn || !realTicketId) return;
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
-    // Use the first statusKey if available, otherwise fallback to label
-    const newStatus = targetColumn.statusKeys?.[0] || targetColumn.label;
-    
-    if (newStatus) {
-      dispatch(changeTicketStatus(realTicketId, newStatus));
+  const findContainer = (id) => {
+    const sId = String(id);
+    if (columns.some(col => String(col.id) === sId)) return sId;
+    const col = columns.find(c => c.tickets.some(t => String(t.id || t._id) === sId));
+    return col ? col.id : null;
+  };
+
+  const handleDragStart = (event) => {
+    const task = event.active.data.current?.task;
+    if (task) setActiveTask(task);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveTask(null);
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainer(activeId);
+    const overContainer = findContainer(overId);
+
+    if (!activeContainer || !overContainer) return;
+
+    if (activeContainer === overContainer) return; // Same column reorder not implemented for local list state yet
+
+    const destCol = columns.find(c => String(c.id) === overContainer);
+    if (!destCol) return;
+
+    if (destCol.statusKeys && destCol.statusKeys.length > 1) {
+      setStatusSelectionModal({
+        taskId: activeId,
+        statusKeys: destCol.statusKeys,
+        destinationColumnId: overContainer
+      });
+    } else {
+      const newStatus = destCol.statusKeys?.[0] || destCol.label;
+      dispatch(changeTicketStatus(activeId, newStatus));
     }
+  };
+
+  const handleStatusSelect = (status) => {
+    if (statusSelectionModal) {
+      dispatch(changeTicketStatus(statusSelectionModal.taskId, status));
+      setStatusSelectionModal(null);
+    }
+  };
+
+  const measuringConfig = {
+    droppable: { strategy: MeasuringStrategy.Always },
   };
 
   return (
@@ -252,34 +310,86 @@ const UserDashboard = () => {
           }))}
           onTaskClick={(t) => navigate(`/tickets/${t._id || t.id}`)}
           onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
-          onTaskMove={handleTaskMove}
+          onTaskMove={handleDragEnd}
         />
       ) : (
         <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
-          {columns.map((col) => (
-            <ExpandableTaskList
-              key={col.id}
-              title={col.label}
-              tasks={col.tickets.map(t => ({
-                ...t,
-                id: t.id || t._id,
-                ticketKey: parseTicketKey(t.ticketKey).short,
-                storyPoint: t.storyPoint || t.pts || 0,
-                assignee: { 
-                  name: user?.profile?.firstName ? (user.profile.firstName + " " + (user.profile.lastName || "")) : "You", 
-                  initials: user?.profile?.firstName ? getInitials(user.profile.firstName + " " + (user.profile.lastName || "")) : "ME",
-                  image: user?.profile?.avatar || null
-                },
-                status: t.status || col.label
-              }))}
-              isCollapsed={collapsedSections[col.id]}
-              onToggle={() => toggleSection(col.id)}
-              onTaskClick={(t) => navigate(`/tickets/${t._id || t.id}`)}
-              bugCount={col.tickets.filter(t => 
-                (t.label || "").toLowerCase().includes('bug')
-              ).length}
-            />
-          ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            measuring={measuringConfig}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {columns.map((col) => (
+              <ExpandableTaskList
+                key={col.id}
+                id={col.id}
+                title={col.label}
+                tasks={col.tickets.map(t => ({
+                  ...t,
+                  id: t.id || t._id,
+                  ticketKey: parseTicketKey(t.ticketKey).short,
+                  storyPoint: t.storyPoint || t.pts || 0,
+                  assignee: { 
+                    name: user?.profile?.firstName ? (user.profile.firstName + " " + (user.profile.lastName || "")) : "You", 
+                    initials: user?.profile?.firstName ? getInitials(user.profile.firstName + " " + (user.profile.lastName || "")) : "ME",
+                    image: user?.profile?.avatar || null
+                  },
+                  status: t.status || col.label
+                }))}
+                isCollapsed={collapsedSections[col.id]}
+                onToggle={() => toggleSection(col.id)}
+                onTaskClick={(t) => navigate(`/tickets/${t._id || t.id}`)}
+                bugCount={col.tickets.filter(t => 
+                  (t.label || "").toLowerCase().includes('bug')
+                ).length}
+              />
+            ))}
+            <DragOverlay>
+              {activeTask ? (
+                <table style={{ width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <tbody>
+                    <tr className="pb-table__row is-overlay">
+                      <td className="pb-table__col-drag" style={{ width: '40px' }}></td>
+                      <td className="pb-table__col-id" style={{ width: '100px' }}>{activeTask.ticketKey}</td>
+                      <td className="pb-table__col-title">{activeTask.title}</td>
+                      <td className="pb-table__col-pts" style={{ width: '60px' }}>{activeTask.storyPoint}</td>
+                      <td className="pb-table__col-status">{activeTask.status}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      )}
+
+      {statusSelectionModal && (
+        <div className="status-selection-overlay" onClick={() => setStatusSelectionModal(null)}>
+          <div className="status-selection-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="status-selection-modal__header">
+              <h3>Select Target Status</h3>
+              <p>This column supports multiple statuses. Please select one:</p>
+            </div>
+            <div className="status-selection-modal__options">
+              {statusSelectionModal.statusKeys.map((status) => (
+                <button
+                  key={status}
+                  className="status-option-btn"
+                  onClick={() => handleStatusSelect(status)}
+                >
+                  <span className="status-dot" />
+                  {status.replace(/_/g, ' ')}
+                </button>
+              ))}
+            </div>
+            <div className="status-selection-modal__footer">
+              <button className="cancel-btn" onClick={() => setStatusSelectionModal(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

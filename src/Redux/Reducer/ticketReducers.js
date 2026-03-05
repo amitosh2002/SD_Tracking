@@ -20,6 +20,7 @@ const initialState = {
   sortKeyValuesLoading:false,
   currentProjectSprintWork: [],
   currentProjectSprintName: null,
+  currentProjectSprintId: null,
   totalSprintStoryPoints: 0,
   projectBoard: {}, 
   sprintColumns: [],
@@ -190,6 +191,7 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.projectBoard = action.payload.data || {};
             state.sprintColumns = action.payload.columns || [];
             state.currentProjectSprintName=action.payload.sprintName;
+            state.currentProjectSprintId=action.payload.sprintId;
             state.totalSprintStoryPoints=action.payload.totalStoryPoint;
             state.sprintFilters=action.payload.allUserFilterAction || {
                 assignee: [],

@@ -23,6 +23,19 @@ import {
   ChevronRight,
   CircuitBoard
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  MeasuringStrategy,
+} from '@dnd-kit/core';
+import {
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
 import './styles/ProjectInsight.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useDispatch } from 'react-redux';
@@ -50,6 +63,7 @@ export default function ProjectInsight() {
     ticketIdentifier: '',
     destinationColumnId: null
   });
+  const [activeTask, setActiveTask] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -227,6 +241,44 @@ export default function ProjectInsight() {
     if (newStatus) {
       applyStatusUpdate(realTicketId, newStatus, destinationColumnId);
     }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const findContainer = (id) => {
+    const sId = String(id);
+    if (kanbanColumns.some(col => String(col.id) === sId)) return sId;
+    const col = kanbanColumns.find(c => c.tasks.some(t => String(t.id) === sId));
+    return col ? col.id : null;
+  };
+
+  const handleDragStart = (event) => {
+    const task = event.active.data.current?.task;
+    if (task) setActiveTask(task);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveTask(null);
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainer(activeId);
+    const overContainer = findContainer(overId);
+
+    if (!activeContainer || !overContainer) return;
+    if (activeContainer === overContainer) return;
+
+    handleTaskMove({ destinationColumnId: overContainer, active });
+  };
+
+  const measuringConfig = {
+    droppable: { strategy: MeasuringStrategy.Always },
   };
 
   const handleStatusSelect = (selectedStatus) => {
@@ -482,19 +534,43 @@ export default function ProjectInsight() {
         />
       ) : viewMode === 'table' ? (
         <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
-          {kanbanColumns.map((column) => (
-            <ExpandableTaskList
-              key={column.id}
-              title={column.title}
-              tasks={column.tasks}
-              isCollapsed={collapsedGroups[column.title]}
-              onToggle={() => toggleGroup(column.title)}
-              onTaskClick={(task) => navigate(`/tickets/${task.ticketId || task.id}`)}
-              bugCount={column.tasks.filter(t => 
-                (t.labels || []).some(l => (typeof l === 'string' ? l : l.name).toLowerCase().includes('bug'))
-              ).length}
-            />
-          ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            measuring={measuringConfig}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {kanbanColumns.map((column) => (
+              <ExpandableTaskList
+                key={column.id}
+                id={column.id}
+                title={column.title}
+                tasks={column.tasks}
+                isCollapsed={collapsedGroups[column.title]}
+                onToggle={() => toggleGroup(column.title)}
+                onTaskClick={(task) => navigate(`/tickets/${task.ticketId || task.id}`)}
+                bugCount={column.tasks.filter(t => 
+                  (t.labels || []).some(l => (typeof l === 'string' ? l : l.name).toLowerCase().includes('bug'))
+                ).length}
+              />
+            ))}
+            <DragOverlay>
+              {activeTask ? (
+                <table style={{ width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <tbody>
+                    <tr className="pb-table__row is-overlay">
+                      <td className="pb-table__col-drag" style={{ width: '40px' }}></td>
+                      <td className="pb-table__col-id" style={{ width: '100px' }}>{activeTask.ticketKey}</td>
+                      <td className="pb-table__col-title">{activeTask.title}</td>
+                      <td className="pb-table__col-priority">{activeTask.priority}</td>
+                      <td className="pb-table__col-status">{activeTask.status}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         </div>
       ) : (
         <div className="timeline-empty">Timeline view coming soon...</div>

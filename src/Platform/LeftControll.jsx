@@ -9,7 +9,7 @@ import { PopupV1 } from '../customFiles/customComponent/popups';
 import { convertInputToSeconds, formatMinutesToCustomDays, getLabelsbyId, getPriorityById, refactorSprintData } from '../utillity/helper';
 import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
 import { GET_TICKET_UPDATED_DETAILS } from '../Redux/Constants/ticketReducerConstants';
-import { assignSprintToTicket, fetchProjectScrumFlow, fetctCurrentProjectSprint } from '../Redux/Actions/SprintActions/sprintActionsV1';
+import { fetchProjectScrumFlow, fetctCurrentProjectSprint } from '../Redux/Actions/SprintActions/sprintActionsV1';
 import { useNavigate } from 'react-router-dom';
 import { 
     User, 
@@ -41,7 +41,7 @@ import {
     ChevronsRight,
     Minimize2
 } from 'lucide-react';
-import { ticketConfiguratorActionV1, handleUsersInProjects } from '../Redux/Actions/PlatformActions.js/projectsActions';
+import { ticketConfiguratorActionV1, handleUsersInProjects, getProjectBacklogAction } from '../Redux/Actions/PlatformActions.js/projectsActions';
 import SidePanel from '../customFiles/customComponent/utilityComponenet/sidePanel';
 import apiClient from '../utils/axiosConfig';
 import { getAllTicketApiv1 } from '../Api/Plat/TicketsApi';
@@ -55,7 +55,7 @@ const IssueDetails = ({ task }) => {
     const { ticketSprint, statusWorkFlow } = useSelector((state) => state.sprint);
     const ticketStatus = statusWorkFlow?.statuses || [];
     const { userDetails } = useSelector((state) => state.user);
-    const {projectlabels,projectsPriorities, projectMembers}= useSelector((state)=>state.projects)
+    const { projectlabels, projectsPriorities, projectMembers, projectBacklog } = useSelector((state) => state.projects)
     
 
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -136,6 +136,7 @@ const IssueDetails = ({ task }) => {
         dispatch(fetctCurrentProjectSprint(selectedTicket.projectId));
         dispatch(ticketConfiguratorActionV1(selectedTicket.projectId));
         dispatch(handleUsersInProjects(selectedTicket.projectId, "get"));
+        dispatch(getProjectBacklogAction(selectedTicket.projectId));
     }, [dispatch, selectedTicket?.projectId]);
 
     useEffect(() => {
@@ -183,15 +184,28 @@ const IssueDetails = ({ task }) => {
         // Redux state updated locally
     };
 
-    const handleSprintChange = async (e) => {
-        const sprintId = e.target.value;
+    const handlePlacementChange = async (e) => {
+        const targetId = e.target.value;
         if (!selectedTicket?._id) return;
+
+        const isSprintSelected = sprints.some(s => s.id === targetId);
+        const isBacklogSelected = projectBacklog?.some(b => b.id === targetId);
+
+        let payload = {};
+        if (isSprintSelected) {
+            payload = { sprint: targetId, backlogId: null };
+        } else if (isBacklogSelected) {
+            payload = { backlogId: targetId, sprint: null };
+        } else {
+            payload = { sprint: null, backlogId: null };
+        }
+
         try {
-            await dispatch(assignSprintToTicket(selectedTicket._id, sprintId));
+            await dispatch(updateTicket(selectedTicket._id, payload));
             dispatch({ type: GET_TICKET_UPDATED_DETAILS });
-            dispatch({ type: SHOW_SNACKBAR, payload: { message: "Sprint updated successfully", type: "success" } });
+            dispatch({ type: SHOW_SNACKBAR, payload: { message: "Placement updated successfully", type: "success" } });
         } catch (err) {
-            console.error('Failed to assign sprint', err);
+            console.error('Failed to update ticket placement', err);
         }
     };
 
@@ -464,17 +478,26 @@ const IssueDetails = ({ task }) => {
                         <div className="planning_item">
                             <div className="item_header">
                                 <Calendar size={14} />
-                                <span>Sprint Execution</span>
+                                <span>Ticket Placement</span>
                             </div>
                             <select 
                                 className="modern_inline_select"
-                                value={activeSprint?.id || ''}
-                                onChange={handleSprintChange}
+                                value={selectedTicket?.sprint || selectedTicket?.backlogId || ''}
+                                onChange={handlePlacementChange}
                             >
-                                <option value="">Move to Backlog</option>
-                                {sprints.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name} {s.status === 'active' ? '●' : ''}</option>
-                                ))}
+                                <option value="">Unassigned (No Backlog/Sprint)</option>
+                                <optgroup label="Sprints">
+                                    {sprints.map(s => (
+                                        <option key={s.id} value={s.id}>{s.name} {s.status === 'active' ? '●' : ''}</option>
+                                    ))}
+                                </optgroup>
+                                {projectBacklog && projectBacklog.length > 0 && (
+                                    <optgroup label="Backlog Sections">
+                                        {projectBacklog.map(b => (
+                                            <option key={b.id} value={b.id}>{b.title}</option>
+                                        ))}
+                                    </optgroup>
+                                )}
                             </select>
                             {activeSprint && (
                                 <div className="sprint_meta">
