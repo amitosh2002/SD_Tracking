@@ -20,6 +20,7 @@ import KanbanBoard from '../../customFiles/customComponent/sprintComponents/Kanb
 import { getCurrentProjectSprintWorkActions, changeTicketStatus } from '../../Redux/Actions/TicketActions/ticketAction';
 
 import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
+import { getProjectBacklogAction } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const getInitials = (name) => {
@@ -75,8 +76,13 @@ const ProjectBoardPage = () => {
     loading: sprintLoading,
   } = useSelector((state) => state.worksTicket);
 
+  const {projectBacklog} = useSelector((state) => state.projects);
+  console.log(projectBacklog)
+
   useEffect(() => {
-    if (projectId) dispatch(getCurrentProjectSprintWorkActions(projectId));
+    if (projectId) {dispatch(getCurrentProjectSprintWorkActions(projectId)),
+      dispatch(getProjectBacklogAction(projectId))
+    };
   }, [projectId, dispatch]);
 
   // ── Flatten board columns into one task list ──────────────────────────────
@@ -142,6 +148,55 @@ const ProjectBoardPage = () => {
     }));
   }, [projectBoard]);
 
+  const backlogSections = useMemo(() => {
+  const sections = [];
+
+  const backlogGroups = Array.isArray(projectBacklog)
+    ? projectBacklog
+    : projectBacklog?.backlogData || [];
+
+  backlogGroups.forEach((backlog) => {
+    const formattedTickets = (backlog.tickets || []).map((ticket) => ({
+      id: ticket.id || ticket._id,
+      ticketKey: ticket.ticketKey,
+      title: ticket.title,
+      status: ticket.status,
+      rawStatus: ticket.status,
+      assignee: {
+        name:
+          (ticket.assignee && typeof ticket.assignee === "object"
+            ? ticket.assignee.name
+            : ticket.assignee) || "Unassigned",
+        initials: getInitials(
+          ticket.assignee && typeof ticket.assignee === "object"
+            ? ticket.assignee.name
+            : ticket.assignee
+        ),
+        image:
+          (ticket.assignee && ticket.assignee.image) ||
+          ticket.assigneeImage ||
+          null
+      },
+      priority: getPriorityLabel(ticket),
+      storyPoint: ticket.storyPoint || 0,
+      labels: getLabelsArray(ticket),
+      ticketId: ticket.id || ticket._id,
+      dueDate: ticket.eta
+        ? new Date(ticket.eta).toLocaleDateString()
+        : "No date",
+      type: ticket.type
+    }));
+
+    sections.push({
+      id: backlog.id || backlog._id,
+      title: backlog.title || backlog.name || "Backlog",
+      tickets: formattedTickets
+    });
+  });
+
+  return sections;
+}, [projectBacklog]);
+
   // ── Filter (for backlog list view only) ──────────────────────────────────
   const filteredTasks = useMemo(() => {
     let r = [...transformedTasks];
@@ -202,6 +257,7 @@ const ProjectBoardPage = () => {
       </div>
     );
   }
+
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -306,7 +362,7 @@ const ProjectBoardPage = () => {
 
           {/* Backlog group */}
           <ExpandableTaskList
-            title={`${currentProjectSprintName || 'Default'} Backlog`}
+            title={`${currentProjectSprintName || 'Default'}`}
             tasks={filteredTasks}
             isCollapsed={collapsed['Default Backlog']}
             onToggle={() => toggleGroup('Default Backlog')}
@@ -314,7 +370,20 @@ const ProjectBoardPage = () => {
             onAddClick={openCreate}
             bugCount={bugCount}
           />
+              {backlogSections.map((backlog) => (
+      <ExpandableTaskList
+        key={backlog.id}
+        title={`${backlog.title} (${backlog.tickets.length})`}
+        tasks={backlog.tickets}
+        isCollapsed={collapsed[backlog.id]}
+        onToggle={() => toggleGroup(backlog.id)}
+        onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+        onAddClick={openCreate}
+        bugCount={backlog.tickets.filter(t => t.type === "1").length}
+      />
+    ))}
         </div>
+        
       )}
 
       {/* ══ SPRINT BOARD ════════════════════════════════════════════════════ */}

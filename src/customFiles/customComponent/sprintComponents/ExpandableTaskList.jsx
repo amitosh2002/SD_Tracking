@@ -84,7 +84,7 @@ const ExpandableTaskList = ({
                     </td>
 
                     <td className="pb-table__col-id">
-                      <span className="pb-ticket-id">{task.id}</span>
+                      <span className="pb-ticket-id">{task.ticketKey.split("-")[0]+"-"+task.ticketKey.split("-")[1]}</span>
                     </td>
 
                     <td className="pb-table__col-title">

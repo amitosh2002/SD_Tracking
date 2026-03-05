@@ -15,3 +15,5 @@ export const updateServiceStatusApi = `${import.meta.env.VITE_BACKEND_URL}/api/p
 export const checkValidPartnerCodeApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/partnerCode/check`
 
 export const projectInsightApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/user-projects/insights`;
+export const projectBacklogApi = `${import.meta.env.VITE_BACKEND_URL}/api/platform/v1/workflow/backlog`;
+

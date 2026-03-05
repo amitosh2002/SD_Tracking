@@ -1,6 +1,6 @@
 import axios from "axios";
 import { FETCH_PROJECT_WITH_HIGHER_ACCESS, GET_ALL_PROJECTS, PROJECT_CONFIG_FETCH_LOADING, PROJECT_CONFIG_FETCH_SUCESS, PROJECT_MEMBERS_ERROR, PROJECT_MEMBERS_LOADING, PROJECT_MEMBERS_SUCCESS } from "../../Constants/projectConstant";
-import { acceptInvitationApi, associateServiceToProjectApi, checkValidPartnerCodeApi, getAllHoraServiceApi, getAlluserAccessProject, getProjectServicesByIdApi, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, projectUserManageApi, ticketConfigurl, updateServiceStatusApi, userProjectWithRights } from "../../../Api/Plat/projectApi";
+import { acceptInvitationApi, associateServiceToProjectApi, checkValidPartnerCodeApi, getAllHoraServiceApi, getAlluserAccessProject, getProjectServicesByIdApi, getUserProjectsLogsAgg, invitationDetails, inviteUsersToProject, projectBacklogApi, projectUserManageApi, ticketConfigurl, updateServiceStatusApi, userProjectWithRights } from "../../../Api/Plat/projectApi";
 import { createProjectApi, getAllTicketApiv1 } from "../../../Api/Plat/TicketsApi";
 import apiClient from "../../../utils/axiosConfig";
 import { SHOW_SNACKBAR } from "../../Constants/PlatformConstatnt/platformConstant";
@@ -581,6 +581,38 @@ export const associateServiceToProjectAction = (projectId, serviceId) => async (
         payload: {
           type: "error",
           message: error?.response?.data?.msg || "Failed to check partner code",
+        },
+      });
+    }
+  };
+
+
+  export const getProjectBacklogAction = (projectId) => async (dispatch) => {
+    try {
+      dispatch({ type: GET_ALL_HORA_SERVICE_LOADING });
+  
+      const res = await apiClient.post(`${projectBacklogApi}`, {projectId});
+      if (res.data.success) {
+        dispatch({
+          type: SHOW_SNACKBAR,
+          payload: {
+            type: "success",
+            message: res.data.msg || "Project backlog fetched successfully",
+          },
+        });
+        dispatch({
+          type:"GET_ALL_HORA_SERVICE_SUCCESS",
+          payload:res.data.data
+        })
+      }
+      
+    } catch (error) {
+      dispatch({type:"GET_ALL_HORA_SERVICE_LOADING_STOP"})
+      dispatch({
+        type: SHOW_SNACKBAR,
+        payload: {
+          type: "error",
+          message: error?.response?.data?.msg || "Failed to fetch project backlog",
         },
       });
     }
