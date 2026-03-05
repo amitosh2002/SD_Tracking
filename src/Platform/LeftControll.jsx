@@ -276,7 +276,7 @@ const IssueDetails = ({ task }) => {
         return (
             <div className="sidebar_collapsed_strip" onClick={() => setIsCollapsed(false)}>
                 <div className="expand_trigger">
-                    <ChevronsRight size={20} />
+                    <Minimize2 size={20} />
                 </div>
                 <div className="mini_stats">
                     <div className="stat_icon"><CheckCircle2 size={18} /></div>
@@ -329,7 +329,7 @@ const IssueDetails = ({ task }) => {
             {/* Header / Top Bar */}
             <div className="sidebar_header">
                 <div className="collapse_trigger" onClick={() => setIsCollapsed(!isCollapsed)}>
-                    {isCollapsed ? <ChevronRight size={20} /> : <Minimize2 size={20} />}
+                    {!isCollapsed ? <Minimize2 size={20} /> : <ChevronRight size={20} />}
                 </div>
                 <div className="header_actions">
                     <DropDownForTicketStatus

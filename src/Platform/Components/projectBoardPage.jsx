@@ -11,12 +11,13 @@ import {
   ChevronRight,
   AlertCircle,
   User as UserIcon,
+  ArrowLeft,
 } from 'lucide-react';
 import './styles/ProjectBoard.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useDispatch, useSelector } from 'react-redux';
 import KanbanBoard from '../../customFiles/customComponent/sprintComponents/KanbanBoard';
-import { getCurrentProjectSprintWorkActions } from '../../Redux/Actions/TicketActions/ticketAction';
+import { getCurrentProjectSprintWorkActions, changeTicketStatus } from '../../Redux/Actions/TicketActions/ticketAction';
 
 import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
 
@@ -69,9 +70,8 @@ const ProjectBoardPage = () => {
   const navigate  = useNavigate();
 
   const {
-    currentProjectSprintWork = [],
+    projectBoard = [],
     currentProjectSprintName,
-    sprintColumns = [],
     loading: sprintLoading,
   } = useSelector((state) => state.worksTicket);
 
@@ -79,36 +79,77 @@ const ProjectBoardPage = () => {
     if (projectId) dispatch(getCurrentProjectSprintWorkActions(projectId));
   }, [projectId, dispatch]);
 
-  // ── Transform raw tickets ─────────────────────────────────────────────────
-  const transformedTasks = useMemo(
-    () =>
-      (currentProjectSprintWork || []).map((ticket) => ({
-        id:         ticket.ticketKey,
+  // ── Flatten board columns into one task list ──────────────────────────────
+  const transformedTasks = useMemo(() => {
+    if (!Array.isArray(projectBoard)) return [];
+    return projectBoard.flatMap((col) => {
+      const colName = col.name || col.title || 'Unknown';
+      return (col.tickets || col.tasks || []).map((ticket) => ({
+        id:         ticket.id || ticket._id,
+        ticketKey:  ticket.ticketKey,
+        title:      ticket.title,
+        status:     colName,
+        rawStatus:  ticket.status,
+        assignee: {
+          name:     (ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee) || 'Unassigned',
+          initials: getInitials(ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee),
+          image:    (ticket.assignee && ticket.assignee.image) ||
+                    ticket.assigneeImage || null,
+        },
+        priority:   getPriorityLabel(ticket),
+        storyPoint: ticket.storyPoint || 0,
+        labels:     getLabelsArray(ticket),
+        ticketId:   ticket.id || ticket._id,
+        dueDate:    ticket.eta ? new Date(ticket.eta).toLocaleDateString() : 'No date',
+      }));
+    });
+  }, [projectBoard]);
+
+  // ── Kanban columns — read directly from projectBoard ─────────────────────
+  const kanbanColumns = useMemo(() => {
+    if (!Array.isArray(projectBoard)) return [];
+    return projectBoard.map((col) => ({
+      id:         col.columnId || col.id,
+      name:       col.name,
+      color:      col.color,
+      statusKeys: col.statusKeys,
+      tasks:      (col.tickets || col.tasks || []).map((ticket) => ({
+        id:         ticket.id || ticket._id,
+        ticketKey:  ticket.ticketKey,
         title:      ticket.title,
         status:     ticket.status,
         rawStatus:  ticket.status,
         assignee: {
-          name:     ticket.assignee || 'Unassigned',
-          initials: getInitials(ticket.assignee),
-          image:    ticket.assigneeImage || null,
+          name:     (ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee) || 'Unassigned',
+          initials: getInitials(ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee),
+          image:    (ticket.assignee && ticket.assignee.image) ||
+                    ticket.assigneeImage || null,
         },
         priority:   getPriorityLabel(ticket),
-        storyPoint: ticket.storyPoint || ticket.pts || 0,
+        storyPoint: ticket.storyPoint || 0,
         labels:     getLabelsArray(ticket),
-        ticketId:   ticket._id || ticket.id,
+        ticketId:   ticket.id || ticket._id,
         dueDate:    ticket.eta ? new Date(ticket.eta).toLocaleDateString() : 'No date',
       })),
-    [currentProjectSprintWork]
-  );
+    }));
+  }, [projectBoard]);
 
-  // ── Filter ────────────────────────────────────────────────────────────────
+  // ── Filter (for backlog list view only) ──────────────────────────────────
   const filteredTasks = useMemo(() => {
     let r = [...transformedTasks];
     if (searchTerm)
       r = r.filter(
         (t) =>
-          t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          t.id.toLowerCase().includes(searchTerm.toLowerCase())
+          t.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (t.id || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     if (priorityFilter !== 'All') r = r.filter((t) => t.priority === priorityFilter);
     return r;
@@ -116,30 +157,33 @@ const ProjectBoardPage = () => {
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const stats = useMemo(() => [
-    { label: 'Total Issues',  value: transformedTasks.length,                                                                          color: 'blue'   },
-    { label: 'Story Points',  value: transformedTasks.reduce((a, t) => a + (t.storyPoint || 0), 0),                                   color: 'teal'   },
-    // { label: 'Bugs',          value: transformedTasks.filter((t) => t.labels.some((l) => l.toLowerCase().includes('bug'))).length,    color: 'red'    },
-    { label: 'Unassigned',    value: transformedTasks.filter((t) => !t.assignee || t.assignee.name === 'Unassigned').length,           color: 'amber'  },
+    { label: 'Total Issues',  value: transformedTasks.length,                                              color: 'blue'  },
+    { label: 'Story Points',  value: transformedTasks.reduce((a, t) => a + (t.storyPoint || 0), 0),       color: 'teal'  },
+    { label: 'Unassigned',    value: transformedTasks.filter((t) => t.assignee?.name === 'Unassigned').length, color: 'amber' },
   ], [transformedTasks]);
-
-  // ── Kanban columns ────────────────────────────────────────────────────────
-  const kanbanColumns = useMemo(
-    () =>
-      sprintColumns.map((col) => ({
-        id:    col.id || col.columnId,
-        name:  col.name,
-        color: col.color,
-        tasks: transformedTasks.filter((t) => {
-          const ns  = (t.rawStatus || '').toUpperCase().replace(/[\s_-]/g, '');
-          const nsk = (col.statusKeys || []).map((s) => s.toUpperCase().replace(/[\s_-]/g, ''));
-          return nsk.includes(ns);
-        }),
-      })),
-    [sprintColumns, transformedTasks]
-  );
 
   const toggleGroup = (name) =>
     setCollapsed((prev) => ({ ...prev, [name]: !prev[name] }));
+
+  const handleTaskMove = ({ destinationColumnId, active }) => {
+    const taskData = active.data.current?.task;
+    const realTicketId = taskData?.ticketId || taskData?._id;
+
+    // Find target column from projectBoard
+    const targetColumn = (Array.isArray(projectBoard) ? projectBoard : []).find(
+      (col) => (col.columnId || col.id) === destinationColumnId
+    );
+    if (!targetColumn || !realTicketId) return;
+
+    if (targetColumn.statusKeys && targetColumn.statusKeys.length > 1) {
+      // Let KanbanBoard handle multi-status popup
+      return;
+    }
+    const newStatus = targetColumn.statusKeys?.[0] || targetColumn.name;
+    if (newStatus) {
+      dispatch(changeTicketStatus(realTicketId, newStatus));
+    }
+  };
 
   const openCreate = () => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true });
 
@@ -148,7 +192,7 @@ const ProjectBoardPage = () => {
   ).length;
 
   // ── Loading ───────────────────────────────────────────────────────────────
-  if (sprintLoading && currentProjectSprintWork.length === 0) {
+  if (sprintLoading && projectBoard.length === 0) {
     return (
       <div className="pb-page pb-page--loading">
         <div className="pb-loader">
@@ -166,12 +210,13 @@ const ProjectBoardPage = () => {
       {/* ══ HEADER ══════════════════════════════════════════════════════════ */}
       <header className="pb-header">
         <div className="pb-header__left">
-          <nav className="pb-breadcrumb" aria-label="breadcrumb">
+          <nav className="pb-breadcrumb" aria-label="breadcrumb" style={{textAlign:"center",display:"flex",alignItems:"center",justifyContent:"center",gap:"10px",cursor:"pointer"}}>
+             <ArrowLeft size={24} onClick={() => navigate(`/workspace/${projectId}/insight`)}/> 
             <span
               className="pb-breadcrumb__item pb-breadcrumb__item--link"
               onClick={() => navigate('/projects')}
             >
-              Projects
+            Projects
             </span>
             <span className="pb-breadcrumb__sep" aria-hidden="true">/</span>
             <span className="pb-breadcrumb__item pb-breadcrumb__item--active">
@@ -279,6 +324,7 @@ const ProjectBoardPage = () => {
             columns={kanbanColumns}
             onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
             onAddTask={openCreate}
+            onTaskMove={handleTaskMove}
           />
         </div>
       )}

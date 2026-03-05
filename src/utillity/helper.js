@@ -416,5 +416,3 @@ export const formatNotificationTime = (dateInput) => {
     year: "numeric",
   });
 };
-
-

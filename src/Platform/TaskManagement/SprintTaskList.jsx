@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import './styles/SprintTaskList.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCurrentProjectSprintWorkActions } from '../../Redux/Actions/TicketActions/ticketAction';
+import { getCurrentProjectSprintWorkActions, changeTicketStatus } from '../../Redux/Actions/TicketActions/ticketAction';
 import { CustomDropDownV3 } from '../../customFiles/customComponent/DropDown';
 import { getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 import FilterDropdown from '../WorksTicket/Components/FilterDropdown';
@@ -39,12 +39,12 @@ const SprintTaskList = () => {
   const dispatch = useDispatch();
 
   const { 
-    currentProjectSprintWork, 
     currentProjectSprintName,
     totalSprintStoryPoints,
     sprintColumns,
     sprintFilters,
-    loading 
+    loading,
+    projectBoard
   } = useSelector((state) => state.worksTicket);
   
   const projects = useSelector((state) => state.projects.projects);
@@ -85,83 +85,66 @@ const SprintTaskList = () => {
     });
   }, [projectId]);
 
-  // Transform API data to match component structure
+  // Transform API data to match component structure by flattening kanban board
   const transformedTasks = useMemo(() => {
-    return (currentProjectSprintWork || []).map(ticket => {
-      // Extract initials from assignee name
-      const getInitials = (name) => {
-        if (!name || name === 'Unassigned') return 'UN';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      };
-
-      // Map status from API to display status based on project board columns
-      const mapStatus = (apiStatus) => {
-        if (sprintColumns && sprintColumns.length > 0) {
-          const normalizedApiStatus = (apiStatus || '').toUpperCase();
-          const column = sprintColumns.find(col => 
-            (col.statusKeys || []).some(k => k.toUpperCase() === normalizedApiStatus)
-          );
-          if (column) return column.name;
-        }
-
-        const statusMap = {
-          'BACKLOG': 'To Do',
-          'TODO': 'To Do',
-          'OPEN': 'To Do',
-          'IN_PROGRESS': 'In Progress',
-          'INPROGRESS': 'In Progress',
-          'IN_REVIEW': 'In Review',
-          'REVIEW': 'In Review',
-          'DONE': 'Done',
-          'COMPLETED': 'Done'
+    if (!Array.isArray(projectBoard)) return [];
+    
+    return projectBoard.flatMap(col => {
+      const colName = col.name || col.title || 'Unknown';
+      
+      return (col.tickets || col.tasks || []).map(ticket => {
+        // Extract initials from assignee name
+        const getInitials = (name) => {
+          if (!name || name === 'Unassigned') return 'UN';
+          return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         };
-        return statusMap[apiStatus] || 'To Do';
-      };
-
-      // Handle priority - can be array, string, or object
-      const getPriorityLabel = (ticket) => {
-        if (ticket.priorityName && ticket.priorityName !== "Unknown") return ticket.priorityName;
-        const p = ticket.priority;
-        if (p && typeof p === 'object' && !Array.isArray(p)) return p.name || 'Medium';
-        if (Array.isArray(p)) {
-          const first = p[0];
-          return (first && typeof first === 'object') ? first.name : (first || 'Medium');
-        }
-        return p || 'Medium';
-      };
-
-      // Handle labels - normalized to array of strings
-      const getLabelsArray = (ticket) => {
-        const l = ticket.labels || [];
-        const labelList = Array.isArray(l) ? l : [l];
-        return labelList.map(label => {
-          if (label && typeof label === 'object') return label.name;
-          return label;
-        }).filter(Boolean);
-      };
-
-      return {
-        id: ticket.ticketKey,
-        name: ticket.title,
-        assignee: {
-          name: ticket.assignee || 'Unassigned',
-          avatar: null,
-          initials: getInitials(ticket.assignee),
-          _id: ticket.assigneeId
-        },
-        project: ticket.projectId || 'Unknown Project',
-        tags: getLabelsArray(ticket),
-        deadline: ticket.eta || "",
-        priority: getPriorityLabel(ticket),
-        status: mapStatus(ticket.status),
-        rawStatus: ticket.status,
-        storyPoint: ticket.storyPoint || 0,
-        labels: getLabelsArray(ticket),
-        _rawData: ticket,
-        ticketId: ticket._id
-      };
+  
+        // Handle priority - can be array, string, or object
+        const getPriorityLabel = (ticket) => {
+          if (ticket.priorityName && ticket.priorityName !== "Unknown") return ticket.priorityName;
+          const p = ticket.priority;
+          if (p && typeof p === 'object' && !Array.isArray(p)) return p.name || 'Medium';
+          if (Array.isArray(p)) {
+            const first = p[0];
+            return (first && typeof first === 'object') ? first.name : (first || 'Medium');
+          }
+          return p || 'Medium';
+        };
+  
+        // Handle labels - normalized to array of strings
+        const getLabelsArray = (ticket) => {
+          const l = ticket.labels || [];
+          const labelList = Array.isArray(l) ? l : [l];
+          return labelList.map(label => {
+            if (label && typeof label === 'object') return label.name;
+            return label;
+          }).filter(Boolean);
+        };
+  
+        return {
+          id: ticket.id || ticket._id,
+          ticketKey: ticket.ticketKey,
+          name: ticket.title,
+          assignee: {
+            name: (ticket.assignee && typeof ticket.assignee === 'object' ? ticket.assignee.name : ticket.assignee) || 'Unassigned',
+            avatar: (ticket.assignee && ticket.assignee.image) || ticket.assigneeImage || null,
+            initials: getInitials((ticket.assignee && typeof ticket.assignee === 'object' ? ticket.assignee.name : ticket.assignee)),
+            _id: (ticket.assignee && ticket.assignee._id) || ticket.assigneeId || null
+          },
+          project: ticket.projectId || 'Unknown Project',
+          tags: getLabelsArray(ticket),
+          deadline: ticket.eta || ticket.dueDate || "",
+          priority: getPriorityLabel(ticket),
+          status: colName, // Exact column name from backend array
+          rawStatus: ticket.status,
+          storyPoint: ticket.storyPoint || 0,
+          labels: getLabelsArray(ticket),
+          _rawData: ticket,
+          ticketId: ticket.id || ticket._id
+        };
+      });
     });
-  }, [currentProjectSprintWork, sprintColumns]);
+  }, [projectBoard]);
 
   // Apply Filtering and Sorting
   const filteredAndSortedTasks = useMemo(() => {
@@ -253,16 +236,35 @@ if (sortConfig.key) {
   //   }, {});
   // }, [filteredAndSortedTasks]);
 
+  // Group tickets into board flow columns based on statusKeys with robust global deduplication
   const groupedTasks = useMemo(() => {
-  const groups = {};
+    const groups = {};
+    
+    if (sprintColumns && sprintColumns.length > 0) {
+      sprintColumns.forEach(col => {
+        groups[col.name] = [];
+      });
+      filteredAndSortedTasks.forEach(task => {
+        if (groups[task.status]) {
+           groups[task.status].push(task);
+        } else {
+           // Fallback if somehow mismatched
+           let firstCol = sprintColumns[0].name;
+           if (!groups[firstCol]) groups[firstCol] = [];
+           groups[firstCol].push(task);
+        }
+      });
+    } else {
+      // Fallback
+      filteredAndSortedTasks.forEach(task => {
+        if (!groups[task.status]) groups[task.status] = [];
+        groups[task.status].push(task);
+      });
+    }
 
-  filteredAndSortedTasks.forEach(task => {
-    if (!groups[task.status]) groups[task.status] = [];
-    groups[task.status].push(task);
-  });
+    return groups;
+  }, [filteredAndSortedTasks, sprintColumns]);
 
-  return groups;
-}, [filteredAndSortedTasks]);
 
   const statusGroups = useMemo(() => {
     if (sprintColumns && sprintColumns.length > 0) {
@@ -288,6 +290,26 @@ if (sortConfig.key) {
       ...prev,
       [groupKey]: !prev[groupKey]
     }));
+  };
+
+  const handleTaskMove = ({ destinationColumnId, active }) => {
+    const taskData = active.data.current?.task;
+    const realTicketId = taskData?.ticketId || taskData?._id;
+    
+    // Find destination column to get the status key
+    let targetColumn = null;
+    if (sprintColumns && sprintColumns.length > 0) {
+      targetColumn = sprintColumns.find(col => col.name === destinationColumnId);
+    }
+    
+    if (!realTicketId) return;
+
+    // Use the first statusKey if available, otherwise fallback to destinationColumnId (which is column name)
+    const newStatus = targetColumn?.statusKeys?.[0] || destinationColumnId;
+    
+    if (newStatus) {
+      dispatch(changeTicketStatus(realTicketId, newStatus));
+    }
   };
 
 
@@ -485,6 +507,7 @@ if (sortConfig.key) {
           }))}
           onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
           onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
+          onTaskMove={handleTaskMove}
         />
 
       )}

@@ -13,6 +13,7 @@ import { OPEN_CREATE_TICKET_POPUP } from "../../../Redux/Constants/ticketReducer
 import { useNavigate } from "react-router-dom";
 import ExpandableTaskList from "../../../customFiles/customComponent/sprintComponents/ExpandableTaskList";
 import KanbanBoard from "../../../customFiles/customComponent/sprintComponents/KanbanBoard";
+import { changeTicketStatus } from "../../../Redux/Actions/TicketActions/ticketAction";
 
 // ============================================================================
 // HELPERS
@@ -91,6 +92,7 @@ const UserDashboard = () => {
         id: col.columnId || col.id,
         label: col.name || col.Name || "Unknown",
         color: col.color || "#94a3b8",
+        statusKeys: col.statusKeys || [],
         tickets: col.tickets || []
       }));
     }
@@ -101,6 +103,7 @@ const UserDashboard = () => {
         id: col.id,
         label: col.name,
         color: col.color || "#94a3b8",
+        statusKeys: col.statusKeys || [],
         tickets: safeData[col.name] || []
       }));
     }
@@ -108,10 +111,10 @@ const UserDashboard = () => {
     // 3️⃣ Legacy Fallback
     const legacyData = typeof safeData === 'object' ? safeData : {};
     return [
-      { id: "todo",       label: "To Do",      color: "#94a3b8", tickets: legacyData["To Do"] || legacyData["OPEN"] || [] },
-      { id: "inProgress", label: "In Progress", color: "#3b82f6", tickets: legacyData["In Progress"] || legacyData["IN_PROGRESS"] || [] },
-      { id: "inReview",   label: "In Review",   color: "#8b5cf6", tickets: legacyData["In Review"] || legacyData["IN_REVIEW"] || [] },
-      { id: "done",       label: "Done",        color: "#10b981", tickets: legacyData["Done"] || legacyData["CLOSED"] || [] }
+      { id: "todo",       label: "To Do",      color: "#94a3b8", statusKeys: ["TODO", "BACKLOG", "OPEN"], tickets: legacyData["To Do"] || legacyData["OPEN"] || [] },
+      { id: "inProgress", label: "In Progress", color: "#3b82f6", statusKeys: ["IN_PROGRESS"], tickets: legacyData["In Progress"] || legacyData["IN_PROGRESS"] || [] },
+      { id: "inReview",   label: "In Review",   color: "#8b5cf6", statusKeys: ["IN_REVIEW"],   tickets: legacyData["In Review"] || legacyData["IN_REVIEW"] || [] },
+      { id: "done",       label: "Done",        color: "#10b981", statusKeys: ["DONE", "CLOSED"],    tickets: legacyData["Done"] || legacyData["CLOSED"] || [] }
     ];
   }, [workColumns, safeData]);
 
@@ -126,6 +129,21 @@ const UserDashboard = () => {
   const inProgress   = columns.find(c => ["In Progress", "IN PROGRESS"].includes(c.label.toUpperCase()))?.tickets?.length || 0;
   const critical     = allTickets.filter(t => ["Critical", "High", "Urgent"].includes(t.priority)).length;
   const completed    = columns.find(c => ["Done", "DONE", "COMPLETED"].includes(c.label.toUpperCase()))?.tickets?.length || 0;
+
+  const handleTaskMove = ({ destinationColumnId, active }) => {
+    const taskData = active.data.current?.task;
+    const realTicketId = taskData?._id || taskData?.id;
+    
+    const targetColumn = columns.find(col => col.id === destinationColumnId);
+    if (!targetColumn || !realTicketId) return;
+
+    // Use the first statusKey if available, otherwise fallback to label
+    const newStatus = targetColumn.statusKeys?.[0] || targetColumn.label;
+    
+    if (newStatus) {
+      dispatch(changeTicketStatus(realTicketId, newStatus));
+    }
+  };
 
   return (
     <div className="sb-page">
@@ -220,9 +238,10 @@ const UserDashboard = () => {
             ...col,
             tasks: col.tickets.map(t => ({
               ...t,
-              id: parseTicketKey(t.ticketKey).short,
+              id: t.id || t._id,
+              ticketKey: t.ticketKey,
               title: t.title,
-              storyPoint: Math.round(t.totalTimeLogged / 60) || 0, // Using hours for points in dashboard
+              storyPoint: t.storyPoint || t.pts || 0,
               assignee: { 
                 name: user?.profile?.firstName ? (user.profile.firstName + " " + (user.profile.lastName || "")) : "You", 
                 initials: user?.profile?.firstName ? getInitials(user.profile.firstName + " " + (user.profile.lastName || "")) : "ME",
@@ -233,6 +252,7 @@ const UserDashboard = () => {
           }))}
           onTaskClick={(t) => navigate(`/tickets/${t._id || t.id}`)}
           onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
+          onTaskMove={handleTaskMove}
         />
       ) : (
         <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
@@ -242,8 +262,9 @@ const UserDashboard = () => {
               title={col.label}
               tasks={col.tickets.map(t => ({
                 ...t,
-                id: parseTicketKey(t.ticketKey).short,
-                pts: Math.round(t.totalTimeLogged || 0),
+                id: t.id || t._id,
+                ticketKey: parseTicketKey(t.ticketKey).short,
+                storyPoint: t.storyPoint || t.pts || 0,
                 assignee: { 
                   name: user?.profile?.firstName ? (user.profile.firstName + " " + (user.profile.lastName || "")) : "You", 
                   initials: user?.profile?.firstName ? getInitials(user.profile.firstName + " " + (user.profile.lastName || "")) : "ME",

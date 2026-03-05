@@ -36,6 +36,13 @@ $red: #ef4444;
   display: flex;
   flex-direction: column;
   transition: all 0.2s ease;
+  min-height: 200px;
+    border: 2px solid transparent;
+  
+    &.drag-over {
+      border-color: $primary;
+      background: rgba($primary, 0.02);
+    }
 
   &__header {
     display: flex;
@@ -125,10 +132,45 @@ $red: #ef4444;
   gap: 10px;
   transition: all 0.2s ease;
   cursor: pointer;
+  position: relative;
 
   &:hover {
     border-color: $gray-300;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    .kanban-card__drag-handle {
+        opacity: 1;
+      }
+    }
+    
+    &.is-overlay {
+      cursor: grabbing;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      transform: rotate(2deg);
+      z-index: 1000;
+      pointer-events: none;
+      border-color: $primary;
+    
+      .kanban-card__drag-handle {
+        opacity: 1;
+        color: $primary;
+      }
+    }
+    
+    &__drag-handle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: $gray-400;
+      opacity: 0;
+      transition: opacity 0.2s;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    
+      &:active {
+        cursor: grabbing;
+      }
   }
 
   &__header {
@@ -315,5 +357,138 @@ $red: #ef4444;
   &:hover {
     background: $gray-200;
     color: $gray-700;
+  }
+}
+
+.status-selection-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($gray-900, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.status-selection-modal {
+  background: $white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &__header {
+    padding: 24px 24px 16px;
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 700;
+      color: $gray-900;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: $gray-500;
+      line-height: 1.5;
+    }
+  }
+
+  &__options {
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  &__footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+
+    .cancel-btn {
+      background: $gray-100;
+      border: none;
+      color: $gray-700;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: $gray-200;
+        color: $gray-900;
+      }
+    }
+  }
+}
+
+.status-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.1, 0, 0.1, 1);
+  text-align: left;
+  text-transform: capitalize;
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $primary;
+  }
+
+  &:hover {
+    background: $white;
+    border-color: $primary;
+    color: $primary;
+    box-shadow: 0 4px 12px rgba($primary, 0.1);
+    transform: translateX(4px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
