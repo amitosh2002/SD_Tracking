@@ -9,7 +9,7 @@ import { PopupV1 } from '../customFiles/customComponent/popups';
 import { convertInputToSeconds, formatMinutesToCustomDays, getLabelsbyId, getPriorityById, refactorSprintData } from '../utillity/helper';
 import { SHOW_SNACKBAR } from '../Redux/Constants/PlatformConstatnt/platformConstant';
 import { GET_TICKET_UPDATED_DETAILS } from '../Redux/Constants/ticketReducerConstants';
-import { assignSprintToTicket, fetchProjectScrumFlow, fetctCurrentProjectSprint } from '../Redux/Actions/SprintActions/sprintActionsV1';
+import { fetchProjectScrumFlow, fetctCurrentProjectSprint } from '../Redux/Actions/SprintActions/sprintActionsV1';
 import { useNavigate } from 'react-router-dom';
 import { 
     User, 
@@ -37,9 +37,11 @@ import {
     ExternalLink,
     Activity,
     ArrowLeft,
-    Bookmark
+    Bookmark,
+    ChevronsRight,
+    Minimize2
 } from 'lucide-react';
-import { ticketConfiguratorActionV1, handleUsersInProjects } from '../Redux/Actions/PlatformActions.js/projectsActions';
+import { ticketConfiguratorActionV1, handleUsersInProjects, getProjectBacklogAction } from '../Redux/Actions/PlatformActions.js/projectsActions';
 import SidePanel from '../customFiles/customComponent/utilityComponenet/sidePanel';
 import apiClient from '../utils/axiosConfig';
 import { getAllTicketApiv1 } from '../Api/Plat/TicketsApi';
@@ -53,7 +55,7 @@ const IssueDetails = ({ task }) => {
     const { ticketSprint, statusWorkFlow } = useSelector((state) => state.sprint);
     const ticketStatus = statusWorkFlow?.statuses || [];
     const { userDetails } = useSelector((state) => state.user);
-    const {projectlabels,projectsPriorities, projectMembers}= useSelector((state)=>state.projects)
+    const { projectlabels, projectsPriorities, projectMembers, projectBacklog } = useSelector((state) => state.projects)
     
 
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -134,7 +136,10 @@ const IssueDetails = ({ task }) => {
         dispatch(fetctCurrentProjectSprint(selectedTicket.projectId));
         dispatch(ticketConfiguratorActionV1(selectedTicket.projectId));
         dispatch(handleUsersInProjects(selectedTicket.projectId, "get"));
+        dispatch(getProjectBacklogAction(selectedTicket.projectId));
     }, [dispatch, selectedTicket?.projectId]);
+
+    const backlogSections = useMemo(() => projectBacklog?.backlogData || [], [projectBacklog]);
 
     useEffect(() => {
         if (!ticketSprint) return;
@@ -164,32 +169,45 @@ const IssueDetails = ({ task }) => {
     }, [projectMembers]);
 
     // Handlers
-    const handleAssigneeChange = (userId) => {
+    const handleAssigneeChange = async (userId) => {
         if (!selectedTicket?._id) return;
-        dispatch(assignTaskApi(selectedTicket._id, userId));
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        await dispatch(assignTaskApi(selectedTicket._id, userId));
+        // No need to dispatch GET_TICKET_UPDATED_DETAILS as Redux state is updated locally by the action
     };
-    const handleStatusChange = useCallback((statusData) => {
+    const handleStatusChange = useCallback(async (statusData) => {
         if (!selectedTicket?._id) return;
-        dispatch(changeTicketStatus(selectedTicket._id, statusData?.newStatus));
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        await dispatch(changeTicketStatus(selectedTicket._id, statusData?.newStatus));
+        // No need to dispatch GET_TICKET_UPDATED_DETAILS for status as action already updates Redux locally
     }, [selectedTicket?._id, dispatch]);
 
-    const handleAssignToMe = () => {
+    const handleAssignToMe = async () => {
         if (!selectedTicket?._id || !userDetails?.id) return;
-        dispatch(assignTaskApi(selectedTicket._id, userDetails.id));
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        await dispatch(assignTaskApi(selectedTicket._id, userDetails.id));
+        // Redux state updated locally
     };
 
-    const handleSprintChange = async (e) => {
-        const sprintId = e.target.value;
+    const handlePlacementChange = async (e) => {
+        const targetId = e.target.value;
         if (!selectedTicket?._id) return;
+
+        const isSprintSelected = sprints.some(s => s.id === targetId);
+        const isBacklogSelected = backlogSections.some(b => b.id === targetId);
+
+        let payload = {};
+        if (isSprintSelected) {
+            payload = { sprint: targetId, backlogId: null };
+        } else if (isBacklogSelected) {
+            payload = { backlogId: targetId, sprint: null };
+        } else {
+            payload = { sprint: null, backlogId: null };
+        }
+
         try {
-            await dispatch(assignSprintToTicket(selectedTicket._id, sprintId));
+            await dispatch(updateTicket(selectedTicket._id, payload));
             dispatch({ type: GET_TICKET_UPDATED_DETAILS });
-            dispatch({ type: SHOW_SNACKBAR, payload: { message: "Sprint updated successfully", type: "success" } });
+            dispatch({ type: SHOW_SNACKBAR, payload: { message: "Placement updated successfully", type: "success" } });
         } catch (err) {
-            console.error('Failed to assign sprint', err);
+            console.error('Failed to update ticket placement', err);
         }
     };
 
@@ -224,15 +242,15 @@ const IssueDetails = ({ task }) => {
         }
     };
 
-    const handleTimeLogSubmit = (e) => {
+    const handleTimeLogSubmit = async (e) => {
         e.preventDefault();
         let totalSeconds = convertInputToSeconds(timeLogged);
         if (!selectedTicket?._id || !userDetails?.id) return;
 
-        dispatch(addTimeLogForWork(selectedTicket._id, userDetails.id, totalSeconds, ""));
+        await dispatch(addTimeLogForWork(selectedTicket._id, userDetails.id, totalSeconds, ""));
         setTimeLogPopup(false);
         setTimeLogged("");
-        dispatch({ type: GET_TICKET_UPDATED_DETAILS });
+        dispatch({ type: GET_TICKET_UPDATED_DETAILS }); // keep refresh for time logs to update totalLoggedTime
         dispatch({ type: SHOW_SNACKBAR, payload: { message: "Time logged successfully", type: "success" } });
     };
 
@@ -274,7 +292,7 @@ const IssueDetails = ({ task }) => {
         return (
             <div className="sidebar_collapsed_strip" onClick={() => setIsCollapsed(false)}>
                 <div className="expand_trigger">
-                    <ChevronRight size={20} />
+                    <Minimize2 size={20} />
                 </div>
                 <div className="mini_stats">
                     <div className="stat_icon"><CheckCircle2 size={18} /></div>
@@ -326,9 +344,9 @@ const IssueDetails = ({ task }) => {
         <div className="modern_sidebar_container">
             {/* Header / Top Bar */}
             <div className="sidebar_header">
-                <button className="collapse_toggle" onClick={() => setIsCollapsed(!isCollapsed)}>
-                    {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-                </button>
+                <div className="collapse_trigger" onClick={() => setIsCollapsed(!isCollapsed)}>
+                    {!isCollapsed ? <Minimize2 size={20} /> : <ChevronRight size={20} />}
+                </div>
                 <div className="header_actions">
                     <DropDownForTicketStatus
                         ticketTypes={ticketStatus.map(s => s.key || s.label || s)}
@@ -462,17 +480,30 @@ const IssueDetails = ({ task }) => {
                         <div className="planning_item">
                             <div className="item_header">
                                 <Calendar size={14} />
-                                <span>Sprint Execution</span>
+                                <span>Ticket Placement</span>
                             </div>
                             <select 
                                 className="modern_inline_select"
-                                value={activeSprint?.id || ''}
-                                onChange={handleSprintChange}
+                                value={
+                                    (typeof selectedTicket?.sprint === 'object' ? selectedTicket.sprint?._id : selectedTicket?.sprint) || 
+                                    (typeof selectedTicket?.backlogId === 'object' ? selectedTicket.backlogId?._id : selectedTicket?.backlogId) || 
+                                    ''
+                                }
+                                onChange={handlePlacementChange}
                             >
-                                <option value="">Move to Backlog</option>
-                                {sprints.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name} {s.status === 'active' ? '●' : ''}</option>
-                                ))}
+                                <option value="">Unassigned (No Backlog/Sprint)</option>
+                                <optgroup label="Sprints">
+                                    {sprints.map(s => (
+                                        <option key={s.id} value={s.id}>{s.name} {s.status === 'active' ? '●' : ''}</option>
+                                    ))}
+                                </optgroup>
+                                {backlogSections.length > 0 && (
+                                    <optgroup label="Backlog Sections">
+                                        {backlogSections.map(b => (
+                                            <option key={b.id} value={b.id}>{b.title}</option>
+                                        ))}
+                                    </optgroup>
+                                )}
                             </select>
                             {activeSprint && (
                                 <div className="sprint_meta">

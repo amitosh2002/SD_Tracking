@@ -1,0 +1,672 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  Plus,
+  Filter,
+  List,
+  Zap,
+  BarChart3,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  AlertCircle,
+  User as UserIcon,
+  ArrowLeft,
+} from 'lucide-react';
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  MeasuringStrategy,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
+import {
+  updateTicket,
+  getCurrentProjectSprintWorkActions,
+  changeTicketStatus
+} from '../../Redux/Actions/TicketActions/ticketAction';
+import { getProjectBacklogAction } from '../../Redux/Actions/PlatformActions.js/projectsActions';
+import './styles/ProjectBoard.scss';
+import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
+import { useDispatch, useSelector } from 'react-redux';
+import KanbanBoard from '../../customFiles/customComponent/sprintComponents/KanbanBoard';
+
+import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+const getInitials = (name) => {
+  if (!name || name === 'Unassigned') return 'UN';
+  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+};
+
+const getPriorityLabel = (ticket) => {
+  if (ticket.priorityName && ticket.priorityName !== 'Unknown') return ticket.priorityName;
+  const p = ticket.priority;
+  if (p && typeof p === 'object' && !Array.isArray(p)) return p.name || 'Medium';
+  if (Array.isArray(p)) {
+    const first = p[0];
+    return first && typeof first === 'object' ? first.name : first || 'Medium';
+  }
+  return p || 'Medium';
+};
+
+const getLabelsArray = (ticket) => {
+  const l = ticket.labels || [];
+  return (Array.isArray(l) ? l : [l])
+    .map((label) => (label && typeof label === 'object' ? label.name : label))
+    .filter(Boolean);
+};
+
+// ─── Avatar colours (deterministic by name) ──────────────────────────────────
+
+// ─── Tab config ───────────────────────────────────────────────────────────────
+const TABS = [
+  { id: 'Backlog',      label: 'Backlog',       Icon: List      },
+  { id: 'Sprint Board', label: 'Sprint Board',  Icon: Zap       },
+  { id: 'Analytics',   label: 'Analytics',     Icon: BarChart3 },
+];
+
+const PRIORITY_FILTERS = ['All', 'Critical', 'High', 'Medium', 'Low'];
+
+// ─── Component ────────────────────────────────────────────────────────────────
+const ProjectBoardPage = () => {
+  const { projectId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'Sprint Board';
+  const [searchTerm, setSearchTerm] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('All');
+  const [collapsed, setCollapsed] = useState({});
+  const [statusSelectionModal, setStatusSelectionModal] = useState(null);
+
+  const dispatch  = useDispatch();
+  const navigate  = useNavigate();
+
+  const {
+    projectBoard = [],
+    sprintColumns = [],
+    currentProjectSprintName,
+    currentProjectSprintId,
+    loading: sprintLoading,
+  } = useSelector((state) => state.worksTicket);
+
+  const {projectBacklog} = useSelector((state) => state.projects);
+  console.log(projectBacklog)
+
+  useEffect(() => {
+    if (projectId) {dispatch(getCurrentProjectSprintWorkActions(projectId)),
+      dispatch(getProjectBacklogAction(projectId))
+    };
+  }, [projectId, dispatch]);
+
+  // ── Flatten board columns into one task list ──────────────────────────────
+  const transformedTasks = useMemo(() => {
+    if (!Array.isArray(projectBoard)) return [];
+    return projectBoard.flatMap((col) => {
+      const colName = col.name || col.title || 'Unknown';
+      return (col.tickets || col.tasks || []).map((ticket) => ({
+        id:         ticket.id || ticket._id,
+        ticketKey:  ticket.ticketKey,
+        title:      ticket.title,
+        status:     colName,
+        rawStatus:  ticket.status,
+        assignee: {
+          name:     (ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee) || 'Unassigned',
+          initials: getInitials(ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee),
+          image:    (ticket.assignee && ticket.assignee.image) ||
+                    ticket.assigneeImage || null,
+        },
+        priority:   getPriorityLabel(ticket),
+        storyPoint: ticket.storyPoint || 0,
+        labels:     getLabelsArray(ticket),
+        ticketId:   ticket.id || ticket._id,
+        dueDate:    ticket.eta ? new Date(ticket.eta).toLocaleDateString() : 'No date',
+      }));
+    });
+  }, [projectBoard]);
+
+  // ── Kanban columns — read directly from projectBoard ─────────────────────
+  const kanbanColumns = useMemo(() => {
+    if (!Array.isArray(projectBoard)) return [];
+    return projectBoard.map((col) => ({
+      id:         col.columnId || col.id,
+      name:       col.name,
+      color:      col.color,
+      statusKeys: col.statusKeys,
+      tasks:      (col.tickets || col.tasks || []).map((ticket) => ({
+        id:         ticket.id || ticket._id,
+        ticketKey:  ticket.ticketKey,
+        title:      ticket.title,
+        status:     ticket.status,
+        rawStatus:  ticket.status,
+        assignee: {
+          name:     (ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee) || 'Unassigned',
+          initials: getInitials(ticket.assignee && typeof ticket.assignee === 'object'
+                      ? ticket.assignee.name
+                      : ticket.assignee),
+          image:    (ticket.assignee && ticket.assignee.image) ||
+                    ticket.assigneeImage || null,
+        },
+        priority:   getPriorityLabel(ticket),
+        storyPoint: ticket.storyPoint || 0,
+        labels:     getLabelsArray(ticket),
+        ticketId:   ticket.id || ticket._id,
+        dueDate:    ticket.eta ? new Date(ticket.eta).toLocaleDateString() : 'No date',
+      })),
+    }));
+  }, [projectBoard]);
+
+  const backlogSections = useMemo(() => {
+  const sections = [];
+
+  const backlogGroups = Array.isArray(projectBacklog)
+    ? projectBacklog
+    : projectBacklog?.backlogData || [];
+
+  backlogGroups.forEach((backlog) => {
+    const formattedTickets = (backlog.tickets || []).map((ticket) => ({
+      id: ticket.id || ticket._id,
+      ticketKey: ticket.ticketKey,
+      title: ticket.title,
+      status: ticket.status,
+      rawStatus: ticket.status,
+      assignee: {
+        name:
+          (ticket.assignee && typeof ticket.assignee === "object"
+            ? ticket.assignee.name
+            : ticket.assignee) || "Unassigned",
+        initials: getInitials(
+          ticket.assignee && typeof ticket.assignee === "object"
+            ? ticket.assignee.name
+            : ticket.assignee
+        ),
+        image:
+          (ticket.assignee && ticket.assignee.image) ||
+          ticket.assigneeImage ||
+          null
+      },
+      priority: getPriorityLabel(ticket),
+      storyPoint: ticket.storyPoint || 0,
+      labels: getLabelsArray(ticket),
+      ticketId: ticket.id || ticket._id,
+      dueDate: ticket.eta
+        ? new Date(ticket.eta).toLocaleDateString()
+        : "No date",
+      type: ticket.type
+    }));
+
+    sections.push({
+      id: backlog.id || backlog._id,
+      title: backlog.title || backlog.name || "Backlog",
+      tickets: formattedTickets
+    });
+  });
+
+  return sections;
+}, [projectBacklog]);
+
+  // ── Filter (for backlog list view only) ──────────────────────────────────
+  const filteredTasks = useMemo(() => {
+    let r = [...transformedTasks];
+    if (searchTerm)
+      r = r.filter(
+        (t) =>
+          t.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (t.id || '').toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    if (priorityFilter !== 'All') r = r.filter((t) => t.priority === priorityFilter);
+    return r;
+  }, [transformedTasks, searchTerm, priorityFilter]);
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  // ── Unified Backlog & Sprint Sections ──────────────────────────────────
+  const [internalBacklogSections, setInternalBacklogSections] = useState([]);
+
+  const rawCombinedBacklogSections = useMemo(() => {
+    const filterFn = (t) => {
+      const matchesSearch = !searchTerm || 
+        t.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (t.id || t.ticketKey || '').toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesPriority = priorityFilter === 'All' || t.priority === priorityFilter;
+      return matchesSearch && matchesPriority;
+    };
+
+    // 1. Active Sprint Section
+    const sprintSection = {
+      id: 'active-sprint',
+      title: currentProjectSprintName || 'Active Sprint',
+      tickets: (filteredTasks || []).map(t => ({ ...t, parentSectionId: 'active-sprint' })),
+      isSprint: true,
+      bugCount: (filteredTasks || []).filter(t => t.type === "1" || String(t.type) === "1").length
+    };
+
+    // 2. Custom Backlog Sections
+    const backlogs = (backlogSections || []).map(section => {
+      const sectionTickets = (section.tickets || []).map(t => ({
+        ...t,
+        id: t.id || t._id, // Ensure id
+        parentSectionId: section.id
+      })).filter(filterFn);
+
+      return {
+        id: section.id,
+        title: section.title,
+        tickets: sectionTickets,
+        isSprint: false,
+        bugCount: sectionTickets.filter(t => t.type === "1" || String(t.type) === "1").length
+      };
+    });
+
+    return [sprintSection, ...backlogs];
+  }, [filteredTasks, currentProjectSprintName, backlogSections, searchTerm, priorityFilter]);
+
+  // Sync internal state with Redux source
+  useEffect(() => {
+    setInternalBacklogSections(rawCombinedBacklogSections);
+  }, [rawCombinedBacklogSections]);
+
+  const stats = useMemo(() => [
+    { label: 'Total Issues',  value: transformedTasks.length,                                              color: 'blue'  },
+    { label: 'Story Points',  value: transformedTasks.reduce((a, t) => a + (t.storyPoint || 0), 0),       color: 'teal'  },
+    { label: 'Unassigned',    value: transformedTasks.filter((t) => t.assignee?.name === 'Unassigned').length, color: 'amber' },
+  ], [transformedTasks]);
+
+  const toggleGroup = (name) =>
+    setCollapsed((prev) => ({ ...prev, [name]: !prev[name] }));
+
+  const handleTaskMove = ({ destinationColumnId, active }) => {
+    const taskData = active.data.current?.task;
+    const realTicketId = taskData?.ticketId || taskData?._id;
+
+    // Find target column from projectBoard
+    const targetColumn = (Array.isArray(projectBoard) ? projectBoard : []).find(
+      (col) => (col.columnId || col.id) === destinationColumnId
+    );
+    if (!targetColumn || !realTicketId) return;
+
+    if (targetColumn.statusKeys && targetColumn.statusKeys.length > 1) {
+      // Let KanbanBoard handle multi-status popup
+      return;
+    }
+    const newStatus = targetColumn.statusKeys?.[0] || targetColumn.name;
+    if (newStatus) {
+      dispatch(changeTicketStatus(realTicketId, newStatus));
+    }
+  };
+
+  // ── Backlog DND Handlers ────────────────────────────────────────────────
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const [activeBacklogTask, setActiveBacklogTask] = useState(null);
+
+  const findContainerId = (id) => {
+    const sId = String(id);
+    if (sId === 'active-sprint' || internalBacklogSections.some(s => String(s.id) === sId)) return sId;
+    const section = internalBacklogSections.find(s => 
+      s.tickets.some(t => String(t.id || t._id) === sId)
+    );
+    return section ? section.id : null;
+  };
+
+  const handleDragStart = (event) => {
+    const { active } = event;
+    setActiveBacklogTask(active.data.current.task);
+  };
+
+  const handleDragOver = (event) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainerId(activeId);
+    const overContainer = findContainerId(overId);
+
+    if (!activeContainer || !overContainer || activeContainer === overContainer) return;
+
+    setInternalBacklogSections((prev) => {
+      const activeSection = prev.find(s => s.id === activeContainer);
+      const overSection = prev.find(s => s.id === overContainer);
+
+      if (!activeSection || !overSection) return prev;
+
+      const activeIndex = activeSection.tickets.findIndex(t => String(t.id || t._id) === activeId);
+      const task = activeSection.tickets[activeIndex];
+      
+      const newActiveTickets = activeSection.tickets.filter(t => String(t.id || t._id) !== activeId);
+      
+      let newOverTickets = [...overSection.tickets];
+      const isOverContainer = overContainer === overId;
+      
+      if (isOverContainer) {
+        newOverTickets.push(task);
+      } else {
+        const overIndex = overSection.tickets.findIndex(t => String(t.id || t._id) === overId);
+        newOverTickets.splice(overIndex >= 0 ? overIndex : newOverTickets.length, 0, task);
+      }
+
+      return prev.map(s => {
+        if (s.id === activeContainer) return { ...s, tickets: newActiveTickets };
+        if (s.id === overContainer) return { ...s, tickets: newOverTickets };
+        return s;
+      });
+    });
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveBacklogTask(null);
+
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainerId(activeId);
+    const overContainer = findContainerId(overId);
+
+    if (!activeContainer || !overContainer) return;
+
+    // Handle same container reorder
+    if (activeContainer === overContainer) {
+      if (activeId !== overId) {
+        setInternalBacklogSections((prev) => {
+          const section = prev.find(s => s.id === activeContainer);
+          const oldIndex = section.tickets.findIndex(t => String(t.id || t._id) === activeId);
+          const newIndex = section.tickets.findIndex(t => String(t.id || t._id) === overId);
+          
+          const newTickets = arrayMove(section.tickets, oldIndex, newIndex);
+          return prev.map(s => (s.id === activeContainer ? { ...s, tickets: newTickets } : s));
+        });
+      }
+      return;
+    }
+
+    // Cross container move
+    const isMovingToSprint = overContainer === 'active-sprint';
+    const updatePayload = isMovingToSprint 
+      ? { sprint: currentProjectSprintId, backlogId: null }
+      : { sprint: null, backlogId: overContainer };
+
+    console.log(`Finalizing move for task ${activeId} to ${overContainer}`, updatePayload);
+
+    if (isMovingToSprint) {
+      const firstCol = sprintColumns?.[0]; 
+      const statusKeys = firstCol?.statusKeys || [];
+
+      if (statusKeys.length > 1) {
+        setStatusSelectionModal({
+          taskId: activeId,
+          payload: updatePayload,
+          statusKeys
+        });
+        return;
+      } else {
+        const selectedStatus = statusKeys[0] || 'To Do';
+        dispatch(updateTicket(activeId, { ...updatePayload, status: selectedStatus })).then(() => {
+          dispatch(getCurrentProjectSprintWorkActions(projectId));
+          dispatch(getProjectBacklogAction(projectId));
+        });
+        return;
+      }
+    }
+
+    dispatch(updateTicket(activeId, updatePayload)).then(() => {
+      dispatch(getCurrentProjectSprintWorkActions(projectId));
+      dispatch(getProjectBacklogAction(projectId));
+    });
+  };
+
+  const handleStatusSelect = (status) => {
+    if (statusSelectionModal) {
+      const { taskId, payload } = statusSelectionModal;
+      console.log(`Finalizing move for task ${taskId} with status ${status}`);
+      dispatch(updateTicket(taskId, { ...payload, status })).then(() => {
+        dispatch(getCurrentProjectSprintWorkActions(projectId));
+        dispatch(getProjectBacklogAction(projectId));
+      });
+      setStatusSelectionModal(null);
+    }
+  };
+
+  const measuringConfig = {
+    droppable: { strategy: MeasuringStrategy.Always },
+  };
+
+  const openCreate = () => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true });
+
+  // ── Loading ───────────────────────────────────────────────────────────────
+  if (sprintLoading && projectBoard.length === 0) {
+    return (
+      <div className="pb-page pb-page--loading">
+        <div className="pb-loader">
+          <div className="pb-loader__ring" />
+          <span>Loading project…</span>
+        </div>
+      </div>
+    );
+  }
+
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  return (
+    <div className="pb-page">
+
+      {/* ══ HEADER ══════════════════════════════════════════════════════════ */}
+      <header className="pb-header">
+        <div className="pb-header__left">
+          <nav className="pb-breadcrumb" aria-label="breadcrumb" style={{textAlign:"center",display:"flex",alignItems:"center",justifyContent:"center",gap:"10px",cursor:"pointer"}}>
+             <ArrowLeft size={24} onClick={() => navigate(`/workspace/${projectId}/insight`)}/> 
+            <span
+              className="pb-breadcrumb__item pb-breadcrumb__item--link"
+              onClick={() => navigate('/projects')}
+            >
+            Projects
+            </span>
+            <span className="pb-breadcrumb__sep" aria-hidden="true">/</span>
+            <span className="pb-breadcrumb__item pb-breadcrumb__item--active">
+              Project Board
+            </span>
+          </nav>
+
+          <h1 className="pb-page-title">
+            {TABS.find((t) => t.id === activeTab)?.label ?? 'Backlog'}
+          </h1>
+        </div>
+
+        <div className="pb-header__right">
+          <button className="pb-btn pb-btn--outline" onClick={() => {}}>
+            <Filter size={14} />
+            Filter
+          </button>
+          <button className="pb-btn pb-btn--primary" onClick={openCreate}>
+            <Plus size={14} />
+            New Issue
+          </button>
+        </div>
+      </header>
+
+      {/* ══ TABS ════════════════════════════════════════════════════════════ */}
+      <nav className="pb-tabs" role="tablist">
+        {TABS.map(({ id, label }) => (
+          <button
+            key={id}
+            role="tab"
+            aria-selected={activeTab === id}
+            className={`pb-tabs__btn${activeTab === id ? ' pb-tabs__btn--active' : ''}`}
+            onClick={() => setSearchParams({ tab: id })}
+          >
+            {/* <Icon size={14} strokeWidth={2} /> */}
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      {/* ══ BACKLOG ══════════════════════════════════════════════════════════ */}
+      {activeTab === 'Backlog' && (
+        <div className="pb-backlog">
+
+          {/* Toolbar */}
+          <div className="pb-toolbar">
+            {/* Search */}
+            <label className="pb-search">
+              <Search size={14} className="pb-search__icon" aria-hidden="true" />
+              <input
+                type="text"
+                placeholder="Search issues…"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pb-search__input"
+              />
+            </label>
+
+            {/* Priority pills */}
+            <div className="pb-pills" role="group" aria-label="Priority filter">
+              {PRIORITY_FILTERS.map((p) => (
+                <button
+                  key={p}
+                  className={`pb-pill${priorityFilter === p ? ' pb-pill--active' : ''}`}
+                  onClick={() => setPriorityFilter(p)}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+
+            <button className="pb-btn pb-btn--primary" onClick={openCreate}>
+              <Plus size={14} />
+              Create Issue
+            </button>
+          </div>
+
+          {/* Stats */}
+          <div className="pb-stats">
+            {stats.map((s) => (
+              <div key={s.label} className={`pb-stat pb-stat--${s.color}`}>
+                <span className="pb-stat__value">{s.value}</span>
+                <span className="pb-stat__label">{s.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            measuring={measuringConfig}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            {internalBacklogSections.map((section) => (
+              <ExpandableTaskList
+                key={section.id}
+                id={section.id}
+                title={section.title}
+                tasks={section.tickets}
+                isCollapsed={collapsed[section.id]}
+                onToggle={() => toggleGroup(section.id)}
+                onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+                onAddClick={openCreate}
+                bugCount={section.bugCount}
+              />
+            ))}
+
+            <DragOverlay>
+              {activeBacklogTask ? (
+                <div 
+                  className="pb-backlog-item-overlay" 
+                  style={{ 
+                    padding: '8px 12px', 
+                    background: 'white', 
+                    border: '1px solid #ddd', 
+                    borderRadius: '4px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    width: '300px'
+                  }}
+                >
+                  <div style={{ fontWeight: '600', fontSize: '12px', color: '#666' }}>{activeBacklogTask.ticketKey}</div>
+                  <div style={{ fontSize: '14px', marginTop: '4px' }}>{activeBacklogTask.title}</div>
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+        
+      )}
+
+      {/* ══ SPRINT BOARD ════════════════════════════════════════════════════ */}
+      {activeTab === 'Sprint Board' && (
+        <div className="pb-sprint">
+          <KanbanBoard
+            columns={kanbanColumns}
+            onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+            onAddTask={openCreate}
+            onTaskMove={handleTaskMove}
+          />
+        </div>
+      )}
+
+      {/* ══ ANALYTICS ════════════════════════════════════════════════════════ */}
+      {activeTab === 'Analytics' && (
+        <div className="pb-analytics-placeholder">
+          <div className="pb-analytics-placeholder__icon">
+            <BarChart3 size={36} />
+          </div>
+          <h3 className="pb-analytics-placeholder__title">Sprint Analytics</h3>
+          <p className="pb-analytics-placeholder__body">
+            Powerful insights are coming soon — velocity charts, burndown diagrams,
+            and member performance metrics.
+          </p>
+        </div>
+      )}
+
+      {/* Status Selection Modal for Backlog -> Sprint moves */}
+      {statusSelectionModal && (
+        <div className="status-selection-overlay" onClick={() => setStatusSelectionModal(null)}>
+          <div className="status-selection-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="status-selection-modal__header">
+              <h3>Select Sprint Status</h3>
+              <p>Moving to sprint requires a starting status:</p>
+            </div>
+            <div className="status-selection-modal__options">
+              {statusSelectionModal.statusKeys.map((status) => (
+                <button
+                  key={status}
+                  className="status-option-btn"
+                  onClick={() => handleStatusSelect(status)}
+                >
+                  <span className="status-dot" />
+                  {status.replace(/_/g, ' ')}
+                </button>
+              ))}
+            </div>
+            <div className="status-selection-modal__footer">
+              <button className="cancel-btn" onClick={() => setStatusSelectionModal(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProjectBoardPage;

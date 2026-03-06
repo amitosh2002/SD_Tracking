@@ -556,15 +556,15 @@ $red: #ef4444;
 // ============================================================================
 // KANBAN BOARD
 // ============================================================================
-.kanban-board {
-  display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    align-items: flex-start;
-}
+// .kanban-board {
+//   display: flex;
+//     flex-wrap: wrap;
+//     gap: 20px;
+//     align-items: flex-start;
+// }
 
 .kanban-column {
-  background: $gray-100;
+  // background: $gray-50;
   border-radius: 8px;
   padding: 16px;
   flex: 1;

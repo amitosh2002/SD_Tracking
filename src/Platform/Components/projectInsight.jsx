@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../utils/axiosConfig';
 import { projectInsightApi } from '../../Api/Plat/projectApi';
@@ -23,9 +23,27 @@ import {
   ChevronRight,
   CircuitBoard
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  MeasuringStrategy,
+} from '@dnd-kit/core';
+import {
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
 import './styles/ProjectInsight.scss';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useDispatch } from 'react-redux';
+import KanbanBoard from '../../customFiles/customComponent/sprintComponents/KanbanBoard';
+import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
+import { changeTicketStatus } from '../../Redux/Actions/TicketActions/ticketAction';
+import StatusSelectPopup from '../Popups/StatusSelectPopup';
+
 
 export default function ProjectInsight() {
   const { projectId } = useParams();
@@ -38,6 +56,14 @@ export default function ProjectInsight() {
     users: [],
     project: null
   });
+  const [statusPopupConfig, setStatusPopupConfig] = useState({
+    isOpen: false,
+    statusList: [],
+    ticketId: null,
+    ticketIdentifier: '',
+    destinationColumnId: null
+  });
+  const [activeTask, setActiveTask] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -100,31 +126,24 @@ export default function ProjectInsight() {
     return '#6b7280';
   };
 
-  const totalTasks = Object.values(insightData.taskStatusOverview || {}).reduce((a, b) => (a || 0) + (b || 0), 0);
-  const statusBreakdown = Object.entries(insightData.taskStatusOverview || {}).map(([status, count]) => ({
+  const totalTasks = useMemo(() => Object.values(insightData.taskStatusOverview || {}).reduce((a, b) => (a || 0) + (b || 0), 0), [insightData.taskStatusOverview]);
+  
+  const statusBreakdown = useMemo(() => Object.entries(insightData.taskStatusOverview || {}).map(([status, count]) => ({
     status,
     color: getColorByStatus(status),
     percentage: totalTasks > 0 ? Math.round(((count || 0) / totalTasks) * 100) : 0,
     tasks: count || 0
-  }));
+  })), [insightData.taskStatusOverview, totalTasks]);
 
-  const getPriorityFlag = (priority, color) => {
-    return (
-      <div 
-        className="priority-indicator" 
-        style={{ backgroundColor: color || '#6b7280' }}
-        title={priority}
-      />
-    );
-  };
 
-  const kanbanColumns = (insightData.projectBoard || []).map((col, index) => ({
-    id: col.columnId || `col-${index}`,
+  const kanbanColumns = useMemo(() => (insightData.projectBoard || []).map((col, index) => ({
+    id: col.columnId || col.id || `col-${index}`,
     title: col.name,
     count: (col.tickets || []).length,
     color: col.color || getColorByStatus(col.name),
     tasks: (col.tickets || []).map(ticket => ({
-      id: ticket.ticketKey,
+      id: ticket.id || ticket._id,
+      ticketKey: ticket.ticketKey,
       title: ticket.title,
       project: (ticket.ticketKey || "").split('-')[0], // Extract prefix as project name fallback
       dueDate: ticket.eta ? new Date(ticket.eta).toLocaleDateString() : 'No date',
@@ -139,21 +158,23 @@ export default function ProjectInsight() {
         name: ticket.assignee ? ticket.assignee.split(' ').map(n => n[0]).join('') : 'UN', 
         image: ticket.assigneeImage || null 
       },
-      fullAssignee: ticket.assignee
+      fullAssignee: ticket.assignee,
+      ticketId: ticket.id || ticket._id,
+      status: ticket.status || col.name
     }))
-  }));
+  })), [insightData.projectBoard]);
 
   // Get current week dates (next 7 days starting from today)
-  const currentWeek = Array.from({ length: 7 }, (_, i) => {
+  const currentWeek = useMemo(() => Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
     return {
       full: d.toISOString().split('T')[0],
       display: d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
     };
-  });
+  }), []);
 
-  const calendarEvents = insightData.projectBoard.flatMap(col => 
+  const calendarEvents = useMemo(() => insightData.projectBoard.flatMap(col => 
     col.tickets.filter(t => t.eta).map(ticket => {
       const ticketDate = new Date(ticket.eta).toISOString().split('T')[0];
       const weekDay = currentWeek.find(d => d.full === ticketDate);
@@ -164,10 +185,108 @@ export default function ProjectInsight() {
         date: weekDay.display,
         dateIndex: currentWeek.indexOf(weekDay),
         title: ticket.title,
-        color: col.color || getColorByStatus(ticket.status)
+        color: col.color || getColorByStatus(ticket.status),
+        ticketId: ticket.id || ticket._id
       };
     }).filter(Boolean)
+  ), [insightData.projectBoard, currentWeek]);
+
+  const applyStatusUpdate = (ticketId, newStatus, destinationColumnId) => {
+    dispatch(changeTicketStatus(ticketId, newStatus));
+    
+    setInsightData(prev => {
+      const newBoard = [...prev.projectBoard];
+      let movedTicket = null;
+
+      newBoard.forEach(col => {
+        const index = col.tickets?.findIndex(t => (t._id || t.id) === ticketId);
+        if (index !== -1 && index !== undefined) {
+          movedTicket = { ...col.tickets[index], status: newStatus };
+          col.tickets.splice(index, 1);
+        }
+      });
+
+      if (movedTicket) {
+        const destCol = newBoard.find((col, index) => (col.columnId || col.id || `col-${index}`) === destinationColumnId);
+        if (destCol) {
+          if (!destCol.tickets) destCol.tickets = [];
+          destCol.tickets.unshift(movedTicket);
+        }
+      }
+
+      return { ...prev, projectBoard: newBoard };
+    });
+  };
+
+  const handleTaskMove = ({ destinationColumnId, active }) => {
+    const taskData = active.data.current?.task;
+    const realTicketId = taskData?.ticketId || taskData?._id;
+    
+    const targetColumn = insightData.projectBoard.find((col, index) => (col.columnId || col.id || `col-${index}`) === destinationColumnId);
+    if (!targetColumn || !realTicketId) return;
+    
+    if (targetColumn.statusKeys && targetColumn.statusKeys.length > 1) {
+      setStatusPopupConfig({
+        isOpen: true,
+        statusList: targetColumn.statusKeys,
+        ticketId: realTicketId,
+        ticketIdentifier: taskData?.ticketKey || taskData?.title || 'task',
+        destinationColumnId
+      });
+      return;
+    }
+    
+    const newStatus = targetColumn.statusKeys?.[0] || targetColumn.name;
+    
+    if (newStatus) {
+      applyStatusUpdate(realTicketId, newStatus, destinationColumnId);
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
+
+  const findContainer = (id) => {
+    const sId = String(id);
+    if (kanbanColumns.some(col => String(col.id) === sId)) return sId;
+    const col = kanbanColumns.find(c => c.tasks.some(t => String(t.id) === sId));
+    return col ? col.id : null;
+  };
+
+  const handleDragStart = (event) => {
+    const task = event.active.data.current?.task;
+    if (task) setActiveTask(task);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveTask(null);
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainer(activeId);
+    const overContainer = findContainer(overId);
+
+    if (!activeContainer || !overContainer) return;
+    if (activeContainer === overContainer) return;
+
+    handleTaskMove({ destinationColumnId: overContainer, active });
+  };
+
+  const measuringConfig = {
+    droppable: { strategy: MeasuringStrategy.Always },
+  };
+
+  const handleStatusSelect = (selectedStatus) => {
+    if (statusPopupConfig.ticketId && statusPopupConfig.destinationColumnId) {
+      applyStatusUpdate(statusPopupConfig.ticketId, selectedStatus, statusPopupConfig.destinationColumnId);
+    }
+    setStatusPopupConfig(prev => ({ ...prev, isOpen: false }));
+  };
 
   if (loading) {
     return (
@@ -197,7 +316,7 @@ export default function ProjectInsight() {
 
 
         <div className="dashboard-header__right">
-          <button className="btn btn--secondary" onClick={()=>navigate(`/projects/${projectId}/tasks`)}>
+          <button className="btn btn--secondary" onClick={()=>navigate(`/workspace/${projectId}/board`)}>
             <CircuitBoard size={18} />
             Board
           </button>
@@ -352,8 +471,10 @@ export default function ProjectInsight() {
                 className="timeline-event"
                 style={{ 
                   gridColumnStart: event.dateIndex + 1,
-                  backgroundColor: event.color
+                  backgroundColor: event.color,
+                  cursor: 'pointer'
                 }}
+                onClick={() => navigate(`/tickets/${event.ticketId}`)}
               >
                 <span className="event-date">{event.date}</span>
                 <span className="event-title">{event.title}</span>
@@ -405,175 +526,63 @@ export default function ProjectInsight() {
       {/* Kanban Board */}
       {/* Task Content */}
       {viewMode === 'kanban' ? (
-        <div className="kanban-board">
-          {kanbanColumns.map((column) => (
-            <div key={column.id} className="kanban-column">
-              <div className="column-header">
-                <div className="column-title">
-                  <div className="column-indicator" style={{ backgroundColor: column.color }}></div>
-                  <span className="column-count">{column.count}</span>
-                  <span className="column-name">{column.title}</span>
-                </div>
-                <button className="btn-icon">
-                  <Plus size={18} />
-                </button>
-              </div>
-
-              <div className="column-tasks">
-                {column.tasks.map((task) => (
-                  <div key={task.id} className="task-card">
-                    <div className="task-card__header">
-                      <Clock size={14} />
-                      <span className="task-due">Due: {task.dueDate}</span>
-                      <button className="btn-icon">
-                        <MoreHorizontal size={16} />
-                      </button>
-                    </div>
-
-                    <h4 className="task-title">
-                      <span className="task-flag">{getPriorityFlag(task.priority, task.priorityColor)}</span>
-                      {task.id}
-                    </h4>
-                    <div className="task-info">
-                      <p className="task-project">
-                      {task.title}
-                        
-                        </p>
-                      {task.labels && task.labels.length > 0 && (
-                        <div className="task-labels">
-                          {task.labels.map((label, i) => (
-                            <span 
-                              key={i} 
-                              className="label-badge" 
-                              style={{ backgroundColor: `${label.color}20`, color: label.color, borderColor: label.color }}
-                            >
-                              {label.name}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {task.progress > 0 && (
-                      <div className="task-progress">
-                        <div className="progress-label">
-                          <span>Progress</span>
-                          <span>{task.progress}%</span>
-                        </div>
-                        <div className="progress-bar">
-                          <div 
-                            className="progress-fill" 
-                            style={{ width: `${task.progress}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="task-card__footer">
-                      <div className="task-assignee">
-                        <div className="avatar">
-                          {task.assignee.image ? (
-                            <img src={task.assignee.image} alt={task.fullAssignee || 'Unassigned'} />
-                          ) : (
-                            task.assignee.name || 'UN'
-                          )}
-                        </div>
-                        <span className="assignee-name">{task.fullAssignee || 'Unassigned'}</span>
-                      </div>
-                      <div className="task-meta">
-                        {task.attachments > 0 && (
-                          <span className="meta-item">
-                            <Paperclip size={14} />
-                            {task.attachments}
-                          </span>
-                        )}
-                        {task.comments > 0 && (
-                          <span className="meta-item">
-                            <MessageSquare size={14} />
-                            {task.comments}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <KanbanBoard 
+          columns={kanbanColumns}
+          onTaskClick={(task) => navigate(`/tickets/${task.ticketId || task.id}`)}
+          onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
+          onTaskMove={handleTaskMove}
+        />
       ) : viewMode === 'table' ? (
-        <div className="table-view">
-          <div className="task-list">
-            <div className="task-header">
-              <div className="header-cell th-toggle"></div>
-              <div className="header-cell th-id">Task ID</div>
-              <div className="header-cell th-title">Title</div>
-              <div className="header-cell th-status">Status</div>
-              <div className="header-cell th-assignee">Assignee</div>
-              <div className="header-cell th-priority">Priority</div>
-              <div className="header-cell th-date">Due Date</div>
-            </div>
-
+        <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            measuring={measuringConfig}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
             {kanbanColumns.map((column) => (
-              <div key={column.id} className={`task-group ${collapsedGroups[column.title] ? 'collapsed' : ''}`}>
-                <div 
-                  className="group-header" 
-                  onClick={() => toggleGroup(column.title)}
-                  style={{ borderLeft: `4px solid ${column.color}` }}
-                >
-                  <div className="task-cell th-toggle">
-                    {collapsedGroups[column.title] ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-                  </div>
-                  <div className="group-info-cell">
-                    <span className="group-name">{column.title}</span>
-                    <span className="group-count">{column.count} tasks</span>
-                  </div>
-                </div>
-
-                {!collapsedGroups[column.title] && column.tasks.map((task) => (
-                  <div key={task.id} className="task-row">
-                    <div className="task-cell th-toggle"></div>
-                    <div className="task-cell task-key-cell">
-                      <span className="key-badge">{task.id}</span>
-                    </div>
-                    <div className="task-cell task-title-cell">
-                      <div className="title-wrapper">
-                        {getPriorityFlag(task.priority, task.priorityColor)}
-                        <span className="task-title-text">{task.title}</span>
-                      </div>
-                    </div>
-                    <div className="task-cell task-status-cell">
-                      <div className="status-cell-wrapper">
-                        <div className="dot" style={{ backgroundColor: column.color }}></div>
-                        {column.title}
-                      </div>
-                    </div>
-                    <div className="task-cell task-assignee-cell">
-                      <div className="assignee-cell-wrapper">
-                        <div className="mini-avatar">
-                          {task.assignee.image ? <img src={task.assignee.image} alt="" /> : task.assignee.name}
-                        </div>
-                        <span className="assignee-name">{task.fullAssignee || 'Unassigned'}</span>
-                      </div>
-                    </div>
-                    <div className="task-cell task-priority-cell">
-                      <span 
-                        className="priority-tag" 
-                        style={{ color: task.priorityColor, backgroundColor: `${task.priorityColor}15` }}
-                      >
-                        {task.priority || 'Medium'}
-                      </span>
-                    </div>
-                    <div className="task-cell task-date-cell">{task.dueDate}</div>
-                  </div>
-                ))}
-              </div>
+              <ExpandableTaskList
+                key={column.id}
+                id={column.id}
+                title={column.title}
+                tasks={column.tasks}
+                isCollapsed={collapsedGroups[column.title]}
+                onToggle={() => toggleGroup(column.title)}
+                onTaskClick={(task) => navigate(`/tickets/${task.ticketId || task.id}`)}
+                bugCount={column.tasks.filter(t => 
+                  (t.labels || []).some(l => (typeof l === 'string' ? l : l.name).toLowerCase().includes('bug'))
+                ).length}
+              />
             ))}
-          </div>
+            <DragOverlay>
+              {activeTask ? (
+                <table style={{ width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <tbody>
+                    <tr className="pb-table__row is-overlay">
+                      <td className="pb-table__col-drag" style={{ width: '40px' }}></td>
+                      <td className="pb-table__col-id" style={{ width: '100px' }}>{activeTask.ticketKey}</td>
+                      <td className="pb-table__col-title">{activeTask.title}</td>
+                      <td className="pb-table__col-priority">{activeTask.priority}</td>
+                      <td className="pb-table__col-status">{activeTask.status}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         </div>
       ) : (
         <div className="timeline-empty">Timeline view coming soon...</div>
       )}
+
+      <StatusSelectPopup 
+        isOpen={statusPopupConfig.isOpen}
+        onClose={() => setStatusPopupConfig(prev => ({ ...prev, isOpen: false }))}
+        statusList={statusPopupConfig.statusList}
+        ticketIdentifier={statusPopupConfig.ticketIdentifier}
+        onSelect={handleStatusSelect}
+      />
     </div>
   );
 }

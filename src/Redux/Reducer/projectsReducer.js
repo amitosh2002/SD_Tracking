@@ -16,6 +16,9 @@ const initialState = {
   projectMembers: [],
   loadingProjectMembers: false,
   errorProjectMembers: false,
+  projectBacklog: null,
+  loadingProjectBacklog: false,
+  errorProjectBacklog: false,
 };
 
 const projectsReducer = createReducer(initialState, (builder) => {
@@ -88,6 +91,22 @@ const projectsReducer = createReducer(initialState, (builder) => {
     .addCase(PROJECT_MEMBERS_ERROR, (state) => {
       state.loadingProjectMembers = false;
       state.errorProjectMembers = true;
+    })
+    .addCase("GET_ALL_HORA_SERVICE_LOADING", (state) => {
+      state.loadingProjectBacklog = true;
+      state.errorProjectBacklog = false;
+    })
+    .addCase("GET_ALL_HORA_SERVICE_SUCCESS", (state, action) => {
+      state.loadingProjectBacklog = false;
+      state.projectBacklog = action.payload;
+      state.errorProjectBacklog = false;
+    })
+    .addCase("GET_ALL_HORA_SERVICE_ERROR", (state) => {
+      state.loadingProjectBacklog = false;
+      state.errorProjectBacklog = true;
+    })
+    .addCase("GET_ALL_HORA_SERVICE_LOADING_STOP", (state) => {
+      state.loadingProjectBacklog = false;
     });
 });
 

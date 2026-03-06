@@ -1,0 +1,477 @@
+@use "sass:color";
+
+// ── Palette ──────────────────────────────────────────────────────────────────
+$white:          #ffffff;
+$bg-page:        #F4F5F7;       // very light warm grey page
+$bg-surface:     #ffffff;
+$bg-raised:      #F8F9FB;       // table headers, group header bg
+$bg-hover:       #F0F2F5;
+$bg-muted:       #E9ECEF;       // chips, pts badges
+
+$border-subtle:  #EEF0F3;
+$border-base:    #E2E5EA;
+$border-strong:  #CDD2D9;
+
+$text-900:       #111318;       // heaviest headings
+$text-700:       #2D3340;       // body
+$text-500:       #5B6374;       // secondary / labels
+$text-300:       #9AA3B0;       // placeholders / disabled
+$text-white:     #ffffff;
+
+// Accent — single, controlled
+$accent:         #3D6BE4;
+$accent-100:     #EBF0FD;
+$accent-700:     #2D55C7;
+
+// Status colours — used only for badges & stats
+$c-red:          #DC3545;  $c-red-100:    #FFF0F0;
+$c-amber:        #D97706;  $c-amber-100:  #FFF7E6;
+$c-green:        #1E8A45;  $c-green-100:  #EDFBF2;
+$c-teal:         #0B7285;  $c-teal-100:   #E0F8FC;
+$c-orange:       #C45213;  $c-orange-100: #FFF2EB;
+
+// ── Shadows ───────────────────────────────────────────────────────────────────
+$shadow-xs:  0 1px 2px  rgba(0,0,0,0.05);
+$shadow-sm:  0 1px 4px  rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+$shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+
+// ── Typography ────────────────────────────────────────────────────────────────
+$font:        'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+$font-mono:   'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+// ── Radius ────────────────────────────────────────────────────────────────────
+$r-sm:   6px;
+$r-md:   8px;
+$r-lg:   10px;
+$r-pill: 999px;
+
+// ── Easing ────────────────────────────────────────────────────────────────────
+$ease:      cubic-bezier(0.4, 0, 0.2, 1);
+$t-fast:    120ms $ease;
+$t-base:    200ms $ease;
+
+
+// ============================================================================
+//  RESPONSIVE HELPERS
+// ============================================================================
+@media (max-width: 820px)  { .pb-hide-md { display: none !important; } }
+@media (max-width: 640px)  { .pb-hide-sm { display: none !important; } }
+
+
+// ============================================================================
+//  PAGE SHELL
+// ============================================================================
+.pb-page {
+  min-height: 100vh;
+//   background: $bg-page;
+  font-family: $font;
+  color: $text-700;
+
+  // ── Loading state
+  &--loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+}
+
+// Spinner
+.pb-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-300;
+
+  &__ring {
+    width: 32px;
+    height: 32px;
+    border: 3px solid $border-base;
+    border-top-color: $accent;
+    border-radius: 50%;
+    animation: pb-spin 0.65s linear infinite;
+  }
+}
+
+@keyframes pb-spin { to { transform: rotate(360deg); } }
+
+
+// ============================================================================
+//  HEADER
+// ============================================================================
+.pb-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 18px 28px 0;
+  background: $bg-surface;
+  border-bottom: 1px solid $border-subtle;
+
+  // Wrap on small screens
+  @media (max-width: 600px) {
+    flex-wrap: wrap;
+    padding: 14px 16px 0;
+  }
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 18px;
+
+    @media (max-width: 600px) {
+      padding-bottom: 14px;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+}
+
+// Breadcrumb
+.pb-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  line-height: 1;
+
+  &__item {
+    color: $text-300;
+
+    &--link {
+      cursor: pointer;
+      transition: color $t-fast;
+      &:hover { color: $accent; }
+    }
+
+    &--active {
+      color: $accent;
+      font-weight: 600;
+    }
+  }
+
+  &__sep { color: $border-strong; }
+}
+
+// Page title
+.pb-page-title {
+  margin: 0 0 18px;
+  font-size: 21px;
+  font-weight: 800;
+  color: $text-900;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+
+// ============================================================================
+//  BUTTONS
+// ============================================================================
+.pb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 15px;
+  border-radius: $r-md;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: $font;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background $t-fast, transform $t-fast, box-shadow $t-fast, border-color $t-fast;
+
+  // Primary — accent fill
+  &--primary {
+    background: $accent;
+    color: $text-white;
+    box-shadow: $shadow-xs;
+
+    &:hover {
+      background: $accent-700;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba($accent, 0.28);
+    }
+
+    &:active { transform: none; }
+  }
+
+  // Outline — subtle border
+  &--outline {
+    background: $bg-surface;
+    color: $text-500;
+    border: 1px solid $border-base;
+    box-shadow: $shadow-xs;
+
+    &:hover {
+      background: $bg-hover;
+      border-color: $border-strong;
+      color: $text-700;
+    }
+  }
+}
+
+
+// ============================================================================
+//  TAB BAR
+// ============================================================================
+.pb-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  padding: 0 28px;
+  background: $bg-surface;
+  border-bottom: 1px solid $border-base;
+
+  @media (max-width: 600px) { padding: 0 16px; }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: $font;
+    color: $text-300;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    margin-bottom: -1px;        // overlap parent border
+    transition: color $t-fast, border-color $t-fast;
+
+    svg { flex-shrink: 0; opacity: 0.7; transition: opacity $t-fast; }
+
+    &:hover {
+      color: $text-500;
+      svg { opacity: 0.9; }
+    }
+
+    // Active state
+    &--active {
+      color: $accent;
+      font-weight: 700;
+      border-bottom-color: $accent;
+
+      svg { opacity: 1; }
+    }
+  }
+}
+
+
+// ============================================================================
+//  BACKLOG TAB
+// ============================================================================
+.pb-backlog {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 28px 32px;
+
+  @media (max-width: 600px) { padding: 14px 16px 24px; gap: 12px; }
+}
+
+// ── Toolbar ───────────────────────────────────────────────────────────────────
+.pb-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// Search
+.pb-search {
+  position: relative;
+  flex: 1 1 180px;
+  min-width: 150px;
+
+  &__icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-300;
+    pointer-events: none;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 7px 12px 7px 32px;
+    border: 1px solid $border-base;
+    border-radius: $r-md;
+    font-size: 13px;
+    font-family: $font;
+    color: $text-700;
+    background: $bg-surface;
+    outline: none;
+    transition: border-color $t-fast, box-shadow $t-fast;
+
+    &::placeholder { color: $text-300; }
+
+    &:focus {
+      border-color: $accent;
+      box-shadow: 0 0 0 3px rgba($accent, 0.12);
+    }
+  }
+}
+
+// Priority pills
+.pb-pills {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) { display: none; }   // collapse on tiny screens
+}
+
+.pb-pill {
+  padding: 6px 13px;
+  border-radius: $r-md;
+  border: 1px solid $border-base;
+  background: $bg-surface;
+  color: $text-500;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: $font;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background $t-fast, border-color $t-fast, color $t-fast;
+
+  &:hover {
+    background: $bg-hover;
+    border-color: $border-strong;
+  }
+
+  &--active {
+    background: $accent-100;
+    border-color: $accent;
+    color: $accent;
+    font-weight: 700;
+  }
+}
+
+
+// ── Stats row ─────────────────────────────────────────────────────────────────
+.pb-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+
+  @media (max-width: 860px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 420px) { grid-template-columns: 1fr 1fr; }
+}
+
+.pb-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: $bg-surface;
+  border: 1px solid $border-subtle;
+  border-radius: $r-lg;
+  box-shadow: $shadow-xs;
+  transition: box-shadow $t-base, transform $t-base;
+
+  &:hover {
+    box-shadow: $shadow-sm;
+    transform: translateY(-1px);
+  }
+
+  &__value {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: 700;
+    color: $text-300;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  // Colour tokens
+  &--blue  .pb-stat__value { color: $accent;   }
+  &--teal  .pb-stat__value { color: $c-teal;   }
+  &--red   .pb-stat__value { color: $c-red;    }
+  &--amber .pb-stat__value { color: $c-amber;  }
+}
+
+
+
+// ── Sprint Board (external Kanban component) ──────────────────────────────────
+.pb-sprint {
+  padding: 20px 28px 32px;
+
+  @media (max-width: 600px) { padding: 14px 16px 24px; }
+}
+
+
+// ============================================================================
+//  ANALYTICS PLACEHOLDER
+// ============================================================================
+.pb-analytics-placeholder {
+  margin: 20px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 40px;
+  background: $bg-surface;
+  border: 1px solid $border-base;
+  border-radius: $r-lg;
+  box-shadow: $shadow-xs;
+
+  @media (max-width: 600px) { margin: 14px 16px; padding: 48px 24px; }
+
+  &__icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: $accent-100;
+    color: $accent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    margin: 0 0 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: $text-900;
+    letter-spacing: -0.01em;
+  }
+
+  &__body {
+    margin: 0;
+    font-size: 13px;
+    color: $text-300;
+    line-height: 1.65;
+    max-width: 360px;
+  }
+}
+
+
+// ============================================================================
+//  RESPONSIVE (remaining edge cases)
+// ============================================================================
+@media (max-width: 480px) {
+  .pb-page-title { font-size: 18px; }
+  .pb-stat__value { font-size: 24px; }
+  .pb-toolbar { gap: 6px; }
+}

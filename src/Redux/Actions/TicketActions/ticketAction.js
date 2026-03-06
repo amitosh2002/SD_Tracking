@@ -111,24 +111,29 @@ export const assignTaskApi = (taskId, userId) => async (dispatch) => {
 
 // change the status for ticket
 export const changeTicketStatus = (ticketId, status) => async (dispatch) => {
-    
+    // Optimistic Update: Dispatch immediately
+    dispatch({
+        type: UPDATE_TICKET_STATUS,
+        payload: {
+            ticketId: ticketId,
+            status: status
+        }
+    });
+
     try {
         await apiClient.post(`${ticketStatusurl}/${ticketId}/status`, {
             status
         });
-
-        
-        // Dispatch success action to update Redux state
-        dispatch({
-            type: UPDATE_TICKET_STATUS,
-            payload: {
-                ticketId: ticketId,
-                status: status
-            }
-        });
-
+        // Success - no further action needed as we already updated state
     } catch (error) {
         console.error("Error updating ticket status:", error.response?.data || error.message);
+        dispatch({
+            type: SHOW_SNACKBAR,
+            payload: {
+                message: "Failed to update status on server. Please refresh.",
+                type: "error"
+            }
+        });
     }
 };
 
