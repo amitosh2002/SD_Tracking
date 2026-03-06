@@ -139,6 +139,8 @@ const IssueDetails = ({ task }) => {
         dispatch(getProjectBacklogAction(selectedTicket.projectId));
     }, [dispatch, selectedTicket?.projectId]);
 
+    const backlogSections = useMemo(() => projectBacklog?.backlogData || [], [projectBacklog]);
+
     useEffect(() => {
         if (!ticketSprint) return;
         const refined = refactorSprintData(ticketSprint);
@@ -189,7 +191,7 @@ const IssueDetails = ({ task }) => {
         if (!selectedTicket?._id) return;
 
         const isSprintSelected = sprints.some(s => s.id === targetId);
-        const isBacklogSelected = projectBacklog?.some(b => b.id === targetId);
+        const isBacklogSelected = backlogSections.some(b => b.id === targetId);
 
         let payload = {};
         if (isSprintSelected) {
@@ -482,7 +484,11 @@ const IssueDetails = ({ task }) => {
                             </div>
                             <select 
                                 className="modern_inline_select"
-                                value={selectedTicket?.sprint || selectedTicket?.backlogId || ''}
+                                value={
+                                    (typeof selectedTicket?.sprint === 'object' ? selectedTicket.sprint?._id : selectedTicket?.sprint) || 
+                                    (typeof selectedTicket?.backlogId === 'object' ? selectedTicket.backlogId?._id : selectedTicket?.backlogId) || 
+                                    ''
+                                }
                                 onChange={handlePlacementChange}
                             >
                                 <option value="">Unassigned (No Backlog/Sprint)</option>
@@ -491,9 +497,9 @@ const IssueDetails = ({ task }) => {
                                         <option key={s.id} value={s.id}>{s.name} {s.status === 'active' ? '●' : ''}</option>
                                     ))}
                                 </optgroup>
-                                {projectBacklog && projectBacklog.length > 0 && (
+                                {backlogSections.length > 0 && (
                                     <optgroup label="Backlog Sections">
-                                        {projectBacklog.map(b => (
+                                        {backlogSections.map(b => (
                                             <option key={b.id} value={b.id}>{b.title}</option>
                                         ))}
                                     </optgroup>
