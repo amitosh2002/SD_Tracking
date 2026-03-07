@@ -1,36 +1,44 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import {
   Search,
-  SlidersHorizontal,
   LayoutList,
   LayoutGrid,
   Calendar as CalendarIcon,
   Plus,
-  ChevronUp,
-  ChevronDown,
-  ArrowUpDown,
-  MoreHorizontal,
-  ExternalLink,
-  Edit,
-  Trash2,
   Filter,
   X,
   Zap
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  MeasuringStrategy,
+} from '@dnd-kit/core';
+import {
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
 import './styles/SprintTaskList.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCurrentProjectSprintWorkActions } from '../../Redux/Actions/TicketActions/ticketAction';
+import { getCurrentProjectSprintWorkActions, changeTicketStatus } from '../../Redux/Actions/TicketActions/ticketAction';
 import { CustomDropDownV3 } from '../../customFiles/customComponent/DropDown';
 import { getAllProjects } from '../../Redux/Actions/PlatformActions.js/projectsActions';
 import FilterDropdown from '../WorksTicket/Components/FilterDropdown';
 import { OPEN_CREATE_TICKET_POPUP } from '../../Redux/Constants/ticketReducerConstants';
 import { useNavigate } from 'react-router-dom';
+import KanbanBoard from '../../customFiles/customComponent/sprintComponents/KanbanBoard';
+import ExpandableTaskList from '../../customFiles/customComponent/sprintComponents/ExpandableTaskList';
+
 
 const SprintTaskList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('list'); // list, kanban
   const [collapsedGroups, setCollapsedGroups] = useState({});
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [sortConfig] = useState({ key: null, direction: 'asc' });
   const [projectId, setProjectId] = useState('');
   const navigate = useNavigate();
   // Filter state
@@ -40,16 +48,18 @@ const SprintTaskList = () => {
     label: [],
     priority: []
   });
+  const [statusSelectionModal, setStatusSelectionModal] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
 
   const dispatch = useDispatch();
 
   const { 
-    currentProjectSprintWork, 
     currentProjectSprintName,
     totalSprintStoryPoints,
     sprintColumns,
     sprintFilters,
-    loading 
+    loading,
+    projectBoard
   } = useSelector((state) => state.worksTicket);
   
   const projects = useSelector((state) => state.projects.projects);
@@ -90,83 +100,66 @@ const SprintTaskList = () => {
     });
   }, [projectId]);
 
-  // Transform API data to match component structure
+  // Transform API data to match component structure by flattening kanban board
   const transformedTasks = useMemo(() => {
-    return (currentProjectSprintWork || []).map(ticket => {
-      // Extract initials from assignee name
-      const getInitials = (name) => {
-        if (!name || name === 'Unassigned') return 'UN';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      };
-
-      // Map status from API to display status based on project board columns
-      const mapStatus = (apiStatus) => {
-        if (sprintColumns && sprintColumns.length > 0) {
-          const normalizedApiStatus = (apiStatus || '').toUpperCase();
-          const column = sprintColumns.find(col => 
-            (col.statusKeys || []).some(k => k.toUpperCase() === normalizedApiStatus)
-          );
-          if (column) return column.name;
-        }
-
-        const statusMap = {
-          'BACKLOG': 'To Do',
-          'TODO': 'To Do',
-          'OPEN': 'To Do',
-          'IN_PROGRESS': 'In Progress',
-          'INPROGRESS': 'In Progress',
-          'IN_REVIEW': 'In Review',
-          'REVIEW': 'In Review',
-          'DONE': 'Done',
-          'COMPLETED': 'Done'
+    if (!Array.isArray(projectBoard)) return [];
+    
+    return projectBoard.flatMap(col => {
+      const colName = col.name || col.title || 'Unknown';
+      
+      return (col.tickets || col.tasks || []).map(ticket => {
+        // Extract initials from assignee name
+        const getInitials = (name) => {
+          if (!name || name === 'Unassigned') return 'UN';
+          return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         };
-        return statusMap[apiStatus] || 'To Do';
-      };
-
-      // Handle priority - can be array, string, or object
-      const getPriorityLabel = (ticket) => {
-        if (ticket.priorityName && ticket.priorityName !== "Unknown") return ticket.priorityName;
-        const p = ticket.priority;
-        if (p && typeof p === 'object' && !Array.isArray(p)) return p.name || 'Medium';
-        if (Array.isArray(p)) {
-          const first = p[0];
-          return (first && typeof first === 'object') ? first.name : (first || 'Medium');
-        }
-        return p || 'Medium';
-      };
-
-      // Handle labels - normalized to array of strings
-      const getLabelsArray = (ticket) => {
-        const l = ticket.labels || [];
-        const labelList = Array.isArray(l) ? l : [l];
-        return labelList.map(label => {
-          if (label && typeof label === 'object') return label.name;
-          return label;
-        }).filter(Boolean);
-      };
-
-      return {
-        id: ticket.ticketKey,
-        name: ticket.title,
-        assignee: {
-          name: ticket.assignee || 'Unassigned',
-          avatar: null,
-          initials: getInitials(ticket.assignee),
-          _id: ticket.assigneeId
-        },
-        project: ticket.projectId || 'Unknown Project',
-        tags: getLabelsArray(ticket),
-        deadline: ticket.eta || "",
-        priority: getPriorityLabel(ticket),
-        status: mapStatus(ticket.status),
-        rawStatus: ticket.status,
-        storyPoint: ticket.storyPoint || 0,
-        labels: getLabelsArray(ticket),
-        _rawData: ticket,
-        ticketId: ticket._id
-      };
+  
+        // Handle priority - can be array, string, or object
+        const getPriorityLabel = (ticket) => {
+          if (ticket.priorityName && ticket.priorityName !== "Unknown") return ticket.priorityName;
+          const p = ticket.priority;
+          if (p && typeof p === 'object' && !Array.isArray(p)) return p.name || 'Medium';
+          if (Array.isArray(p)) {
+            const first = p[0];
+            return (first && typeof first === 'object') ? first.name : (first || 'Medium');
+          }
+          return p || 'Medium';
+        };
+  
+        // Handle labels - normalized to array of strings
+        const getLabelsArray = (ticket) => {
+          const l = ticket.labels || [];
+          const labelList = Array.isArray(l) ? l : [l];
+          return labelList.map(label => {
+            if (label && typeof label === 'object') return label.name;
+            return label;
+          }).filter(Boolean);
+        };
+  
+        return {
+          id: ticket.id || ticket._id,
+          ticketKey: ticket.ticketKey,
+          name: ticket.title,
+          assignee: {
+            name: (ticket.assignee && typeof ticket.assignee === 'object' ? ticket.assignee.name : ticket.assignee) || 'Unassigned',
+            avatar: (ticket.assignee && ticket.assignee.image) || ticket.assigneeImage || null,
+            initials: getInitials((ticket.assignee && typeof ticket.assignee === 'object' ? ticket.assignee.name : ticket.assignee)),
+            _id: (ticket.assignee && ticket.assignee._id) || ticket.assigneeId || null
+          },
+          project: ticket.projectId || 'Unknown Project',
+          tags: getLabelsArray(ticket),
+          deadline: ticket.eta || ticket.dueDate || "",
+          priority: getPriorityLabel(ticket),
+          status: colName, // Exact column name from backend array
+          rawStatus: ticket.status,
+          storyPoint: ticket.storyPoint || 0,
+          labels: getLabelsArray(ticket),
+          _rawData: ticket,
+          ticketId: ticket.id || ticket._id
+        };
+      });
     });
-  }, [currentProjectSprintWork, sprintColumns]);
+  }, [projectBoard]);
 
   // Apply Filtering and Sorting
   const filteredAndSortedTasks = useMemo(() => {
@@ -258,16 +251,35 @@ if (sortConfig.key) {
   //   }, {});
   // }, [filteredAndSortedTasks]);
 
+  // Group tickets into board flow columns based on statusKeys with robust global deduplication
   const groupedTasks = useMemo(() => {
-  const groups = {};
+    const groups = {};
+    
+    if (sprintColumns && sprintColumns.length > 0) {
+      sprintColumns.forEach(col => {
+        groups[col.name] = [];
+      });
+      filteredAndSortedTasks.forEach(task => {
+        if (groups[task.status]) {
+           groups[task.status].push(task);
+        } else {
+           // Fallback if somehow mismatched
+           let firstCol = sprintColumns[0].name;
+           if (!groups[firstCol]) groups[firstCol] = [];
+           groups[firstCol].push(task);
+        }
+      });
+    } else {
+      // Fallback
+      filteredAndSortedTasks.forEach(task => {
+        if (!groups[task.status]) groups[task.status] = [];
+        groups[task.status].push(task);
+      });
+    }
 
-  filteredAndSortedTasks.forEach(task => {
-    if (!groups[task.status]) groups[task.status] = [];
-    groups[task.status].push(task);
-  });
+    return groups;
+  }, [filteredAndSortedTasks, sprintColumns]);
 
-  return groups;
-}, [filteredAndSortedTasks]);
 
   const statusGroups = useMemo(() => {
     if (sprintColumns && sprintColumns.length > 0) {
@@ -295,26 +307,82 @@ if (sortConfig.key) {
     }));
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+  const handleTaskMove = ({ destinationColumnId, active }) => {
+    const taskData = active.data.current?.task;
+    const realTicketId = taskData?.ticketId || taskData?._id;
+    
+    // Find destination column to get the status key
+    let targetColumn = null;
+    if (sprintColumns && sprintColumns.length > 0) {
+      targetColumn = sprintColumns.find(col => col.name === destinationColumnId);
     }
-    setSortConfig({ key, direction });
+    
+    if (!realTicketId) return;
+
+    // Use the first statusKey if available, otherwise fallback to destinationColumnId (which is column name)
+    const newStatus = targetColumn?.statusKeys?.[0] || destinationColumnId;
+    
+    if (newStatus) {
+      dispatch(changeTicketStatus(realTicketId, newStatus));
+    }
   };
 
-  const getPriorityClass = (priority) => {
-    return `priority-${priority.toLowerCase()}`;
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const findContainer = (id) => {
+    const sId = String(id);
+    if (statusGroups.some(group => String(group.key) === sId)) return sId;
+    const allT = Object.values(groupedTasks).flat();
+    const task = allT.find(t => String(t.id || t._id) === sId);
+    return task ? task.status : null;
   };
 
-  const getAvatarColor = (initials) => {
-    const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#3b82f6', '#ec4899'];
-    let hash = 0;
-    for (let i = 0; i < initials.length; i++) {
-      hash = initials.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
+  const handleDragStart = (event) => {
+    const task = event.active.data.current?.task;
+    if (task) setActiveTask(task);
   };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveTask(null);
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainer(activeId);
+    const overContainer = findContainer(overId);
+
+    if (!activeContainer || !overContainer) return;
+    if (activeContainer === overContainer) return;
+
+    const targetColumn = sprintColumns?.find(col => col.name === overContainer);
+    
+    if (targetColumn && targetColumn.statusKeys && targetColumn.statusKeys.length > 1) {
+      setStatusSelectionModal({
+        taskId: activeId,
+        statusKeys: targetColumn.statusKeys,
+        destinationColumnId: overContainer
+      });
+    } else {
+      handleTaskMove({ destinationColumnId: overContainer, active });
+    }
+  };
+
+  const handleStatusSelect = (status) => {
+    if (statusSelectionModal) {
+      dispatch(changeTicketStatus(statusSelectionModal.taskId, status));
+      setStatusSelectionModal(null);
+    }
+  };
+
+  const measuringConfig = {
+    droppable: { strategy: MeasuringStrategy.Always },
+  };
+
 
   const clearFilters = () => {
     setActiveFilters({
@@ -485,216 +553,84 @@ if (sortConfig.key) {
 
       {/* Task Content */}
       {viewMode === 'list' ? (
-        <div className="task-groups">
-          {statusGroups.map((group) => {
-            const tasks = groupedTasks[group.key] || [];
-            const isCollapsed = collapsedGroups[group.key];
-
-            return (
-              <div key={group.key} className="task-group">
-                {/* Group Header */}
-                <div className="task-group__header" onClick={() => toggleGroup(group.key)}>
-                  <div className="task-group__title">
-                    <div
-                      className="task-group__indicator"
-                      style={{ backgroundColor: group.color }}
-                    />
-                    <span className="task-group__label">{group.label}</span>
-                    <span className="task-group__count">{group.count}</span>
-                    <button className="task-group__toggle">
-                      {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Table */}
-                {!isCollapsed && tasks.length > 0 && (
-                  <div className="task-table">
-                    {/* Table Header */}
-                    <div className="task-table__header">
-                      <div className="task-table__col task-table__col--id">
-                        <span>Task ID</span>
-                        <button onClick={() => handleSort('id')} className={sortConfig.key === 'id' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--name">
-                        <span>Task Name</span>
-                        <button onClick={() => handleSort('name')} className={sortConfig.key === 'name' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--assignee">
-                        <span>Assignee</span>
-                        <button onClick={() => handleSort('assignee')} className={sortConfig.key === 'assignee' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--project">
-                        <span>Story Points</span>
-                        <button onClick={() => handleSort('project')} className={sortConfig.key === 'project' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--progress">
-                        <span>Labels</span>
-                      </div>
-                      <div className="task-table__col task-table__col--deadline">
-                        <span>Deadline</span>
-                        <button onClick={() => handleSort('deadline')} className={sortConfig.key === 'deadline' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--priority">
-                        <span>Priority</span>
-                        <button onClick={() => handleSort('priority')} className={sortConfig.key === 'priority' ? 'active-sort' : ''}>
-                          <ArrowUpDown size={14} />
-                        </button>
-                      </div>
-                      <div className="task-table__col task-table__col--action">
-                        <span>Action</span>
-                      </div>
-                    </div>
-
-                    {/* Table Body */}
-                    <div className="task-table__body">
-                      {tasks.map((task) => (
-                        <div key={task.id} className="task-row" onClick={()=>navigate(`/tickets/${task.ticketId}`)}>
-                          <div className="task-row__col task-row__col--id">
-                            {task.id}
-                          </div>
-                          <div className="task-row__col task-row__col--name">
-                            {task.name}
-                          </div>
-                          <div className="task-row__col task-row__col--assignee">
-                            <div className="assignee">
-                              <div
-                                className="assignee__avatar"
-                                style={{ backgroundColor: getAvatarColor(task.assignee.initials) }}
-                              >
-                                {task.assignee.initials}
-                              </div>
-                              <span className="assignee__name">{task.assignee.name}</span>
-                            </div>
-                          </div>
-                          <div className="task-row__col task-row__col--project story_point_text">
-                            {task.storyPoint}
-                          </div>
-                          <div className="task-row__col task-row__col--progress labels-container">
-                            {task.labels && task.labels.length > 0 ? (
-                              task.labels.map((label, idx) => (
-                                <span key={idx} className="label-tag">{label}</span>
-                              ))
-                            ) : (
-                              <span className="no-labels">-</span>
-                            )}
-                          </div>
-                          <div className="task-row__col task-row__col--deadline">
-                            {task.deadline ? new Date(task.deadline).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            }) : '-'}
-                          </div>
-                          <div className="task-row__col task-row__col--priority">
-                            <span className={`priority-badge ${getPriorityClass(task.priority)}`}>
-                              {task.priority}
-                            </span>
-                          </div>
-                          <div className="task-row__col task-row__col--action">
-                            <button className="action-menu-btn">
-                              <MoreHorizontal size={18} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {!isCollapsed && tasks.length === 0 && (
-                  <div className="empty-group-state">
-                    No tasks found matching your filters.
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            measuring={measuringConfig}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {statusGroups.map((group) => (
+              <ExpandableTaskList
+                key={group.key}
+                id={group.key}
+                title={group.label}
+                tasks={groupedTasks[group.key] || []}
+                isCollapsed={collapsedGroups[group.key]}
+                onToggle={() => toggleGroup(group.key)}
+                onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+                bugCount={(groupedTasks[group.key] || []).filter(t => 
+                  (t.labels || []).some(l => (typeof l === 'string' ? l : l.name).toLowerCase().includes('bug'))
+                ).length}
+              />
+            ))}
+            <DragOverlay>
+              {activeTask ? (
+                <table style={{ width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <tbody>
+                    <tr className="pb-table__row is-overlay">
+                      <td className="pb-table__col-drag" style={{ width: '40px' }}></td>
+                      <td className="pb-table__col-id" style={{ width: '100px' }}>{activeTask.ticketKey}</td>
+                      <td className="pb-table__col-title">{activeTask.name || activeTask.title}</td>
+                      <td className="pb-table__col-pts" style={{ width: '60px' }}>{activeTask.storyPoint}</td>
+                      <td className="pb-table__col-status">{activeTask.status}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         </div>
       ) : (
-        <div className="kanban-board">
-          {statusGroups.map((group) => {
-            const tasks = groupedTasks[group.key] || [];
-            return (
-              <div key={group.key} className="kanban-column">
-                <div className="kanban-column__header">
-                  <div className="kanban-column__title-area">
-                    <span className="kanban-column__dot" style={{ backgroundColor: group.color }} />
-                    <span className="kanban-column__name">{group.label}</span>
-                    <span className="kanban-column__count">{tasks.length}</span>
-                  </div>
-                  <button className="icon-btn">
-                    <MoreHorizontal size={16} />
-                  </button>
-                </div>
+        <KanbanBoard 
+          columns={statusGroups.map(group => ({
+            id: group.key,
+            name: group.label,
+            color: group.color,
+            tasks: groupedTasks[group.key] || []
+          }))}
+          onTaskClick={(task) => navigate(`/tickets/${task.ticketId}`)}
+          onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
+          onTaskMove={handleTaskMove}
+        />
+      )}
 
-                <div className="kanban-column__body">
-                  {tasks.length > 0 ? (
-                    tasks.map((task) => (
-                      <div key={task.id} className="kanban-card" onClick={() => navigate(`/tickets/${task.ticketId}`)}>
-                        <div className="kanban-card__header">
-                          <span className="kanban-card__id">{task.id}</span>
-                          <span className={`kanban-card__priority ${task.priority.toLowerCase()}`}>
-                            {task.priority}
-                          </span>
-                        </div>
-                        <h4 className="kanban-card__title">{task.name}</h4>
-                        
-                        {(task.labels && task.labels.length > 0) && (
-                          <div className="kanban-card__tags">
-                            {task.labels.slice(0, 2).map((label, idx) => (
-                              <span key={idx} className="kanban-card__tag">{label}</span>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="kanban-card__footer">
-                          <div className="kanban-card__meta">
-                            <div className="kanban-card__meta-item kanban-card__meta-item--points">
-                              {task.storyPoint} pts
-                            </div>
-                            {task.deadline && (
-                              <div className="kanban-card__meta-item">
-                                <CalendarIcon size={12} />
-                                {new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                              </div>
-                            )}
-                          </div>
-                          <div className="kanban-card__assignee">
-                            <div 
-                              className="avatar" 
-                              style={{ backgroundColor: getAvatarColor(task.assignee?.initials || 'UN') }}
-                              title={task.assignee?.name}
-                            >
-                              {task.assignee?.initials}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="kanban-empty">No tasks</div>
-                  )}
-                </div>
-
-                <div className="kanban-column__footer">
-                  <button className="add-task-btn" onClick={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}>
-                    <Plus size={14} />
-                    <span>Add Task</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+      {statusSelectionModal && (
+        <div className="status-selection-overlay" onClick={() => setStatusSelectionModal(null)}>
+          <div className="status-selection-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="status-selection-modal__header">
+              <h3>Select Target Status</h3>
+              <p>This column supports multiple statuses. Please select one:</p>
+            </div>
+            <div className="status-selection-modal__options">
+              {statusSelectionModal.statusKeys.map((status) => (
+                <button
+                  key={status}
+                  className="status-option-btn"
+                  onClick={() => handleStatusSelect(status)}
+                >
+                  <span className="status-dot" />
+                  {status.replace(/_/g, ' ')}
+                </button>
+              ))}
+            </div>
+            <div className="status-selection-modal__footer">
+              <button className="cancel-btn" onClick={() => setStatusSelectionModal(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

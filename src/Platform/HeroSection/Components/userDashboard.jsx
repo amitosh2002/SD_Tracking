@@ -1,10 +1,9 @@
 import React, { useMemo, useState, useEffect } from "react";
 import {
   CheckCircle2, Clock, AlertCircle, TrendingUp,
-  Plus, MoreHorizontal, Calendar, Layout,
-  Coffee, Sparkles, AlertTriangle, ChevronDown,
-  ShieldAlert, LayoutGrid, List,
-  ChevronUp
+  Plus, Calendar, Layout,
+  Coffee, Sparkles, AlertTriangle,
+  ShieldAlert, LayoutGrid, List
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserWorkDetails } from "../../../Redux/Actions/PlatformActions.js/userActions";
@@ -12,6 +11,22 @@ import "./styles/userdashboard.scss";
 import { DropDownV1 } from "../../../customFiles/customComponent/DropDown";
 import { OPEN_CREATE_TICKET_POPUP } from "../../../Redux/Constants/ticketReducerConstants";
 import { useNavigate } from "react-router-dom";
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  MeasuringStrategy,
+} from '@dnd-kit/core';
+import {
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
+import ExpandableTaskList from "../../../customFiles/customComponent/sprintComponents/ExpandableTaskList";
+import KanbanBoard from "../../../customFiles/customComponent/sprintComponents/KanbanBoard";
+import { changeTicketStatus } from "../../../Redux/Actions/TicketActions/ticketAction";
 
 // ============================================================================
 // HELPERS
@@ -32,41 +47,12 @@ const parseTicketKey = (fullKey) => {
   return { short, tags };
 };
 
-// Convert minutes → compact string  (e.g. 360 → "6h", 90 → "1h 30m")
-const fmtTime = (mins) => {
-  if (!mins) return null;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  if (h && m) return `${h}h ${m}m`;
-  if (h)      return `${h}h`;
-  return `${m}m`;
+// Generate initials from name
+const getInitials = (name) => {
+  if (!name) return "??";
+  return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 };
 
-// Extract the latest date from timeLogs
-const latestDate = (ticket) => {
-  if (!ticket.timeLogs || !ticket.timeLogs.length) return null;
-  const sorted = [...ticket.timeLogs].sort((a, b) => new Date(b.at) - new Date(a.at));
-  return new Date(sorted[0].at);
-};
-
-// Format date → "Feb 1"
-const fmtDate = (date) => {
-  if (!date) return null;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-};
-
-// Priority label style
-const priorityStyle = (priority) => {
-  const p = (priority || "").toLowerCase();
-  switch (p) {
-    case "critical": return "critical";
-    case "high":     return "high";
-    case "medium":   return "medium";
-    case "low":      return "low";
-    case "urgent":   return "critical";
-    default:         return "medium";
-  }
-};
 
 // ============================================================================
 // SPRINT BOARD  (root)
@@ -82,11 +68,14 @@ const UserDashboard = () => {
   const loading = useSelector((state) => state.user.workDetailsLoading);
   const error = useSelector((state) => state.user.workDetailsFail);
   const errorMessage = useSelector((state) => state.user.workDetailsErrorMessage);
+  const user = useSelector((state) => state.auth.user);
 
   // Local State
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [viewMode, setViewMode] = useState("kanban"); // kanban, list
   const [collapsedSections, setCollapsedSections] = useState({});
+  const [statusSelectionModal, setStatusSelectionModal] = useState(null);
+  const [activeTask, setActiveTask] = useState(null);
 
   const toggleSection = (sectionId) => {
     setCollapsedSections(prev => ({
@@ -118,6 +107,7 @@ const UserDashboard = () => {
         id: col.columnId || col.id,
         label: col.name || col.Name || "Unknown",
         color: col.color || "#94a3b8",
+        statusKeys: col.statusKeys || [],
         tickets: col.tickets || []
       }));
     }
@@ -128,6 +118,7 @@ const UserDashboard = () => {
         id: col.id,
         label: col.name,
         color: col.color || "#94a3b8",
+        statusKeys: col.statusKeys || [],
         tickets: safeData[col.name] || []
       }));
     }
@@ -135,10 +126,10 @@ const UserDashboard = () => {
     // 3️⃣ Legacy Fallback
     const legacyData = typeof safeData === 'object' ? safeData : {};
     return [
-      { id: "todo",       label: "To Do",      color: "#94a3b8", tickets: legacyData["To Do"] || legacyData["OPEN"] || [] },
-      { id: "inProgress", label: "In Progress", color: "#3b82f6", tickets: legacyData["In Progress"] || legacyData["IN_PROGRESS"] || [] },
-      { id: "inReview",   label: "In Review",   color: "#8b5cf6", tickets: legacyData["In Review"] || legacyData["IN_REVIEW"] || [] },
-      { id: "done",       label: "Done",        color: "#10b981", tickets: legacyData["Done"] || legacyData["CLOSED"] || [] }
+      { id: "todo",       label: "To Do",      color: "#94a3b8", statusKeys: ["TODO", "BACKLOG", "OPEN"], tickets: legacyData["To Do"] || legacyData["OPEN"] || [] },
+      { id: "inProgress", label: "In Progress", color: "#3b82f6", statusKeys: ["IN_PROGRESS"], tickets: legacyData["In Progress"] || legacyData["IN_PROGRESS"] || [] },
+      { id: "inReview",   label: "In Review",   color: "#8b5cf6", statusKeys: ["IN_REVIEW"],   tickets: legacyData["In Review"] || legacyData["IN_REVIEW"] || [] },
+      { id: "done",       label: "Done",        color: "#10b981", statusKeys: ["DONE", "CLOSED"],    tickets: legacyData["Done"] || legacyData["CLOSED"] || [] }
     ];
   }, [workColumns, safeData]);
 
@@ -153,6 +144,64 @@ const UserDashboard = () => {
   const inProgress   = columns.find(c => ["In Progress", "IN PROGRESS"].includes(c.label.toUpperCase()))?.tickets?.length || 0;
   const critical     = allTickets.filter(t => ["Critical", "High", "Urgent"].includes(t.priority)).length;
   const completed    = columns.find(c => ["Done", "DONE", "COMPLETED"].includes(c.label.toUpperCase()))?.tickets?.length || 0;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const findContainer = (id) => {
+    const sId = String(id);
+    if (columns.some(col => String(col.id) === sId)) return sId;
+    const col = columns.find(c => c.tickets.some(t => String(t.id || t._id) === sId));
+    return col ? col.id : null;
+  };
+
+  const handleDragStart = (event) => {
+    const task = event.active.data.current?.task;
+    if (task) setActiveTask(task);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveTask(null);
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const activeContainer = findContainer(activeId);
+    const overContainer = findContainer(overId);
+
+    if (!activeContainer || !overContainer) return;
+
+    if (activeContainer === overContainer) return; // Same column reorder not implemented for local list state yet
+
+    const destCol = columns.find(c => String(c.id) === overContainer);
+    if (!destCol) return;
+
+    if (destCol.statusKeys && destCol.statusKeys.length > 1) {
+      setStatusSelectionModal({
+        taskId: activeId,
+        statusKeys: destCol.statusKeys,
+        destinationColumnId: overContainer
+      });
+    } else {
+      const newStatus = destCol.statusKeys?.[0] || destCol.label;
+      dispatch(changeTicketStatus(activeId, newStatus));
+    }
+  };
+
+  const handleStatusSelect = (status) => {
+    if (statusSelectionModal) {
+      dispatch(changeTicketStatus(statusSelectionModal.taskId, status));
+      setStatusSelectionModal(null);
+    }
+  };
+
+  const measuringConfig = {
+    droppable: { strategy: MeasuringStrategy.Always },
+  };
 
   return (
     <div className="sb-page">
@@ -242,96 +291,105 @@ const UserDashboard = () => {
           </button>
         </div>
       ) : viewMode === "kanban" ? (
-        <div className="sb-board">
-          {columns.map((col) => (
-            <Column key={col.id} column={col} />
-          ))}
-        </div>
+        <KanbanBoard 
+          columns={columns.map(col => ({
+            ...col,
+            tasks: col.tickets.map(t => ({
+              ...t,
+              id: t.id || t._id,
+              ticketKey: t.ticketKey,
+              title: t.title,
+              storyPoint: t.storyPoint || t.pts || 0,
+              assignee: { 
+                name: user?.profile?.firstName ? (user.profile.firstName + " " + (user.profile.lastName || "")) : "You", 
+                initials: user?.profile?.firstName ? getInitials(user.profile.firstName + " " + (user.profile.lastName || "")) : "ME",
+                image: user?.profile?.avatar || null
+              },
+              status: t.status || col.label
+            }))
+          }))}
+          onTaskClick={(t) => navigate(`/tickets/${t._id || t.id}`)}
+          onAddTask={() => dispatch({ type: OPEN_CREATE_TICKET_POPUP, payload: true })}
+          onTaskMove={handleDragEnd}
+        />
       ) : (
-        <div className="sb-list-container" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {columns.map((col) => {
-            const isCollapsed = collapsedSections[col.id];
-            return (
-              <div key={col.id} className="sb-list-section">
-                <div 
-                  className="sb-list-section__header" 
-                  onClick={() => toggleSection(col.id)}
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '12px', 
-                    marginBottom: '12px',
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    background: '#ffffff',
-                    borderRadius: '10px',
-                    border: '1px solid #e2e8f0',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <span className="status-dot" style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: col.color }} />
-                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#1e293b', flex: 1 }}>{col.label}</h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: '600', color: '#64748b', background: '#f1f5f9', padding: '2px 8px', borderRadius: '10px' }}>
-                      {col.tickets.length}
-                    </span>
-                    {isCollapsed ? <ChevronDown size={18} color="#94a3b8" /> : <ChevronUp size={18} color="#94a3b8" />}
-                  </div>
-                </div>
+        <div className="pb-backlog" style={{ padding: '0 0 32px' }}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            measuring={measuringConfig}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {columns.map((col) => (
+              <ExpandableTaskList
+                key={col.id}
+                id={col.id}
+                title={col.label}
+                tasks={col.tickets.map(t => ({
+                  ...t,
+                  id: t.id || t._id,
+                  ticketKey: parseTicketKey(t.ticketKey).short,
+                  storyPoint: t.storyPoint || t.pts || 0,
+                  assignee: { 
+                    name: user?.profile?.firstName ? (user.profile.firstName + " " + (user.profile.lastName || "")) : "You", 
+                    initials: user?.profile?.firstName ? getInitials(user.profile.firstName + " " + (user.profile.lastName || "")) : "ME",
+                    image: user?.profile?.avatar || null
+                  },
+                  status: t.status || col.label
+                }))}
+                isCollapsed={collapsedSections[col.id]}
+                onToggle={() => toggleSection(col.id)}
+                onTaskClick={(t) => navigate(`/tickets/${t._id || t.id}`)}
+                bugCount={col.tickets.filter(t => 
+                  (t.label || "").toLowerCase().includes('bug')
+                ).length}
+              />
+            ))}
+            <DragOverlay>
+              {activeTask ? (
+                <table style={{ width: '100%', background: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <tbody>
+                    <tr className="pb-table__row is-overlay">
+                      <td className="pb-table__col-drag" style={{ width: '40px' }}></td>
+                      <td className="pb-table__col-id" style={{ width: '100px' }}>{activeTask.ticketKey}</td>
+                      <td className="pb-table__col-title">{activeTask.title}</td>
+                      <td className="pb-table__col-pts" style={{ width: '60px' }}>{activeTask.storyPoint}</td>
+                      <td className="pb-table__col-status">{activeTask.status}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      )}
 
-                {!isCollapsed && (
-                  col.tickets.length > 0 ? (
-                    <div className="sb-list-view">
-                      <div className="sb-table">
-                        <div className="sb-table__header">
-                          <span>Task ID</span>
-                          <span>Title</span>
-                          <span>Status</span>
-                          <span>Priority</span>
-                          <span>Updated</span>
-                          <span>Logged</span>
-                          <span></span>
-                        </div>
-                        <div className="sb-table__body">
-                          {col.tickets.map((ticket) => (
-                            <div key={ticket.id} className="sb-row" onClick={() => navigate(`/tickets/${ticket.id}`)}>
-                              <div className="sb-row__col sb-row__col--id">{parseTicketKey(ticket.ticketKey).short}</div>
-                              <div className="sb-row__col sb-row__col--title">{ticket.title}</div>
-                              <div className="sb-row__col sb-row__col--status">
-                                <span 
-                                  className="status-dot" 
-                                  style={{ backgroundColor: col.color }} 
-                                />
-                                {ticket.status}
-                              </div>
-                              <div className="sb-row__col">
-                                <span className={`priority-badge ${priorityStyle(ticket.priority)}`}>
-                                  {ticket.priority}
-                                </span>
-                              </div>
-                              <div className="sb-row__col">
-                                {fmtDate(latestDate(ticket)) || "Recently"}
-                              </div>
-                              <div className="sb-row__col sb-row__col--points">
-                                {fmtTime(ticket.totalTimeLogged) || "0h"}
-                              </div>
-                              <div className="sb-row__col">
-                                <MoreHorizontal size={18} color="#94a3b8" />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', border: '1px dashed #e2e8f0', color: '#94a3b8', fontSize: '13px', textAlign: 'center' }}>
-                      No tasks assigned in this stage
-                    </div>
-                  )
-                )}
-              </div>
-            );
-          })}
+      {statusSelectionModal && (
+        <div className="status-selection-overlay" onClick={() => setStatusSelectionModal(null)}>
+          <div className="status-selection-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="status-selection-modal__header">
+              <h3>Select Target Status</h3>
+              <p>This column supports multiple statuses. Please select one:</p>
+            </div>
+            <div className="status-selection-modal__options">
+              {statusSelectionModal.statusKeys.map((status) => (
+                <button
+                  key={status}
+                  className="status-option-btn"
+                  onClick={() => handleStatusSelect(status)}
+                >
+                  <span className="status-dot" />
+                  {status.replace(/_/g, ' ')}
+                </button>
+              ))}
+            </div>
+            <div className="status-selection-modal__footer">
+              <button className="cancel-btn" onClick={() => setStatusSelectionModal(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -352,74 +410,5 @@ const StatCard = ({ icon, color, num, label }) => (
   </div>
 );
 
-const Column = ({ column }) => (
-  <div className="sb-col">
-    <div className="sb-col__header">
-      <div className="sb-col__header-left">
-        <span className="sb-col__dot" style={{ backgroundColor: column.color }} />
-        <span className="sb-col__title">{column.label}</span>
-        <span className="sb-col__count">{column.tickets.length}</span>
-      </div>
-      <div className="sb-col__header-right">
-        <button className="sb-col__btn"><Plus size={16} /></button>
-      </div>
-    </div>
-
-    <div className="sb-col__body">
-      {column.tickets.map((ticket) => (
-        <TicketCard key={ticket.ticketKey} ticket={ticket} />
-      ))}
-      {column.tickets.length === 0 && (
-         <div style={{ padding: '20px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
-            No tasks here
-         </div>
-      )}
-    </div>
-
-    <div className="sb-col__footer">
-      <Plus size={15} />
-      <span>Add task</span>
-    </div>
-  </div>
-);
-
-const TicketCard = ({ ticket }) => {
-  const { short } = parseTicketKey(ticket.ticketKey);
-  const timeStr = fmtTime(ticket.totalTimeLogged);
-  const date = latestDate(ticket);
-  const dateStr = fmtDate(date);
-  const navigate = useNavigate();
-
-  return (
-    <div className="sb-ticket" onClick={() => navigate(`/tickets/${ticket.id}`)}>
-      <div className="sb-ticket__top">
-        <span className="sb-ticket__key">{short}</span>
-        <span className={`sb-ticket__priority sb-ticket__priority--${priorityStyle(ticket.priority)}`}>
-          {ticket.priority}
-        </span>
-      </div>
-
-      <h4 className="sb-ticket__title">{ticket.title}</h4>
-
-      {ticket.label && (
-        <div className="sb-ticket__tags">
-            <span className="sb-ticket__tag">{ticket.label}</span>
-        </div>
-      )}
-
-      <div className="sb-ticket__meta">
-        <div className="sb-ticket__meta-left">
-          {dateStr && (
-            <span className="sb-ticket__date">
-              <Calendar size={13} />
-              {dateStr}
-            </span>
-          )}
-          {timeStr && <span className="sb-ticket__points">{timeStr}</span>}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default UserDashboard;

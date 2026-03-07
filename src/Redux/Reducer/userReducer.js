@@ -1,5 +1,7 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { FAIL_FETCH_USER_DETAILS, FETCH_USER_DETAILS, SUCESS_FETCH_USER_DETAILS, USER_MOST_RESCENT_TIME_LOG, USER_MOST_RESCENT_WORK, USER_TEAM_MEMBERS, USER_TEAM_MEMBERS_FAIL, USER_TEAM_MEMBERS_FETCH, USER_TEAM_MEMBERS_LOADING, USER_WORK_DETAILS, USER_WORK_DETAILS_FAIL, USER_WORK_DETAILS_LOADING } from "../Constants/PlatformConstatnt/userConstant";
+import { UPDATE_TICKET_STATUS } from "../Constants/ticketReducerConstants";
+
 const initialState={
     userDetails:null,
     sucessFetch:false,
@@ -80,5 +82,65 @@ export const userReducer=createReducer(initialState,(builder)=>{
         state.projectTeamMembersLoading=false;
         state.projectTeamMembers=null;
         state.projectTeamMembersErrorMessage=action.payload;
+    })
+    .addCase(UPDATE_TICKET_STATUS, (state, action) => {
+        const { ticketId, status } = action.payload;
+        
+        // 1. Update in workDetails (Array of columns)
+        if (Array.isArray(state.workDetails)) {
+            let foundTicket = null;
+            
+            // Remove from current column
+            state.workDetails.forEach(col => {
+                const index = col.tickets?.findIndex(t => (t._id || t.id) === ticketId);
+                if (index !== -1 && index !== undefined) {
+                    foundTicket = { ...col.tickets[index], status };
+                    col.tickets.splice(index, 1);
+                }
+            });
+
+            // Add to new column
+            if (foundTicket) {
+                const ns = status.toUpperCase().replace(/[\s_-]/g, '');
+                const targetCol = state.workDetails.find(col => 
+                    (col.statusKeys || []).some(k => k.toUpperCase().replace(/[\s_-]/g, '') === ns)
+                );
+                
+                if (targetCol) {
+                    if (!targetCol.tickets) targetCol.tickets = [];
+                    targetCol.tickets.unshift(foundTicket);
+                } else {
+                    // Fallback: put it back where it was or in first column? 
+                    // Better: just find by name if statusKeys match fails
+                    const targetColByName = state.workDetails.find(col => 
+                        col.name.toUpperCase().replace(/[\s_-]/g, '') === ns
+                    );
+                    if (targetColByName) {
+                        if (!targetColByName.tickets) targetColByName.tickets = [];
+                        targetColByName.tickets.unshift(foundTicket);
+                    }
+                }
+            }
+        } 
+        // 2. Update in workDetails (Legacy Object format)
+        else if (state.workDetails && typeof state.workDetails === 'object') {
+            let foundTicket = null;
+            Object.keys(state.workDetails).forEach(key => {
+                const list = state.workDetails[key];
+                if (Array.isArray(list)) {
+                    const index = list.findIndex(t => (t._id || t.id) === ticketId);
+                    if (index !== -1) {
+                        foundTicket = { ...list[index], status };
+                        list.splice(index, 1);
+                    }
+                }
+            });
+
+            if (foundTicket) {
+                // Simplified move for object format
+                if (!state.workDetails[status]) state.workDetails[status] = [];
+                state.workDetails[status].unshift(foundTicket);
+            }
+        }
     })
 })

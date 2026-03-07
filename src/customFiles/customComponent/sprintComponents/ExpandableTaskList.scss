@@ -1,0 +1,298 @@
+// ============================================================================
+//  ExpandableTaskList.scss
+//  Self-contained styles for the reusable task list component.
+// ============================================================================
+
+// ── Palette (matching ProjectBoard.scss) ─────────────────────────────────────
+$white:          #ffffff;
+$bg-surface:     #ffffff;
+$bg-raised:      #F8F9FB;
+$bg-hover:       #F0F2F5;
+$bg-muted:       #E9ECEF;
+$border-subtle:  #EEF0F3;
+$border-base:    #E2E5EA;
+$border-strong:  #CDD2D9;
+$text-900:       #111318;
+$text-700:       #2D3340;
+$text-500:       #5B6374;
+$text-300:       #9AA3B0;
+$text-white:     #ffffff;
+$accent:         #3D6BE4;
+$accent-100:     #EBF0FD;
+$c-red:          #DC3545;  $c-red-100:    #FFF0F0;
+$c-amber:        #D97706;  $c-amber-100:  #FFF7E6;
+$c-green:        #1E8A45;  $c-green-100:  #EDFBF2;
+$c-orange:       #C45213;  $c-orange-100: #FFF2EB;
+
+$shadow-xs:  0 1px 2px  rgba(0,0,0,0.05);
+$font:        'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+$font-mono:   'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+$r-sm:   6px;
+$r-md:   8px;
+$r-lg:   10px;
+$r-pill: 999px;
+$ease:      cubic-bezier(0.4, 0, 0.2, 1);
+$t-fast:    120ms $ease;
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+.pb-backlog {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 28px 32px;
+
+  @media (max-width: 600px) { padding: 14px 16px 24px; gap: 12px; }
+}
+
+// ── Backlog group (accordion) ─────────────────────────────────────────────────
+.pb-group {
+  background: $bg-surface;
+  border: 1px solid $border-base;
+  border-radius: $r-lg;
+  overflow: hidden;
+  box-shadow: $shadow-xs;
+  margin-bottom: 16px;
+
+  // Clickable header
+  &__header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    background: $bg-raised;
+    border: none;
+    border-bottom: 1px solid $border-subtle;
+    cursor: pointer;
+    text-align: left;
+    font-family: $font;
+    transition: background $t-fast;
+
+    &:hover { background: $bg-hover; }
+  }
+
+  &__chevron {
+    display: flex;
+    flex-shrink: 0;
+    color: $text-300;
+    transition: transform 180ms $ease;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-900;
+    flex: 1;
+    letter-spacing: -0.01em;
+  }
+
+  &__meta {
+    font-size: 12px;
+    color: $text-300;
+    flex-shrink: 0;
+  }
+
+  &__bug-pill {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: $r-pill;
+    font-size: 10px;
+    font-weight: 700;
+    background: $c-red-100;
+    color: $c-red;
+    margin-left: 8px;
+  }
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+.pb-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pb-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: #FAFBFC;
+    border-bottom: 1px solid $border-subtle;
+  }
+
+  th {
+    padding: 7px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    color: $text-300;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  td {
+    padding: 0 14px;
+    height: 44px;
+    border-bottom: 1px solid $border-subtle;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  &__row {
+    cursor: pointer;
+    transition: background $t-fast;
+    &:hover td { background: $bg-hover; }
+
+    &:hover td:first-child {
+      box-shadow: inset 3px 0 0 $accent;
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 36px 0 !important;
+    height: auto !important;
+    color: $text-300;
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  &__add-row {
+    cursor: pointer;
+    td {
+      border-bottom: none;
+      height: 38px;
+      padding: 0 14px;
+    }
+    &:hover td { background: $bg-hover; }
+    &:hover .pb-table__add-inner { color: $accent; }
+  }
+
+  &__add-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: $text-300;
+    transition: color $t-fast;
+  }
+
+  // Column widths
+  &__col-check    { width: 34px;  }
+  &__col-id       { width: 86px;  }
+  &__col-title    { min-width: 180px; }
+  &__col-labels   { width: 190px; }
+  &__col-priority { width: 100px; }
+  &__col-status   { width: 110px; }
+  &__col-pts      { width: 52px;  text-align: center; }
+  &__col-who      { width: 48px;  text-align: center; }
+}
+
+.pb-ticket-id {
+  font-family: $font-mono;
+  font-size: 11px;
+  color: $text-300;
+  letter-spacing: 0.01em;
+}
+
+.pb-task-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-900;
+}
+
+.pb-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pb-tag {
+  padding: 2px 7px;
+  border-radius: $r-pill;
+  font-size: 10px;
+  font-weight: 600;
+  background: $bg-muted;
+  color: $text-500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.pb-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: $r-pill;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--critical { background: $c-red-100;    color: $c-red;    }
+  &--high     { background: $c-orange-100; color: $c-orange; }
+  &--medium   { background: $c-amber-100;  color: $c-amber;  }
+  &--low      { background: $c-green-100;  color: $c-green;  }
+}
+
+.pb-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  background: $bg-muted;
+  color: $text-500;
+  border: 1px solid transparent;
+
+  &--todo        { background: #F1F3F5; color: #495057; border-color: #DEE2E6; }
+  &--inprogress  { background: #E7F5FF; color: #1971C2; border-color: #A5D8FF; }
+  &--inreview    { background: #F3F0FF; color: #6741D9; border-color: #D0BFFF; }
+  &--done        { background: #EBFBEE; color: #2F9E44; border-color: #B2F2BB; }
+  &--completed   { background: #EBFBEE; color: #2F9E44; border-color: #B2F2BB; }
+}
+
+.pb-pts-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: $r-sm;
+  background: $bg-muted;
+  color: $text-500;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pb-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: $text-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin: 0 auto;
+  border: 2px solid $bg-surface;
+  box-shadow: 0 0 0 1px $border-subtle;
+  letter-spacing: 0.02em;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// ── Responsive Helpers ────────────────────────────────────────────────────────
+@media (max-width: 820px)  { .pb-hide-md { display: none !important; } }
+@media (max-width: 640px)  { .pb-hide-sm { display: none !important; } }

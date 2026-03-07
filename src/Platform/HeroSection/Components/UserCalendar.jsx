@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, List, Info, Clock, AlertCircle, CalendarDays } from 'lucide-react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import '../styles/UserCalendar.scss';
 
 const UserCalendar = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [projectsData, setProjectsData] = useState([]);
+    const [timelineData, setTimelineData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
+    const navigate = useNavigate();
 
     const fetchCalendarData = async () => {
         setLoading(true);
@@ -17,13 +19,25 @@ const UserCalendar = () => {
         try {
             const token = localStorage.getItem('token');
             const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-            const res = await axios.post(
+            
+            // 1. Fetch Sprints (UI Context)
+            const sprintRes = await axios.post(
                 `${backendUrl}/api/sprint/allsprint`,
                 {}, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            if (res.data.success) {
-                setProjectsData(res.data.projects || []);
+            
+            // 2. Fetch Ticket Timeline (ETAs)
+            const timelineRes = await axios.get(
+                `${backendUrl}/api/platform/v1/user/calendar-timeline`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (sprintRes.data.success) {
+                setProjectsData(sprintRes.data.projects || []);
+            }
+            if (timelineRes.data.success) {
+                setTimelineData(timelineRes.data.data || []);
             }
         } catch (err) {
             console.error("Fetch calendar data error:", err);
@@ -37,9 +51,9 @@ const UserCalendar = () => {
         fetchCalendarData();
     }, []);
 
-    // NEW: Auto-select today when data is loaded
+    // Auto-select today when data is loaded
     useEffect(() => {
-        if (projectsData.length > 0 && !selectedDate) {
+        if ((projectsData.length > 0 || timelineData.length > 0) && !selectedDate) {
             const today = new Date();
             const dateStr = today.toISOString().split('T')[0];
             const allSprints = projectsData.flatMap(p => p.sprints || []);
@@ -50,7 +64,7 @@ const UserCalendar = () => {
                 return dateStr >= sDate && dateStr <= eDate;
             });
 
-            const dayTickets = allSprints.flatMap(s => s.tickets || []).filter(t => {
+            const dayTickets = timelineData.filter(t => {
                 return t.eta ? new Date(t.eta).toISOString().split('T')[0] === dateStr : false;
             });
 
@@ -61,7 +75,7 @@ const UserCalendar = () => {
                 tickets: dayTickets 
             });
         }
-    }, [projectsData]);
+    }, [projectsData, timelineData, selectedDate]);
 
     const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
     const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
@@ -78,7 +92,7 @@ const UserCalendar = () => {
             return dateStr >= sDate && dateStr <= eDate;
         });
 
-        const dayTickets = allSprints.flatMap(s => s.tickets || []).filter(t => {
+        const dayTickets = timelineData.filter(t => {
             return t.eta ? new Date(t.eta).toISOString().split('T')[0] === dateStr : false;
         });
 
@@ -134,14 +148,14 @@ const UserCalendar = () => {
                 return dateStr >= sDate && dateStr <= eDate;
             });
 
-            const dayTickets = allSprints.flatMap(s => s.tickets || []).filter(t => {
+            const dayTickets = timelineData.filter(t => {
                 return t.eta ? new Date(t.eta).toISOString().split('T')[0] === dateStr : false;
             });
 
             days.push(
                 <div 
                     key={d} 
-                    className={`calendar-cell ${isToday ? 'today' : ''}`}
+                    className={`calendar-cell ${isToday ? 'today' : ''} ${selectedDate?.date === dateStr ? 'selected' : ''}`}
                     onClick={() => setSelectedDate({ day: d, date: dateStr, sprints: activeSprints, tickets: dayTickets })}
                 >
                     <span className="day-number">{d}</span>
@@ -149,9 +163,20 @@ const UserCalendar = () => {
                         {activeSprints.map((s, idx) => (
                             <div key={idx} className={`sprint-bar ${s.isActive ? 'active' : 'planned'}`} title={`${s.projectName} | ${s.sprintName}`} />
                         ))}
-                        {dayTickets.map((t, idx) => (
-                            <div key={idx} className="task-marker">{t.title}</div>
-                        ))}
+                        {dayTickets.length > 0 && (
+                            <div className="day-tasks-mini-list">
+                                {dayTickets.slice(0, 2).map((t, idx) => (
+                                    <div key={idx} className="task-marker mini" title={t.ticketKey}>
+                                        {t.ticketKey.split('-').slice(0, 2).join('-')}
+                                    </div>
+                                ))}
+                                {dayTickets.length > 2 && (
+                                    <div className="show-all-indicator">
+                                        show all
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             );
@@ -197,22 +222,24 @@ const UserCalendar = () => {
                 <p className="section-label">Task Deadlines (ETAs)</p>
                 {selectedDate.tickets.length > 0 ? (
                     selectedDate.tickets.map((t, i) => (
-                        <div key={i} className="activity-item">
+                        <div key={i} className="activity-item clickable" onClick={() => navigate(`/tickets/${t.id}`)}>
                             <Clock size={16} color="#6366f1" />
                             <div className="item-info">
-                                <p className="name">{t.title}</p>
-                                <p className="meta">{t.ticketKey} • <span style={{ color: '#6366f1' }}>{t.status}</span></p>
+                                <p className="name">{t.ticketKey || t.title}</p>
+                                {/* <p className="meta">{t.ticketKey} • <span style={{ color: '#6366f1' }}>View Details</span></p> */}
                             </div>
                         </div>
                     ))
                 ) : (
-                    <p style={{ color: '#94a3b8', fontSize: '0.85rem', padding: '0 10px', fontWeight: '500' }}>No task deadlines for this day.</p>
+                    <p style={{ color: '#94a3b8', fontSize: '0.85rem', padding: '10px', fontWeight: '500', textAlign: 'center' }}>
+                        No target deadlines for this day.
+                    </p>
                 )}
             </div>
         );
     };
 
-    if (loading && projectsData.length === 0) return (
+    if (loading && projectsData.length === 0 && timelineData.length === 0) return (
         <div className="calendar-container" style={{ alignItems: 'center', justifyContent: 'center', background: '#f3f4f6' }}>
             <div className="animate-pulse" style={{ color: '#6366f1', fontWeight: '700' }}>Synchronizing Project Timelines...</div>
         </div>

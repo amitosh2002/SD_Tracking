@@ -20,6 +20,7 @@ const initialState = {
   sortKeyValuesLoading:false,
   currentProjectSprintWork: [],
   currentProjectSprintName: null,
+  currentProjectSprintId: null,
   totalSprintStoryPoints: 0,
   projectBoard: {}, 
   sprintColumns: [],
@@ -81,12 +82,21 @@ export const ticketReducer = createReducer(initialState,(builder=>{
         })
         .addCase(UPDATE_TICKET_STATUS, (state, action) => {
             const { ticketId, status } = action.payload;
+            
+            // 1. Update in main tickets list
             const ticketIndex = state.tickets.items?.findIndex(ticket => ticket._id === ticketId);
             if (ticketIndex !== -1 && state.tickets.items) {
                 state.tickets.items[ticketIndex].status = status;
             }
-            // Also update selectedTicket if it's the same ticket
-            if (state.selectedTicket && state.selectedTicket._id === ticketId) {
+
+            // 2. Update in current project sprint work (for board views)
+            const sprintIndex = state.currentProjectSprintWork?.findIndex(ticket => (ticket._id || ticket.id) === ticketId);
+            if (sprintIndex !== -1 && state.currentProjectSprintWork) {
+                state.currentProjectSprintWork[sprintIndex].status = status;
+            }
+
+            // 3. Update selectedTicket if it's the same ticket
+            if (state.selectedTicket && (state.selectedTicket._id || state.selectedTicket.id) === ticketId) {
                 state.selectedTicket.status = status;
             }
         })
@@ -181,6 +191,7 @@ export const ticketReducer = createReducer(initialState,(builder=>{
             state.projectBoard = action.payload.data || {};
             state.sprintColumns = action.payload.columns || [];
             state.currentProjectSprintName=action.payload.sprintName;
+            state.currentProjectSprintId=action.payload.sprintId;
             state.totalSprintStoryPoints=action.payload.totalStoryPoint;
             state.sprintFilters=action.payload.allUserFilterAction || {
                 assignee: [],
