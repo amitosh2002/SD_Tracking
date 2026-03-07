@@ -491,41 +491,42 @@ export const DropDownForTicketStatus = ({
   };
 
   const defaultStatusWorkflow = {
-    "OPEN": ["IN_PROGRESS", "IN_REVIEW", "ON_HOLD"],
-    "IN_PROGRESS": ["IN_REVIEW", "ON_HOLD", "OPEN"],
-    "IN_REVIEW": ["DEV_TESTING", "REJECTED", "ON_HOLD"],
-    "DEV_TESTING": ["RESOLVED", "IN_REVIEW", "REJECTED"],
-    "RESOLVED": ["M1 TESTING COMPLETED", "REOPENED"],
-    "M1 TESTING COMPLETED": ["M2 TESTING COMPLETED", "REOPENED"],
-    "M2 TESTING COMPLETED": ["CLOSED", "REOPENED"],
-    "REJECTED": ["OPEN", "IN_PROGRESS"],
-    "ON_HOLD": ["OPEN", "IN_PROGRESS"],
-    "REOPENED": ["IN_PROGRESS", "IN_REVIEW"],
-    "CLOSED": ["REOPENED"],
+    "OPEN": ["IN_PROGRESS", "IN_REVIEW", "HOLD"],
+    "IN_PROGRESS": ["IN_REVIEW", "HOLD", "OPEN"],
+    "IN_REVIEW": ["DONE", "REOPEN", "HOLD"],
+    "DONE": ["REOPEN", "OPEN"],
+    "HOLD": ["OPEN", "IN_PROGRESS"],
+    "REOPEN": ["IN_PROGRESS", "IN_REVIEW"],
+    "CLOSED": ["REOPEN"],
   };
 
   // Use provided workflow/colors or fall back to defaults
-  const activeWorkflow = statusWorkflow || defaultStatusWorkflow;
+  const activeWorkflow = statusWorkflow ?? defaultStatusWorkflow;
   const activeColors = statusColors || defaultStatusColors;
-  const getAllowedStatuses = (currentStatus) => {
+  const getAllowedStatuses = (inputStatus) => {
+    const currentStatus = (inputStatus || "").toUpperCase().trim().replace(/\s+/g, '_');
+    
     if (!currentStatus || !activeWorkflow[currentStatus]) {
       return ticketTypes;
     }
     
-    const allowedNext = activeWorkflow[currentStatus];
-    return [currentStatus, ...allowedNext].filter((status, index, self) => 
-      self?.indexOf(status) === index && ticketTypes?.includes(status)
-    );
+    const allowedNext = activeWorkflow[currentStatus] || [];
+    
+    return ticketTypes.filter(status => {
+      const normStatus = status.toUpperCase().trim().replace(/\s+/g, '_');
+      return normStatus === currentStatus || allowedNext.includes(normStatus);
+    });
   };
 
   const uniqueKey = `dropdown-${ticketId || Math.random()}`;
   const currentValue = value || defaultType || (ticketTypes && ticketTypes.length > 0 ? ticketTypes[0] : "");
-  const currentColors = activeColors[currentValue] || activeColors["OPEN"];
+  const normalizedCurrent = (currentValue || "").toUpperCase().trim().replace(/\s+/g, '_');
+  const currentColors = activeColors[normalizedCurrent] || activeColors["OPEN"];
   
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const filteredOptions = getAllowedStatuses(currentValue);
+  const filteredOptions = getAllowedStatuses(normalizedCurrent);
   
   useEffect(() => {
     const handleClickOutside = (event) => {

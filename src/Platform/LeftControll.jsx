@@ -332,7 +332,7 @@ const IssueDetails = ({ task }) => {
                 <div className="header_actions">
                     <DropDownForTicketStatus
                         ticketTypes={ticketStatus.map(s => s.key || s.label || s)}
-                        value={selectedTicket?.status || "OPEN"}
+                        value={(selectedTicket?.status || "OPEN").toUpperCase().trim().replace(/\s+/g, '_')}
                         onStatusChange={(statusData) => {
                             handleStatusChange(statusData);
                         }}

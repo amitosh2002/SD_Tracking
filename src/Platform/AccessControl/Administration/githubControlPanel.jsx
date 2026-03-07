@@ -88,7 +88,7 @@ const GitHubAdminPanel = () => {
                 <button
                   className="connect-button"
                   onClick={() => {
-                    window.location.href = `https://github.com/apps/themysticsquadapp/installations/new?state=${projectId}`;
+                    window.location.href = `https://github.com/apps/friday-by-hora/installations/new?state=${projectId}`;
                   }}
                 >
                   <Zap size={20} />
@@ -209,7 +209,7 @@ const GitHubAdminPanel = () => {
                         <button 
                           className="action-btn-primary"
                           onClick={() => {
-                            window.location.href = `https://github.com/apps/themysticsquadapp/installations/new?state=${inst.projectId}`;
+                            window.location.href = `https://github.com/apps/friday-by-hora/installations/new?state=${inst.projectId}`;
                           }}
                         >
                           <Settings size={16} /> Configure
@@ -249,7 +249,7 @@ const GitHubAdminPanel = () => {
                         type="button"
                         className="action-button primary"
                         onClick={() => {
-                          window.location.href = `https://github.com/apps/themysticsquadapp/installations/new`;
+                          window.location.href = `https://github.com/apps/friday-by-hora/installations/new?state=${projectId}`;
                         }}
                       >
                         <Github size={20} />
